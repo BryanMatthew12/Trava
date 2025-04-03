@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Routes, Route, Outlet } from 'react-router-dom';
+import Header from './header/Header';
+import Footer from './footer/Footer';
+import RootPage from './home/RootPage';
+import Home from './home/Home';
+import Threads from './threads/Threads';
+import Destinations from './destinations/Destinations';
 
-function App() {
+const Layout = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          test <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+    </>
   );
-}
+};
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<RootPage />} />
+        <Route path="home" element={<Home />} />
+        <Route path="destinations" element={<Destinations />} />
+        <Route path="threads" element={<Threads />} />
+      </Route>
+    </Routes>
+  );
+};
 
 export default App;
