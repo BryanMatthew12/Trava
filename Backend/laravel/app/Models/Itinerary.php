@@ -16,12 +16,12 @@ class Itinerary extends Model
 
     public function days()
     {
-        return $this->hasMany(Day::class, 'dayId', 'dayId');
+        return $this->hasMany(Day::class, 'itineraryId', 'itineraryId');
     }
 
     public function destinations()
     {
-        return $this->belongsToMany(Destination::class, 'itineraryId', 'destinationId');
+        return $this->belongsToMany(Destination::class, 'destination_itinerary', 'itinerary_id', 'destination_id');
     }
 
 }

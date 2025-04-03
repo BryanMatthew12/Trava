@@ -12,13 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('itineraries', function (Blueprint $table) {
-            $table->id();
-            $table->integer('itineraryId');
-            $table->string('itineraryBudget');
-            $table->date('itineraryDate');
+            $table->bigIncrements('id'); // Primary Key
+            $table->unsignedBigInteger('user_id'); // Foreign Key (Refers to users.userId)
+            $table->decimal('budget', 10, 2);
+            $table->date('start_date');
             $table->integer('days');
-            $table->string('itineraryDescription');
+            $table->text('description');
             $table->timestamps();
+
+            // Foreign Key Constraint
+            $table->foreign('user_id')->references('userId')->on('users')->onDelete('cascade');
         });
     }
 

@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('threads', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id'); // Primary Key
+            $table->unsignedBigInteger('user_id'); // Foreign Key (Refers to users.userId)
+            $table->string('title'); // Thread title
+            $table->text('content'); // Thread content
             $table->timestamps();
+
+            $table->foreign('user_id')->references('userId')->on('users')->onDelete('cascade');
         });
     }
 
