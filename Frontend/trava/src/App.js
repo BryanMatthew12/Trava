@@ -7,7 +7,7 @@ import Home from './home/Home';
 import Threads from './threads/Threads';
 import Destinations from './destinations/Destinations';
 import PlanningItinerary from './planItinerary/PlanningItinerary';
-
+import PrePlanningItinerary from './planItinerary/prePlanningItinerary';
 const Layout = () => {
   const location = useLocation();
   const isPlanningItinerary = location.pathname.startsWith('/PlanningItinerary');
@@ -33,6 +33,7 @@ const App = () => {
         <Route path="destinations" element={<Destinations />} />
         <Route path="threads" element={<Threads />} />
         <Route path="planningitinerary" element={<PlanningItinerary />} />
+        <Route path="preplanningitinerary" element={<PrePlanningItinerary />} />
       </Route>
     </Routes>
   );
