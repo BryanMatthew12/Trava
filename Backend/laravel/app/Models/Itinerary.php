@@ -9,9 +9,21 @@ class Itinerary extends Model
 {
     /** @use HasFactory<\Database\Factories\ItineraryFactory> */
     use HasFactory;
+    
+    protected $primaryKey = 'itinerary_id';
+
+    protected $fillable = [
+        'itinerary_id',
+        'user_id',
+        'start_date',
+        'end_date',
+        'days',
+        'budget',
+        'itinerary_description',
+    ];
 
     public function user() {
-        return $this->belongsTo(User::class, 'userId');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function days()
