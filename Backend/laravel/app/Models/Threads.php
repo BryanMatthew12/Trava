@@ -13,11 +13,11 @@ class Threads extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'userId', 'userId'); // Only user owns the thread
+        return $this->belongsTo(User::class, 'user_id', 'user_id'); // Only user owns the thread
     }
 
     public function comments()
     {
-        return $this->hasMany(Comment::class, 'threadId', 'threadId');
+        return $this->hasMany(Comment::class, 'thread_id', 'thread_id');
     }
 }

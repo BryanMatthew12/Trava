@@ -12,10 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('days', function (Blueprint $table) {
-            $table->id(); // Primary Key
-            $table->foreignId('itinerary_id')->constrained()->onDelete('cascade'); // Links to itineraries
+            $table->id('day_id'); // Primary Key
+            $table->unsignedBigInteger('itinerary_id'); // Foreign Key
             $table->integer('day_number'); // Example: Day 1, Day 2
             $table->timestamps();
+
+            // Foreign Key Constraint
+            $table->foreign('itinerary_id')->references('itinerary_id')->on('itineraries')->onDelete('cascade');
         });
     }
 
