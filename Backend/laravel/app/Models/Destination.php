@@ -10,9 +10,13 @@ class Destination extends Model
     /** @use HasFactory<\Database\Factories\DestinationFactory> */
     use HasFactory;
 
+    public function places()
+    {
+        return $this->hasMany(Places::class, 'destination_id', 'id');
+    }
 
     public function itineraries()
     {
-        return $this->hasMany(Itinerary::class, 'itineraryId', 'itineraryId');
+        return $this->belongsToMany(Itinerary::class, 'destination_itinerary', 'destination_id', 'itinerary_id');
     }
 }

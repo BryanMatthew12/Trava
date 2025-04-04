@@ -23,7 +23,7 @@ const Header = () => {
             <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/Threads')}>
               Threads
             </li>
-            <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/PlanYourItinerary')}>
+            <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/PlanningItinerary')}>
               Plan Your Itinerary
             </li>
           </ul>
