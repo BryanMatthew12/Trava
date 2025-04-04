@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet, useLocation } from 'react-router-dom';
 import Header from './header/Header';
 import Footer from './footer/Footer';
 import RootPage from './home/RootPage';
@@ -7,15 +7,20 @@ import Home from './home/Home';
 import Threads from './threads/Threads';
 import Destinations from './destinations/Destinations';
 import PlanningItinerary from './planItinerary/PlanningItinerary';
+
 const Layout = () => {
+  const location = useLocation();
+  const isPlanningItinerary = location.pathname.startsWith('/PlanningItinerary');
+
   return (
-    <>
-      <Header />
-      <main>
+    <div className="flex flex-col min-h-screen">
+      {/* Conditionally render the Header */}
+      {!isPlanningItinerary && <Header />}
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />
-    </>
+    </div>
   );
 };
 
