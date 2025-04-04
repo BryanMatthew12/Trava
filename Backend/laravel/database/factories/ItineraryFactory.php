@@ -19,11 +19,13 @@ class ItineraryFactory extends Factory
     public function definition(): array
     {
         return [
+            'itinerary_id' => $this->faker->unique()->randomNumber(5), // Match model primary key
             'user_id' => User::factory(),
-            'itinerary_date' => $this->faker->date(),
-            'itinerary_budget' => $this->faker->randomFloat(2, 10, 10000),
+            'start_date' => $this->faker->date(),
+            'end_date' => $this->faker->date(),
             'days' => $this->faker->numberBetween(1, 30),
-            'itinerary_description' => $this->faker->paragraph(),
+            'budget' => $this->faker->randomFloat(2, 10, 10000),
+            'description' => $this->faker->paragraph(),
         ];
     }
 }

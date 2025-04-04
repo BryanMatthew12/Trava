@@ -10,11 +10,16 @@ class Admin extends Model
     /** @use HasFactory<\Database\Factories\AdminFactory> */
     use HasFactory;
 
-    protected $fillable = ['adminId', 'userId', 'adminPermissions'];
+    protected $fillable = [
+        'user_id',
+        'admin_name'
+        'role',
+        // 'adminPermissions'
+    ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'userId', 'userId');
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
 }
