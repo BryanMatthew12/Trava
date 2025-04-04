@@ -21,13 +21,13 @@ const CarouselSection = ({ carouselSlides, currentSlide, handlePrev, handleNext 
           onClick={handlePrev}
           className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-700 bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full shadow-md transition duration-300"
         >
-          &#8592;
+          &#10229;
         </button>
         <button
           onClick={handleNext}
           className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-700 bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full shadow-md transition duration-300"
         >
-          &#8594;
+          &#10230;
         </button>
       </div>
     </div>

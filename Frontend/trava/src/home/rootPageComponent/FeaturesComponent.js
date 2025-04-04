@@ -10,7 +10,7 @@ const FeaturesSection = () => {
         <div className="flex flex-col items-center">
           <FontAwesomeIcon icon={faMapMarkerAlt} className="text-blue-500 text-3xl sm:text-4xl mb-4" />
           <h3 className="font-bold text-base sm:text-lg">Add places from guides with 1 click</h3>
-          <p className="text-gray-600 text-xs sm:text-sm">
+           <p className="text-gray-600 text-xs sm:text-sm">
             We crawled the web so you don’t have to. Easily add mentioned places to your plan.
           </p>
         </div>
