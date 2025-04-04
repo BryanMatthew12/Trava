@@ -11,10 +11,17 @@ class User extends Model
     use HasFactory;
 
     protected $table = 'users'; // Explicitly define table name
-    protected $primaryKey = 'userId'; // Set custom primary key
+    protected $primaryKey = 'user_id'; // Set custom primary key
     public $incrementing = true; // Ensure auto-increment
-    protected $keyType = 'bigint'; // Match bigIncrements() type 
-    protected $fillable = ['userId', 'userName', 'userEmail', 'userPassword', 'role'];
+    protected $keyType = 'integer'; // Match bigIncrements() type 
+
+    protected $fillable = [
+        'user_id', 
+        'user_name',
+        'user_email', 
+        'user_password', 
+        'role'
+    ];
 
     public function isAdmin()
     {
@@ -23,16 +30,16 @@ class User extends Model
 
     public function admin()
     {
-        return $this->hasOne(Admin::class, 'userId', 'userId');
+        return $this->hasOne(Admin::class, 'user_id', 'user_id');
     }
 
     public function itineraries() {
-        return $this->hasMany(Itinerary::class, 'userId', 'userId');
+        return $this->hasMany(Itinerary::class, 'user_id', 'user_id');
     }
 
     public function threads()
     {
-        return $this->hasMany(Thread::class, 'userId', 'userId');
+        return $this->hasMany(Thread::class, 'user_id', 'user_id');
     }
 
     public function comments()

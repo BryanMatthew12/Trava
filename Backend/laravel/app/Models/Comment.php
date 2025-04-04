@@ -10,12 +10,22 @@ class Comment extends Model
     /** @use HasFactory<\Database\Factories\CommentFactory> */
     use HasFactory;
 
+    protected $primaryKey = 'commentId';
+
+    protected $fillable = [
+        'comment_id',
+        'user_id',
+        'thread_id',
+        'content',
+    ]
+
     public function thread()
     {
-        return $this->belongsTo(Thread::class, 'threadId', 'threadId');
+        return $this->belongsTo(Thread::class, 'thread_id', 'thread_id');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'userId'); 
+        return $this->belongsTo(User::class, 'user_id', 'user_id'); 
+    }
 }
