@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Destination;
-use App\Http\Requests\StoreDestinationRequest;
-use App\Http\Requests\UpdateDestinationRequest;
+use App\Models\Day;
+use App\Http\Requests\StoreDayRequest;
+use App\Http\Requests\UpdateDayRequest;
+use App\Http\Controllers\Controller;
 
-class DestinationController extends Controller
+class DayController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Day::all();
     }
 
     /**
@@ -27,7 +28,7 @@ class DestinationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDestinationRequest $request)
+    public function store(StoreDayRequest $request)
     {
         //
     }
@@ -35,7 +36,7 @@ class DestinationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Destination $destination)
+    public function show(Day $day)
     {
         //
     }
@@ -43,7 +44,7 @@ class DestinationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Destination $destination)
+    public function edit(Day $day)
     {
         //
     }
@@ -51,7 +52,7 @@ class DestinationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDestinationRequest $request, Destination $destination)
+    public function update(UpdateDayRequest $request, Day $day)
     {
         //
     }
@@ -59,7 +60,7 @@ class DestinationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Destination $destination)
+    public function destroy(Day $day)
     {
         //
     }

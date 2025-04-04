@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
-use App\Models\ItineraryDestination;
-use App\Http\Requests\StoreItineraryDestinationRequest;
-use App\Http\Requests\UpdateItineraryDestinationRequest;
+use App\Models\Threads;
+use App\Http\Requests\StoreThreadsRequest;
+use App\Http\Requests\UpdateThreadsRequest;
+use App\Http\Controllers\Controller;
 
-class ItineraryDestinationController extends Controller
+class ThreadsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Threads::all();
     }
 
     /**
@@ -27,7 +28,7 @@ class ItineraryDestinationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreItineraryDestinationRequest $request)
+    public function store(StoreThreadsRequest $request)
     {
         //
     }
@@ -35,7 +36,7 @@ class ItineraryDestinationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ItineraryDestination $itineraryDestination)
+    public function show(Threads $threads)
     {
         //
     }
@@ -43,7 +44,7 @@ class ItineraryDestinationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ItineraryDestination $itineraryDestination)
+    public function edit(Threads $threads)
     {
         //
     }
@@ -51,7 +52,7 @@ class ItineraryDestinationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateItineraryDestinationRequest $request, ItineraryDestination $itineraryDestination)
+    public function update(UpdateThreadsRequest $request, Threads $threads)
     {
         //
     }
@@ -59,7 +60,7 @@ class ItineraryDestinationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ItineraryDestination $itineraryDestination)
+    public function destroy(Threads $threads)
     {
         //
     }

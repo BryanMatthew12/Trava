@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Itinerary;
+
 
 class Day extends Model
 {
@@ -15,7 +17,7 @@ class Day extends Model
         'itinerary_id',
         'day_number',
         // 'places' ??
-    ]
+    ];
 
     public function itinerary()
     {
