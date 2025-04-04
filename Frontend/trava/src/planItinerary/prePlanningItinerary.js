@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 const PlanningItinerary = () => {
   const [destination, setDestination] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const navigate = useNavigate();
 
   const handleContinue = () => {
@@ -33,23 +37,36 @@ const PlanningItinerary = () => {
 
       {/* Date Inputs */}
       <div className="flex justify-between w-full max-w-md mb-6">
-        <div className="flex flex-col items-start">
+        {/* Start Date */}
+        <div className="flex flex-col items-start relative">
           <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="w-40 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="relative">
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              placeholderText="Select Start Date"
+              className="mr-1 w-40 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="absolute inset-y-0 right-3 flex items-center text-gray-500 pointer-events-none">
+              <FontAwesomeIcon icon={faCalendarAlt} />
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col items-start">
+
+        {/* End Date */}
+        <div className="flex flex-col items-start relative">
           <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="w-40 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="relative">
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              placeholderText="Select End Date"
+              className="w-40 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-1"
+            />
+            <span className="absolute inset-y-0 right-3 flex items-center text-gray-500 pointer-events-none">
+              <FontAwesomeIcon icon={faCalendarAlt} />
+            </span>
+          </div>
         </div>
       </div>
 
