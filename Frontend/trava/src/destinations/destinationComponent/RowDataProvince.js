@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import javalandscape from "../../assets/img/javalandscape.jpg";
 import balilandscape from "../../assets/img/carousel-java-1.jpeg";
 
@@ -20,6 +21,7 @@ const javaDes = [
 
 const RowDataProvince = ({ province }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
   // Determine the data to display based on the selected province
   const data = province === 1 ? baliDes : javaDes;
@@ -35,6 +37,11 @@ const RowDataProvince = ({ province }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Handle navigation on item click
+  const handleItemClick = (item) => {
+    navigate('/PlanningItinerary?source=rowdataprovince')
+  };
+
   if (isMobile) {
     // Horizontal scrollable list for mobile view
     return (
@@ -43,7 +50,8 @@ const RowDataProvince = ({ province }) => {
           {data.map((item, index) => (
             <div
               key={index}
-              className="flex-shrink-0 w-64 border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center"
+              onClick={() => handleItemClick(item)} // Navigate on click
+              className="flex-shrink-0 w-64 border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
             >
               <img
                 src={item.image}
@@ -69,7 +77,8 @@ const RowDataProvince = ({ province }) => {
       {data.map((item, index) => (
         <div
           key={index}
-          className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center"
+          onClick={() => handleItemClick(item)} // Navigate on click
+          className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
         >
           <img
             src={item.image}

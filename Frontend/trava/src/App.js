@@ -15,7 +15,7 @@ const Layout = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Conditionally render the Header */}
-      {!isPlanningItinerary && <Header />}
+      {!isPlanningItinerary && <Header/>}
       <main className="flex-grow">
         <Outlet />
       </main>
