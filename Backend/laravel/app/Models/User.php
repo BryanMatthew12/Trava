@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin;
+use App\Models\Itinerary;
+use App\Models\Threads;
+use App\Models\Comment;
 
 class User extends Model
 {
@@ -39,7 +43,7 @@ class User extends Model
 
     public function threads()
     {
-        return $this->hasMany(Thread::class, 'user_id', 'user_id');
+        return $this->hasMany(Threads::class, 'user_id', 'user_id');
     }
 
     public function comments()

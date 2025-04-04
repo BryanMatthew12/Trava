@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Itinerary;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -14,6 +13,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+
+
         User::factory()
             ->count(20)
             ->hasItineraries(10)
@@ -33,7 +34,6 @@ class UserSeeder extends Seeder
             ->count(2)
             ->create();
 
-            
 
     }
 }

@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Places;
+use App\Models\Itinerary;
+use App\Models\ItineraryDestination;
+
 
 class Destination extends Model
 {
@@ -14,13 +18,13 @@ class Destination extends Model
 
     protected $fillable = [
         'destination_id',
-        'itinerary_id'
+        'itinerary_id',
         'content',
         'picture',
         'location',
         'operational',
         'category',
-    ]
+    ];
 
     public function places()
     {

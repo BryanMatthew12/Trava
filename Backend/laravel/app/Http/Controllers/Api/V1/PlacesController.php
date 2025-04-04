@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Itinerary;
-use App\Http\Requests\StoreItineraryRequest;
-use App\Http\Requests\UpdateItineraryRequest;
+use App\Models\Places;
+use App\Http\Requests\StorePlacesRequest;
+use App\Http\Requests\UpdatePlacesRequest;
+use App\Http\Controllers\Controller;
 
-class ItineraryController extends Controller
+class PlacesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Places::all();
     }
 
     /**
@@ -27,7 +28,7 @@ class ItineraryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreItineraryRequest $request)
+    public function store(StorePlacesRequest $request)
     {
         //
     }
@@ -35,7 +36,7 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Itinerary $itinerary)
+    public function show(Places $places)
     {
         //
     }
@@ -43,7 +44,7 @@ class ItineraryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Itinerary $itinerary)
+    public function edit(Places $places)
     {
         //
     }
@@ -51,7 +52,7 @@ class ItineraryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateItineraryRequest $request, Itinerary $itinerary)
+    public function update(UpdatePlacesRequest $request, Places $places)
     {
         //
     }
@@ -59,7 +60,7 @@ class ItineraryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Itinerary $itinerary)
+    public function destroy(Places $places)
     {
         //
     }
