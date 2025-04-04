@@ -1,18 +1,16 @@
-import React from 'react'
+import React from "react";
+import ImageBanner from "./homeComponent/ImageBanner";
+import ExploreComponent from "./homeComponent/ExploreComponent";
+import UsertripThreads from "./homeComponent/UsertripThreads";
 
 const Home = () => {
   return (
-    <div id="top"className='flex items-center justify-center flex-col py-20'>
-      <div className="text-center">
-        <h1 className='text-2xl md:text-4xl mb-1 md: mb-3 font-bold bg-clip-text '>
-          Website Slogan
-        </h1>
-        <h2 className='text-lg md:text-2xl mb-1 md: w-2/3  font-medium bg-clip-text'>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur nec vulputate leo, vitae fringilla elit. Suspendisse aliquam ultricies felis vel tempus. Phasellus nec turpis id massa ornare porta a ac est
-        </h2>
-      </div>
+    <div className="flex flex-col items-center space-y-6">
+        <ImageBanner/>
+        <UsertripThreads/>
+        <ExploreComponent/>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
