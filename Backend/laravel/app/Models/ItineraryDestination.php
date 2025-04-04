@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Itinerary;
+use App\Models\Places;
+use App\Models\Destination;
 
 class ItineraryDestination extends Model
 {
@@ -11,7 +14,7 @@ class ItineraryDestination extends Model
 
     protected $fillable = [
         'itinerary_id',
-        'place_id'
+        'place_id',
         'destination_id',
         'destination_name',
         'visit_order',

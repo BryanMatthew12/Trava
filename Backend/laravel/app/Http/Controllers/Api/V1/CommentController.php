@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Day;
-use App\Http\Requests\StoreDayRequest;
-use App\Http\Requests\UpdateDayRequest;
+use App\Models\Comment;
+use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\UpdateCommentRequest;
+use App\Http\Controllers\Controller;
 
-class DayController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Comment::all();
     }
 
     /**
@@ -27,7 +28,7 @@ class DayController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDayRequest $request)
+    public function store(StoreCommentRequest $request)
     {
         //
     }
@@ -35,7 +36,7 @@ class DayController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Day $day)
+    public function show(Comment $comment)
     {
         //
     }
@@ -43,7 +44,7 @@ class DayController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Day $day)
+    public function edit(Comment $comment)
     {
         //
     }
@@ -51,7 +52,7 @@ class DayController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDayRequest $request, Day $day)
+    public function update(UpdateCommentRequest $request, Comment $comment)
     {
         //
     }
@@ -59,7 +60,7 @@ class DayController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Day $day)
+    public function destroy(Comment $comment)
     {
         //
     }

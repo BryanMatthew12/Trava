@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Threads;
-use App\Http\Requests\StoreThreadsRequest;
-use App\Http\Requests\UpdateThreadsRequest;
+use App\Models\User;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Http\Controllers\Controller;
 
-class ThreadsController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return User::all();
     }
 
     /**
@@ -27,7 +28,7 @@ class ThreadsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreThreadsRequest $request)
+    public function store(StoreUserRequest $request)
     {
         //
     }
@@ -35,7 +36,7 @@ class ThreadsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Threads $threads)
+    public function show(User $User)
     {
         //
     }
@@ -43,7 +44,7 @@ class ThreadsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Threads $threads)
+    public function edit(User $User)
     {
         //
     }
@@ -51,7 +52,7 @@ class ThreadsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateThreadsRequest $request, Threads $threads)
+    public function update(UpdateUserRequest $request, User $User)
     {
         //
     }
@@ -59,7 +60,7 @@ class ThreadsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Threads $threads)
+    public function destroy(User $User)
     {
         //
     }

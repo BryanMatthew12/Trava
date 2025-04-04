@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ItineraryDestination;
+use App\Models\Destination;
 
 class Places extends Model
 {
@@ -21,7 +23,7 @@ class Places extends Model
         'place_rating',
         'place_picture',
         'place_est_price'
-    ]
+    ];
 
     public function destination()
     {
