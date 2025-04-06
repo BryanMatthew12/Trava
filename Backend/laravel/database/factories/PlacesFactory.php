@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Destination;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,15 @@ class PlacesFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'place_id' => $this->faker->unique()->randomNumber(5), 
+            'destination_id' => Destination::inRandomOrder()->first()?->destination_id ?? Destination::factory(),
+            'place_name' => $this->faker->word(),
+            'description' => $this->faker->paragraph(),
+            'location' => $this->faker->address(),
+            'category' => $this->faker->randomElement(['culture', 'nature', 'shopping', 'culinary', 'adventure']),
+            'place_rating' => $this->faker->randomFloat(1, 2, 3, 4, 5),
+            'place_picture' => $this->faker->imageUrl(),
+            'place_est_price' => $this->faker->randomFloat(20000, 50000, 100000),
         ];
     }
 }

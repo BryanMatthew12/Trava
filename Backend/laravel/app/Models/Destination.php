@@ -14,7 +14,7 @@ class Destination extends Model
     /** @use HasFactory<\Database\Factories\DestinationFactory> */
     use HasFactory;
 
-    protected $primaryKey = 'destinationId';
+    protected $primaryKey = 'destination_id';
 
     protected $fillable = [
         'destination_id',
@@ -23,12 +23,11 @@ class Destination extends Model
         'picture',
         'location',
         'operational',
-        'category',
     ];
 
     public function places()
     {
-        return $this->hasMany(Places::class, 'destination_id', 'id');
+        return $this->hasMany(Places::class, 'destination_id', 'destination_id');
     }
 
     public function itineraries()
@@ -38,6 +37,6 @@ class Destination extends Model
 
     public function itineraryDestinations()
     {
-        return $this->hasMany(ItineraryDestination::class, 'destination_id', 'destinationId');
+        return $this->hasMany(ItineraryDestination::class, 'destination_id', 'destination_id');
     }
 }

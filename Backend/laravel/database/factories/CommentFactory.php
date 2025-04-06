@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Threads;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,10 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'comment_id' => $this->faker->unique()->randomNumber(5), // Match model primary key
+            'user_id' => User::inRandomOrder()->first()?->user_id ?? User::factory(),
+            'thread_id' => Threads::factory(), 
+            'content' => $this->faker->paragraph(),
         ];
     }
 }

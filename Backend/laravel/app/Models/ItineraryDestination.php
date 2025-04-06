@@ -24,18 +24,18 @@ class ItineraryDestination extends Model
     // One itineraryDestination belongs to one itinerary
     public function itinerary()
     {
-        return $this->belongsTo(Itinerary::class, 'itinerary_id', 'id');
+        return $this->belongsTo(Itinerary::class, 'itinerary_id', 'itinerary_id');
     }
 
     // One itineraryDestination references one place
     public function place()
     {
-        return $this->belongsTo(Places::class, 'place_id', 'id');
+        return $this->belongsTo(Places::class, 'place_id', 'place_id');
     }
 
     public function destination()
     {
-        return $this->belongsTo(Destination::class, 'destination_id', 'id');
+        return $this->belongsTo(Destination::class, 'destination_id', 'destination_id');
     }
     
 }
