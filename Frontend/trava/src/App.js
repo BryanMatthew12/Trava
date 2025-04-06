@@ -8,6 +8,8 @@ import Threads from './threads/Threads';
 import Destinations from './destinations/Destinations';
 import PlanningItinerary from './planItinerary/PlanningItinerary';
 import PrePlanningItinerary from './planItinerary/prePlanningItinerary';
+import Register from './authentication/Register';
+import Login from './authentication/Login';
 const Layout = () => {
   const location = useLocation();
   const isPlanningItinerary = location.pathname.startsWith('/PlanningItinerary');
@@ -34,6 +36,9 @@ const App = () => {
         <Route path="threads" element={<Threads />} />
         <Route path="planningitinerary" element={<PlanningItinerary />} />
         <Route path="preplanningitinerary" element={<PrePlanningItinerary />} />
+        <Route path="register" element={<Register />} />
+        <Route path="login" element={<Login />} />
+        <Route path="*" element={<div>404 Not Found</div>} />
       </Route>
     </Routes>
   );
