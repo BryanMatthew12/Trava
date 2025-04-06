@@ -10,10 +10,11 @@ class CreatePlacesTable extends Migration
     {
         Schema::create('places', function (Blueprint $table) {
             $table->id('place_id'); // Primary Key
-            $table->unsignedBigInteger('destination_id'); // Foreign Key
-            $table->string('place_name'); // Place Name
-            $table->text('description')->nullable(); // Optional Description
+            $table->unsignedBigInteger('destination_id');
+            $table->string('place_name'); 
+            $table->text('description')->nullable(); 
             $table->string('location');
+            $table->string('category'); 
             $table->decimal('place_rating');
             $table->string('place_picture');
             $table->decimal('place_est_price');

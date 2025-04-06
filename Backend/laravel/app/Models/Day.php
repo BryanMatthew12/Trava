@@ -21,7 +21,7 @@ class Day extends Model
 
     public function itinerary()
     {
-        return $this->belongsTo(itinerary::class, 'itineraryId', 'itineraryId');
+        return $this->belongsTo(itinerary::class, 'itinerary_id', 'itinerary_id');
     }
 
 }

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Itinerary;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,11 +19,11 @@ class ItineraryFactory extends Factory
     {
         return [
             'itinerary_id' => $this->faker->unique()->randomNumber(5), // Match model primary key
-            'user_id' => User::factory(),
+            'user_id' => User::inRandomOrder()->first()?->user_id ?? User::factory(),
             'start_date' => $this->faker->date(),
             'end_date' => $this->faker->date(),
             'days' => $this->faker->numberBetween(1, 30),
-            'budget' => $this->faker->randomFloat(2, 10, 10000),
+            'budget' => $this->faker->randomFloat(10000, 100000, 1000000),
             'description' => $this->faker->paragraph(),
         ];
     }
