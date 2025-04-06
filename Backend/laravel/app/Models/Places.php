@@ -20,6 +20,7 @@ class Places extends Model
         'place_name',
         'description',
         'location',
+        'category',
         'place_rating',
         'place_picture',
         'place_est_price'
@@ -27,11 +28,11 @@ class Places extends Model
 
     public function destination()
     {
-        return $this->belongsTo(Destination::class, 'destination_id');
+        return $this->belongsTo(Destination::class, 'destination_id, destniation_id');
     }
 
     public function itineraryDestinations()
     {
-        return $this->hasMany(ItineraryDestination::class, 'place_id', 'id');
+        return $this->hasMany(ItineraryDestination::class, 'place_id', 'place_id');
     }
 }

@@ -21,8 +21,8 @@ class User extends Model
 
     protected $fillable = [
         'user_id', 
-        'user_name',
-        'user_email', 
+        'username',
+        'email', 
         'user_password', 
         'role'
     ];
@@ -48,7 +48,7 @@ class User extends Model
 
     public function comments()
     {
-        return $this->hasMany(Comment::class, 'user_id');
+        return $this->hasMany(Comment::class, 'user_id', 'user_id');
     }
 
 }

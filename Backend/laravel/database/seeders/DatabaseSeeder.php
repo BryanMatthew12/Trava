@@ -12,7 +12,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-       $this->call([UserSeeder::class]);
-    //    $this->call(ItinerarySeeder::class);
+    //    $this->call([UserSeeder::class]);
+    //    $this->call([DestinationSeeder::class,]);
+        $this->call([
+            UserSeeder::class,
+            DestinationSeeder::class,
+            DestinationItinerarySeeder::class, 
+        ]);
     }
+
+    
 }
