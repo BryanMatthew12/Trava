@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Itinerary;
 use App\Models\Places;
+use App\Models\Day;
 use App\Models\Destination;
 
 class ItineraryDestination extends Model
@@ -15,6 +16,7 @@ class ItineraryDestination extends Model
     protected $fillable = [
         'itinerary_id',
         'place_id',
+        'day_id',
         'destination_id',
         'destination_name',
         'visit_order',
@@ -37,5 +39,11 @@ class ItineraryDestination extends Model
     {
         return $this->belongsTo(Destination::class, 'destination_id', 'destination_id');
     }
+
+    public function day()
+    {
+        return $this->belongsTo(Day::class, 'day_id', 'day_id');
+    }
     
+
 }
