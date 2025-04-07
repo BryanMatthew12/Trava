@@ -16,7 +16,7 @@ class Day extends Model
         'day_id',
         'itinerary_id',
         'day_number',
-        // 'places' ??
+
     ];
 
     public function itinerary()
