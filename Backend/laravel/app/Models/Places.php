@@ -28,7 +28,7 @@ class Places extends Model
 
     public function destination()
     {
-        return $this->belongsTo(Destination::class, 'destination_id, destniation_id');
+        return $this->belongsTo(Destination::class, 'destination_id', 'destination_id');
     }
 
     public function itineraryDestinations()
