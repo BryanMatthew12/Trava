@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('user_id'); 
-            $table->string('username');
-            $table->string('role');
+            $table->string('username')->default('guest');
+            $table->string('role')->default('user'); // Default role set to 'user'
             $table->string('email');
             $table->string('password');
             $table->timestamps();
