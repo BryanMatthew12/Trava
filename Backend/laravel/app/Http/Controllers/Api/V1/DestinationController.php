@@ -2,27 +2,31 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Destination;
+use App\Services\DestinationService;
 use App\Http\Requests\StoreDestinationRequest;
 use App\Http\Requests\UpdateDestinationRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class DestinationController extends Controller
 {
+    protected $destinationService;
+
     /**
-     * Display a listing of the resource.
+     * Inject the DestinationService into the controller.
      */
-    public function index()
+    public function __construct(DestinationService $destinationService)
     {
-        return Destination::all();
+        $this->destinationService = $destinationService;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      */
-    public function create()
+    public function index(Request $request)
     {
-        //
+        $destinations = $this->destinationService->getAll($request);
+        return response()->json($destinations);
     }
 
     /**
@@ -30,38 +34,52 @@ class DestinationController extends Controller
      */
     public function store(StoreDestinationRequest $request)
     {
-        //
+        $data = $request->validated();
+        $destination = $this->destinationService->create($data);
+
+        return response()->json($destination, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Destination $destination)
+    public function show($id)
     {
-        //
-    }
+        $destination = $this->destinationService->getById($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Destination $destination)
-    {
-        //
+        if (!$destination) {
+            return response()->json(['message' => 'Destination not found'], 404);
+        }
+
+        return response()->json($destination);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDestinationRequest $request, Destination $destination)
+    public function update(UpdateDestinationRequest $request, $id)
     {
-        //
+        $data = $request->validated();
+        $destination = $this->destinationService->update($data, $id);
+
+        if (!$destination) {
+            return response()->json(['message' => 'Destination not found'], 404);
+        }
+
+        return response()->json(['message' => 'Destination updated successfully', 'destination' => $destination]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Destination $destination)
+    public function destroy($id)
     {
-        //
+        $result = $this->destinationService->delete($id);
+
+        if (!$result) {
+            return response()->json(['message' => 'Destination not found'], 404);
+        }
+
+        return response()->json(['message' => 'Destination deleted successfully']);
     }
 }
