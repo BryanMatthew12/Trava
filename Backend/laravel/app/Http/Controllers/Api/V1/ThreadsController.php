@@ -6,23 +6,35 @@ use App\Models\Threads;
 use App\Http\Requests\StoreThreadsRequest;
 use App\Http\Requests\UpdateThreadsRequest;
 use App\Http\Controllers\Controller;
+use App\Services\ThreadsService;
+use Illuminate\Http\Request;
 
 class ThreadsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $threadsService;
+
+    public function __construct(ThreadsService $threadsService)
     {
-        return Threads::all();
+        $this->threadsService = $threadsService;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      */
-    public function create()
+    public function index(Request $request)
     {
-        //
+        $filters = [
+            'title' => $request->input('title'),
+            'sort_by' => $request->input('sort_by'),
+            'order' => $request->input('order'),
+        ];
+
+        $threads = $this->threadsService->getThreads($filters);
+
+        return response()->json([
+            'message' => 'Threads retrieved successfully!',
+            'data' => $threads,
+        ]);
     }
 
     /**
@@ -30,38 +42,59 @@ class ThreadsController extends Controller
      */
     public function store(StoreThreadsRequest $request)
     {
-        //
+        $thread = $this->threadsService->create($request->validated());
+
+        return response()->json([
+            'message' => 'Thread created successfully!',
+            'data' => $thread,
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Threads $threads)
+    public function show($id)
     {
-        //
-    }
+        $thread = $this->threadsService->getById($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Threads $threads)
-    {
-        //
+        if (!$thread) {
+            return response()->json(['message' => 'Thread not found!'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Thread retrieved successfully!',
+            'data' => $thread,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateThreadsRequest $request, Threads $threads)
+    public function update(UpdateThreadsRequest $request, $id)
     {
-        //
+        $thread = $this->threadsService->update($request->validated(), $id);
+
+        if (!$thread) {
+            return response()->json(['message' => 'Thread not found!'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Thread updated successfully!',
+            'data' => $thread,
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Threads $threads)
+    public function destroy($id)
     {
-        //
+        $deleted = $this->threadsService->delete($id);
+
+        if (!$deleted) {
+            return response()->json(['message' => 'Thread not found!'], 404);
+        }
+
+        return response()->json(['message' => 'Thread deleted successfully!']);
     }
 }
