@@ -128,7 +128,7 @@ const Register = () => {
                 <span className="text-sm font-medium text-gray-700">Adventure</span>
               </div>
 
-              {/* Relaxation */}
+              {/* Cullinary */}
               <div
                 className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
                   selectedCategories.includes('Relaxation') ? 'border-blue-500' : 'border-gray-300'
@@ -136,7 +136,7 @@ const Register = () => {
                 onClick={() => handleCategoryToggle('Relaxation')}
               >
                 <FontAwesomeIcon icon={faSpa} className="text-blue-500 text-2xl mb-2" />
-                <span className="text-sm font-medium text-gray-700">Relaxation</span>
+                <span className="text-sm font-medium text-gray-700">Cullinary</span>
               </div>
 
               {/* Cultural */}
