@@ -27,12 +27,12 @@ class Itinerary extends Model
     ];
 
     public function user() {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'user_id'); 
     }
 
     public function days()
     {
-        return $this->hasMany(Day::class, 'itineraryId', 'itineraryId');
+        return $this->hasMany(Day::class, 'itinerary_id', 'itinerary_id');
     }
 
     public function destinations()

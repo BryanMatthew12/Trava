@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Itinerary;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class DayFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'day_id' => $this->faker->unique()->randomNumber(5),
+            'itinerary_id' => Itinerary::inRandomOrder()->first()?->itinerary_id ?? Itinerary::factory(),
+            'day_number' => $this->faker->numberBetween(1, 10),
         ];
     }
 }
