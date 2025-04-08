@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Admin;
@@ -9,7 +11,7 @@ use App\Models\Itinerary;
 use App\Models\Threads;
 use App\Models\Comment;
 
-class User extends Model
+class User extends Authenticatable implements JWTSubject
 {
 
     use HasFactory;
@@ -23,7 +25,7 @@ class User extends Model
         'user_id', 
         'username',
         'email', 
-        'user_password', 
+        'password', 
         'role'
     ];
 
@@ -51,4 +53,17 @@ class User extends Model
         return $this->hasMany(Comment::class, 'user_id', 'user_id');
     }
 
+    public function getJWTIdentifier()
+    {
+        return $this->getKey(); // Return the primary key
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'username' => $this->username,
+            'email' => $this->email,
+            'role' => $this->role,
+        ]; // Add any custom claims if needed
+    }
 }
