@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\V1\ItineraryController;
 use App\Http\Controllers\Api\V1\ItineraryDestinationController;
 use App\Http\Controllers\Api\V1\PlacesController;
 use App\Http\Controllers\Api\V1\ThreadsController;
+use App\Http\Controllers\Auth\LoginRegisterController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,18 +25,33 @@ use App\Http\Controllers\Api\V1\ThreadsController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::prefix('auth')->group(function () {
+    Route::post('register', [LoginRegisterController::class, 'store']); // Registration
+    Route::post('login', [LoginRegisterController::class, 'authenticate']); // Login
+    Route::post('refresh', [LoginRegisterController::class, 'refreshToken']);
 });
 
-Route::prefix('v1')->group(function () {
-    Route::apiResource('users', UserController::class);
-    Route::apiResource('itineraries', ItineraryController::class);
-    Route::apiResource('destinations', DestinationController::class);
-    Route::apiResource('places', PlacesController::class);
-    Route::apiResource('threads', ThreadsController::class);
-    Route::apiResource('comments', CommentController::class);
-    Route::apiResource('days', DayController::class);
-    Route::apiResource('admins', AdminController::class);
-    Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
+Route::middleware(['auth.api'])->group(function () {
+    Route::prefix('v1')->group(function () {
+        Route::apiResource('users', UserController::class);
+        Route::apiResource('itineraries', ItineraryController::class);
+        Route::apiResource('destinations', DestinationController::class);
+        Route::apiResource('places', PlacesController::class);
+        Route::apiResource('threads', ThreadsController::class);
+        Route::apiResource('comments', CommentController::class);
+        Route::apiResource('days', DayController::class);
+        Route::apiResource('admins', AdminController::class);
+        Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
+    });
+    // Logout route
+    Route::post('auth/logout', [LoginRegisterController::class, 'logout']);
+});
+
+// Route to get the authenticated user
+Route::get('/user', function (Request $request) {
+    return $request->user();
 });
