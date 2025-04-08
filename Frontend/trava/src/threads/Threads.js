@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import Header from './threadsComponent/Header';
 import SortDropdown from './threadsComponent/SortDropdown';
 import ThreadsGrid from './threadsComponent/ThreadsGrid';
-
+import axios from 'axios';
 // Import images
 import jakartaImg from '../assets/img/jakarta.jpg';
 import bandungImg from '../assets/img/bandung.jpg';
@@ -52,6 +52,18 @@ const Threads = () => {
     return 0; // Default order
   });
 
+  useEffect(() => {
+    const response = async () => {
+      try {
+        const result = await axios.get('http://127.0.0.1:8000/api/v1/threads?title='); // Replace with your API endpoint
+        console.log(result.data);
+      } catch (error) {
+        console.error('Error fetching guides:', error);
+      }
+    };
+    response();
+  }, [])
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <Header />
