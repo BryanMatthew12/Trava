@@ -24,16 +24,18 @@ class ThreadsController extends Controller
     public function index(Request $request)
     {
         $filters = [
-            'title' => $request->input('title'),
+            'title' => $request->input('title'), // Get the title from the query string
             'sort_by' => $request->input('sort_by'),
             'order' => $request->input('order'),
         ];
 
-        $threads = $this->threadsService->getThreads($filters);
+        $threads = $this->threadsService->getThreads($filters)->paginate(12);
 
         return response()->json([
             'message' => 'Threads retrieved successfully!',
-            'data' => $threads,
+            'data' => $threads->items(),
+            'current_page' => $threads->currentPage(),
+            'last_page' => $threads->lastPage(),
         ]);
     }
 
