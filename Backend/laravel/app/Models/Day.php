@@ -12,8 +12,9 @@ class Day extends Model
 
     use HasFactory;
 
+    protected $primaryKey = 'day_id';
+
     protected $fillable = [
-        'day_id',
         'itinerary_id',
         'day_number',
 
