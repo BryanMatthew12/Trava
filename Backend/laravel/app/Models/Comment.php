@@ -13,10 +13,8 @@ class Comment extends Model
     /** @use HasFactory<\Database\Factories\CommentFactory> */
     use HasFactory;
 
-    protected $primaryKey = 'commentId';
 
     protected $fillable = [
-        'comment_id',
         'user_id',
         'thread_id',
         'content',

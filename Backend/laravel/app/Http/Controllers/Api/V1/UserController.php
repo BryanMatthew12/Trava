@@ -64,4 +64,15 @@ class UserController extends Controller
     {
         //
     }
+ 
+    //Test Route
+    public function getPreferences($id)
+    {
+        $user = User::with('preferences')->findOrFail($id);
+
+        return response()->json([
+            'user_id' => $user->id,
+            'preferences' => $user->preferences
+        ]);
+    }
 }

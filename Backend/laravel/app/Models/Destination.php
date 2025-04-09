@@ -17,7 +17,6 @@ class Destination extends Model
     protected $primaryKey = 'destination_id';
 
     protected $fillable = [
-        'destination_id',
         'itinerary_id',
         'content',
         'picture',
