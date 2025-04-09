@@ -1,33 +1,45 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { login } from '../api/login/login';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState({ email: '', password: '' });
-const navigate = useNavigate();
-  const handleLogin = (e) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     // Reset errors
     setError({ email: '', password: '' });
 
     // Simple validation
+    let hasError = false;
     if (!email) {
       setError((prev) => ({ ...prev, email: 'Please enter your email address' }));
+      hasError = true;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       setError((prev) => ({ ...prev, email: 'Please enter a valid email address' }));
-      return;
-    }
-    if (!password) {
-      setError((prev) => ({ ...prev, password: 'Please enter your password' }));
-      return;
+      hasError = true;
     }
 
-    if (email && password) {
-      // Handle login logic here
-      alert('Login successful!');
-      navigate('/home'); // Redirect to home page after successful login
+    if (!password) {
+      setError((prev) => ({ ...prev, password: 'Please enter your password' }));
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    // Call the login function
+    try {
+      await login(email, password, dispatch, navigate);
+      console.log('Login successful');
+    } catch (error) {
+      console.error('Login error:', error.message);
+      setError((prev) => ({ ...prev, email: error.message })); // Display server error
     }
   };
 
@@ -76,7 +88,6 @@ const navigate = useNavigate();
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none"
-            onClick={handleLogin}
           >
             Log in
           </button>
