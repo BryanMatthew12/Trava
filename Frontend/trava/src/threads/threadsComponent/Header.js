@@ -1,41 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
-const Header = () => {
+const Header = ({ onSearch, token }) => { // Accept the token as a prop
   const [searchTerm, setSearchTerm] = useState('');
+  const [typingTimeout, setTypingTimeout] = useState(null); // Timeout for debouncing
 
   // Function to handle input changes
   const handleInputChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-  const fetchThreads = async () => {
-    try {
-      const result = await axios.get(
-        `http://127.0.0.1:8000/api/v1/threads?title=${searchTerm}` // Replace with your API endpoint
-      );
-      console.log(result.data);
-    } catch (error) {
-      console.error('Error fetching threads:', error);
-    }
-  };
+    const value = e.target.value;
+    setSearchTerm(value);
 
-  useEffect(() => {
-    // Call the fetch function only if searchTerm is not empty
-    fetchThreads();
-  }, [searchTerm]); // Dependency array ensures this runs when searchTerm changes
+    // Clear the previous timeout
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    // Set a new timeout to delay the API call
+    setTypingTimeout(
+      setTimeout(async () => {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/v1/threads?title=${value}`, // Pass the title as a query parameter
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token, // Use the token here
+              },
+            }
+          );
+          onSearch(response.data.data); // Pass the fetched data to the parent component
+        } catch (error) {
+          console.error('Error fetching threads:', error);
+        }
+      }, 500) // Delay the API call by 500ms
+    );
+  };
 
   return (
     <>
-      <h1 className="text-3xl font-bold text-center mb-2">Explore Travel</h1>
+      <h1 className="text-3xl font-bold text-center mb-2">Explore Threads</h1>
       <p className="text-center text-gray-600 mb-6">
         See threads made by other travellers
       </p>
       <div className="flex justify-center mb-8">
         <input
           type="text"
-          placeholder="Explore itinerary and destination"
+          placeholder="Explore threads to get more itinerary from other user"
           className="border border-gray-300 rounded-md px-4 py-2 w-full max-w-md outline-none"
-          onChange={handleInputChange} // Handle input change
+          value={searchTerm}
+          onChange={handleInputChange} // Trigger search on input change
         />
       </div>
     </>

@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
 import Header from './threadsComponent/Header';
 import SortDropdown from './threadsComponent/SortDropdown';
 import ThreadsGrid from './threadsComponent/ThreadsGrid';
 import axios from 'axios';
-// Import images
-import jakartaImg from '../assets/img/jakarta.jpg';
-import bandungImg from '../assets/img/bandung.jpg';
-import baliImg from '../assets/img/bali.jpg';
-import yogyakartaImg from '../assets/img/yogyakarta.jpg';
-import surabayaImg from '../assets/img/surabaya.jpg';
-import lombokImg from '../assets/img/lombok.jpg';
-import medanImg from '../assets/img/medan.jpg';
-import makassarImg from '../assets/img/makassar.jpg';
-import semarangImg from '../assets/img/semarang.jpg';
-import acehImg from '../assets/img/aceh.jpg';
-import manadoImg from '../assets/img/manado.jpg';
-import palembangImg from '../assets/img/palembang.jpg';
 
 const Threads = () => {
+  const [threads, setThreads] = useState([]); // State to store threads data
   const [sortOption, setSortOption] = useState(1); // Default to "Most Recent"
+  const [loading, setLoading] = useState(false); // State to handle loading
+  const [page, setPage] = useState(1); // Current page for pagination
+  const [hasMore, setHasMore] = useState(true); // Whether there are more threads to load
+
+  const token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3NDQxODA1MTYsImV4cCI6MTc0NDE4NDExNiwibmJmIjoxNzQ0MTgwNTE2LCJqdGkiOiJPY21YbGt4OHVUVXdVeThSIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VybmFtZSI6Ik5pa28iLCJlbWFpbCI6Im5pa29AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciJ9.J3c04QJ3-XDwjJHlCixHUDhuvcweY2mjplZ8-vJDyMw'; // Replace with your actual token
 
   const sortOptions = [
     { value: 1, label: 'Most Recent' },   // Default order
@@ -27,54 +19,79 @@ const Threads = () => {
     { value: 3, label: 'Most Liked' },   // Sort by highest likes
   ];
 
-  const guides = [
-    { title: 'Jakarta: Good Cities to Stay', description: 'Explore Jakarta...', author: 'John Doe', likes: 15234, views: 89234, image: jakartaImg },
-    { title: 'Bandung: Best Culinary in Indonesia', description: 'Discover Bandung...', author: 'Jane Smith', likes: 12345, views: 75432, image: bandungImg },
-    { title: 'Bali: Island of the Gods', description: 'Experience Bali...', author: 'Alex Johnson', likes: 9876, views: 65432, image: baliImg },
-    { title: 'Yogyakarta: Cultural Heritage', description: 'Visit Yogyakarta...', author: 'Emily Davis', likes: 8765, views: 54321, image: yogyakartaImg },
-    { title: 'Surabaya: City of Heroes', description: 'Explore Surabaya...', author: 'Michael Brown', likes: 7654, views: 43210, image: surabayaImg },
-    { title: 'Lombok: Hidden Paradise', description: 'Relax on Lombok...', author: 'Sarah Wilson', likes: 6543, views: 32109, image: lombokImg },
-    { title: 'Medan: Gateway to Lake Toba', description: 'Discover Medan...', author: 'Chris Lee', likes: 5432, views: 21098, image: medanImg },
-    { title: 'Makassar: Culinary and History', description: 'Visit Makassar...', author: 'Anna Taylor', likes: 4321, views: 10987, image: makassarImg },
-    { title: 'Semarang: Blend of Cultures', description: 'Explore Semarang...', author: 'David Clark', likes: 3210, views: 9876, image: semarangImg },
-    { title: 'Aceh: Gateway to Tsunami History', description: 'Learn about Aceh...', author: 'Emily Carter', likes: 2890, views: 8765, image: acehImg },
-    { title: 'Manado: Diving Paradise', description: 'Dive into Manado...', author: 'James White', likes: 2456, views: 7654, image: manadoImg },
-    { title: 'Palembang: Culinary and History', description: 'Visit Palembang...', author: 'Sophia Green', likes: 1987, views: 6543, image: palembangImg },
-  ];
+  // Fetch threads from the API
+  const fetchThreads = async (page) => {
+    setLoading(true); // Set loading to true while fetching
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/v1/threads?page=${page}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token, // Use the token here
+        },
+      });
 
+      const newThreads = response.data.data; // Assuming the API response has a "data" field
+      setThreads((prevThreads) => [...prevThreads, ...newThreads]); // Append new threads to the existing list
+      setHasMore(page < response.data.last_page); // Check if there are more pages to load
+    } catch (error) {
+      console.error('Error fetching threads:', error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching
+    }
+  };
+
+  useEffect(() => {
+    fetchThreads(page); // Fetch threads when the component mounts or page changes
+  }, [page]);
+
+  // Handle sorting
   const handleSortChange = (selectedOption) => {
     setSortOption(selectedOption.value);
   };
 
-  const sortedGuides = [...guides].sort((a, b) => {
+  // Handle search results from Header
+  const handleSearchResults = (searchResults) => {
+    setThreads(searchResults); // Replace the current threads with the search results
+    setHasMore(false); // Disable lazy loading when searching
+  };
+
+  // Sort threads based on the selected option
+  const sortedThreads = [...threads].sort((a, b) => {
     if (sortOption === 2) return b.views - a.views; // Most Popular
     if (sortOption === 3) return b.likes - a.likes; // Most Liked
     return 0; // Default order
   });
 
-  useEffect(() => {
-    const response = async () => {
-      try {
-        const result = await axios.get('http://127.0.0.1:8000/api/v1/threads?title='); // Replace with your API endpoint
-        console.log(result.data);
-      } catch (error) {
-        console.error('Error fetching guides:', error);
+  // Handle scroll event for lazy loading
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop >=
+      document.documentElement.offsetHeight - 100
+    ) {
+      if (hasMore && !loading) {
+        setPage((prevPage) => prevPage + 1); // Load the next page
       }
-    };
-    response();
-  }, [])
-  
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll); // Cleanup on unmount
+  }, [hasMore, loading]);
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <Header />
+      <Header onSearch={handleSearchResults} token={token} /> {/* Pass the token to Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Threads</h2>
         <SortDropdown sortOptions={sortOptions} handleSortChange={handleSortChange} />
       </div>
-      <ThreadsGrid guides={sortedGuides} />
-      <div className="flex justify-center mt-8">
-        <button className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600">See more</button>
-      </div>
+      <ThreadsGrid guides={sortedThreads} />
+      {loading && <div className="text-center mt-4">Loading...</div>}
+      {/* {!hasMore && <div className="text-center mt-4 text-gray-500">Threads doesn't found.</div>} */}
+      {threads.length === 0 && !loading && (
+        <div className="text-center mt-4 text-gray-500">No threads available.</div>
+      )}
     </div>
   );
 };
