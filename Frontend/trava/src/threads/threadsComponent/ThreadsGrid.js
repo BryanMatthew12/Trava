@@ -1,11 +1,10 @@
 import React from 'react';
 
-const ThreadsGrid = ({ guides }) => {
-  // console.log(guides);
+const ThreadsGrid = ({ guides, loading }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {guides.map((guide, index) => (
-        <div key={index} className="border rounded-lg overflow-hidden shadow-md">
+      {guides.map((guide) => (
+        <div key={guide.thread_id} className="border rounded-lg overflow-hidden shadow-md">
           <img
             src={guide.thread_picture} // Use the image URL from the API
             alt={guide.thread_title} // Use the title from the API
@@ -24,6 +23,7 @@ const ThreadsGrid = ({ guides }) => {
           </div>
         </div>
       ))}
+      {loading && <div className="text-center col-span-full">Loading...</div>}
     </div>
   );
 };
