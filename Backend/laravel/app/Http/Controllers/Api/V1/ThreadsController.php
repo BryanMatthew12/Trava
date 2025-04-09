@@ -26,10 +26,21 @@ class ThreadsController extends Controller
         $filters = [
             'title' => $request->input('title'), // Get the title from the query string
             'sort_by' => $request->input('sort_by'),
-            'order' => $request->input('order'),
+            'order' => $request->input('order', 'desc'), // Default to descending order
         ];
 
-        $threads = $this->threadsService->getThreads($filters)->paginate(12);
+        $threadsQuery = $this->threadsService->getThreads($filters);
+
+        // Apply sorting
+        if ($filters['sort_by'] == 2) {
+            $threadsQuery->orderBy('views', $filters['order']);
+        } elseif ($filters['sort_by'] == 3) {
+            $threadsQuery->orderBy('likes', $filters['order']);
+        } else {
+            $threadsQuery->orderBy('created_at', $filters['order']); // Default to "Most Recent"
+        }
+
+        $threads = $threadsQuery->paginate(12);
 
         return response()->json([
             'message' => 'Threads retrieved successfully!',
