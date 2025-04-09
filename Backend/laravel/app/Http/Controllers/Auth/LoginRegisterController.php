@@ -40,24 +40,29 @@ class LoginRegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(LoginRegisterRequest $request)
+    public function store(LoginRegisterRequest $request) //REGISTER METHOD (perlu generate token atau ngga?)
     {
-        User::create([
-            // 'name' => $request->name,
+        // For API Testing
+        $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
+        
+        $token = JWTAuth::fromUser($user);
+        return response()->json([
+            'message' => 'Registration successful',
+            'token' => $token,
+            'user' => $user,
+        ], 201);
 
-        // event(new Registered($user)); 
-        // ganti Registered ke routing register di FE
-
-
-        $credentials = $request->only('email', 'password');
-        Auth::attempt($credentials);
-        $request->session()->regenerate();
-        return redirect()->route('dashboard')
-        ->withSuccess('You have successfully registered & logged in!');
+        // For real application
+        // User::create([
+        //     'username' => $request->username,
+        //     'email' => $request->email,
+        //     'password' => Hash::make($request->password)
+        // ]);
+        // return redirect()->route('dashboard')->withSuccess('You have successfully registered & logged in!');
     }
 
     /**
@@ -77,16 +82,16 @@ class LoginRegisterController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function authenticate(Request $request)
+    public function authenticate(Request $request) // LOGIN METHOD (Generate JWT Token)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
-        if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
-        }
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'Invalid credentials'], 401);
+            }
 
         return response()->json([
             'message' => 'Login successful',
@@ -138,13 +143,15 @@ class LoginRegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function logout(Request $request)
+
+     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('login')
-            ->withSuccess('You have logged out successfully!');;
-    }    
+        JWTAuth::invalidate(JWTAuth::getToken());
+
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
+    }
+    
 
 }
