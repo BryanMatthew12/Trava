@@ -10,11 +10,11 @@ class ThreadsService
      * Get all threads with optional sorting and searching.
      *
      * @param array $filters
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function getThreads(array $filters = [])
     {
-        $query = Threads::query();
+        $query = Threads::query(); // Start with the query builder
 
         // Search by title
         if (!empty($filters['title'])) {
@@ -27,7 +27,7 @@ class ThreadsService
             $query->orderBy($filters['sort_by'], $order);
         }
 
-        return $query->get();
+        return $query; // Return the query builder instance
     }
 
     /**
