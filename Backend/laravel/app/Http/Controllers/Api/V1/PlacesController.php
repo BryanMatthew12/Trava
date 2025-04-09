@@ -36,9 +36,10 @@ class PlacesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Places $places)
+    public function show($id)
     {
-        //
+        $place = Places::with('category')->findOrFail($id);
+        return response()->json($place);
     }
 
     /**

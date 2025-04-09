@@ -53,6 +53,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Comment::class, 'user_id', 'user_id');
     }
 
+    public function preferences()
+    {
+        return $this->hasMany(UserPreference::class, 'user_id', 'user_id');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey(); // Return the primary key

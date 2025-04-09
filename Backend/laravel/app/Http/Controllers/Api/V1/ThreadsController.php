@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Threads;
 use App\Http\Requests\StoreThreadsRequest;
 use App\Http\Requests\UpdateThreadsRequest;
 use App\Http\Controllers\Controller;

@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\ItineraryDestinationController;
 use App\Http\Controllers\Api\V1\PlacesController;
 use App\Http\Controllers\Api\V1\ThreadsController;
 use App\Http\Controllers\Auth\LoginRegisterController;
+use App\Http\Controllers\Api\V1\UserPreferenceController;
 
 
 /*
@@ -46,6 +47,13 @@ Route::middleware(['auth:api'])->group(function () {
         Route::apiResource('days', DayController::class);
         Route::apiResource('admins', AdminController::class);
         Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
+        Route::apiResource('user-preference', UserPreferenceController::class);
+
+        //Testing route
+        // Route::get('/v1/users/{id}/preferences', [UserController::class, 'getPreferences']);
+        Route::get('/v1/user-preference/{userId}', [UserPreferenceController::class, 'getByUserId']);
+        Route::get('/places/{id}', [PlacesController::class, 'show']);
+
     });
     // Logout route
     Route::post('auth/logout', [LoginRegisterController::class, 'logout']);

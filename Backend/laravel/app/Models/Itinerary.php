@@ -17,7 +17,6 @@ class Itinerary extends Model
     protected $primaryKey = 'itinerary_id';
 
     protected $fillable = [
-        'itinerary_id',
         'user_id',
         'start_date',
         'end_date',
