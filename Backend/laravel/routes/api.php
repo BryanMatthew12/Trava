@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\PlacesController;
 use App\Http\Controllers\Api\V1\ThreadsController;
 use App\Http\Controllers\Auth\LoginRegisterController;
 use App\Http\Controllers\Api\V1\UserPreferenceController;
+use App\Http\Controllers\Api\V1\CategoryController;
 
 
 /*
@@ -57,6 +58,10 @@ Route::middleware(['auth:api'])->group(function () {
     });
     // Logout route
     Route::post('auth/logout', [LoginRegisterController::class, 'logout']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/categories', [CategoryController::class, 'store']);
 });
 
 // Route to get the authenticated user

@@ -13,7 +13,7 @@ const HeaderSection = () => {
       <button 
       className="px-4 sm:px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
       onClick={() => {
-        navigate('/Register');
+        navigate('/Login');
       }}
       >
         Plan Itinerary
