@@ -36,7 +36,6 @@ const App = () => {
         <Route index element={<RootPage />} />
         <Route path="register" element={<Register />} />
         <Route path="login" element={<Login />} />
-        
         {/* Protected Routes */}
         <Route
           path="home"
