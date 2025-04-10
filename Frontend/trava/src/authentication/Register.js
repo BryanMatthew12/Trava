@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/login/register";
+import { token as selectToken } from "../slices/auth/authSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHiking,
@@ -13,6 +14,15 @@ import {
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const token = useSelector((selectToken)); // Get the token from Redux
+
+  useEffect(() => {
+    if(token) {
+      navigate("/Home"); // Redirect to /Home if token exists
+    }
+  }, [token, navigate]);
+  
 
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
