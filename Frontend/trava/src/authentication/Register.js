@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/login/register";
+import { token as selectToken } from "../slices/auth/authSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHiking,
@@ -13,6 +14,14 @@ import {
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const token = useSelector(selectToken); // Get the token from Redux
+
+  useEffect(() => {
+    if (token) {
+      navigate("/Home"); // Redirect to /Home if token exists
+    }
+  }, [token, navigate]);
 
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -73,8 +82,6 @@ const Register = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        {!showCategorySection ? (
-          <>
             <h1 className="text-xl font-bold text-center mb-6">
               Sign up to Trava
             </h1>
@@ -132,9 +139,7 @@ const Register = () => {
                   className={`w-full border ${
                     error.password ? "border-red-500" : "border-gray-300"
                   } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.password
-                      ? "focus:ring-red-500"
-                      : "focus:ring-blue-500"
+                    error.password ? "focus:ring-red-500" : "focus:ring-blue-500"
                   }`}
                   placeholder="Enter your password"
                 />
@@ -183,94 +188,6 @@ const Register = () => {
                 Log in
               </a>
             </p>
-          </>
-        ) : (
-          <>
-            <h1 className="text-xl font-bold text-center mb-6">
-              Choose Your Preferences
-            </h1>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {/* Adventure */}
-              <div
-                className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
-                  selectedCategories.includes("Adventure")
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                }`}
-                onClick={() => handleCategoryToggle("Adventure")}
-              >
-                <FontAwesomeIcon
-                  icon={faHiking}
-                  className="text-blue-500 text-2xl mb-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  Adventure
-                </span>
-              </div>
-
-              {/* Cullinary */}
-              <div
-                className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
-                  selectedCategories.includes("Relaxation")
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                }`}
-                onClick={() => handleCategoryToggle("Relaxation")}
-              >
-                <FontAwesomeIcon
-                  icon={faSpa}
-                  className="text-blue-500 text-2xl mb-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  Cullinary
-                </span>
-              </div>
-
-              {/* Cultural */}
-              <div
-                className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
-                  selectedCategories.includes("Cultural")
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                }`}
-                onClick={() => handleCategoryToggle("Cultural")}
-              >
-                <FontAwesomeIcon
-                  icon={faLandmark}
-                  className="text-blue-500 text-2xl mb-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  Cultural
-                </span>
-              </div>
-
-              {/* Nature */}
-              <div
-                className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
-                  selectedCategories.includes("Nature")
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                }`}
-                onClick={() => handleCategoryToggle("Nature")}
-              >
-                <FontAwesomeIcon
-                  icon={faTree}
-                  className="text-blue-500 text-2xl mb-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  Nature
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={handleCategorySubmit}
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none"
-            >
-              Submit Preferences
-            </button>
-          </>
-        )}
       </div>
     </div>
   );

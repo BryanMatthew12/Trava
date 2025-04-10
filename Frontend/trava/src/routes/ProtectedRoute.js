@@ -1,13 +1,14 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { token as selectToken } from './slices/auth/authSlice'; // Rename the imported selector
 import { Navigate } from 'react-router-dom';
+import { token as selectToken } from '../slices/auth/authSlice'; // Import the token selector
 
 const ProtectedRoute = ({ children }) => {
-  const userToken = useSelector(selectToken); // Use a different name for the local variable
+  const userToken = useSelector(selectToken); // Get the token from Redux
 
   // If no token, redirect to "/"
-  if (!userToken || userToken === 'undefined') {
+  if (!userToken) {
+    console.log('No token, redirecting to login');
     return <Navigate to="/Login" replace />;
   }
 

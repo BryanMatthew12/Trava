@@ -13,7 +13,7 @@ export const register = async (name, email, password, confirmPassword, dispatch,
 
     if (response.data && response.data.token) {
       dispatch(setToken(response.data.token)); // Set token in Redux
-      navigate('/Home'); // Redirect to /Home
+      navigate('/preference'); // Redirect to /Home
       return response.data;
     } else {
       throw new Error('Register failed');

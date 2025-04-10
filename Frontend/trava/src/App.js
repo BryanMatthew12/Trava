@@ -11,7 +11,9 @@ import PrePlanningItinerary from './planItinerary/prePlanningItinerary';
 import Register from './authentication/Register';
 import Login from './authentication/Login';
 import Profile from './header/profile/Profile';
-import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute from './routes/ProtectedRoute';
+import PublicRoute from './routes/PublicRoute';
+import CategorySelector from './authentication/CategorySelector';
 
 const Layout = () => {
   const location = useLocation();
@@ -33,10 +35,42 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<RootPage />} />
-        <Route path="register" element={<Register />} />
-        <Route path="login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <RootPage />
+            </PublicRoute>
+          }
+        />
+        
+        {/* Public Routes */}
+        <Route
+          path="register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        
         {/* Protected Routes */}
+        <Route
+          path="preference"
+          element={
+            <ProtectedRoute>
+              <CategorySelector />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="home"
           element={
