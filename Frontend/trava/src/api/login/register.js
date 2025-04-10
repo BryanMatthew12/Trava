@@ -1,5 +1,5 @@
-import { setToken } from "../../slices/auth/authSlice";
-import { BASE_URL } from '../../config';
+import { setToken, setName } from "../../slices/auth/authSlice";
+import { BASE_URL } from "../../config";
 import axios from "axios";
 
 export const register = async (name, email, password, confirmPassword, dispatch, navigate) => {
@@ -12,14 +12,17 @@ export const register = async (name, email, password, confirmPassword, dispatch,
     });
 
     if (response.data && response.data.token) {
-      dispatch(setToken(response.data.token)); // Set token in Redux
-      navigate('/preference'); // Redirect to /Home
-      return response.data;
+      dispatch(setToken(response.data.token)); // Save token to Redux and cookie
+      dispatch(setName(response.data.user.username)); // Save username to Redux
+      return response.data; // Return the response to indicate success
     } else {
-      throw new Error('Register failed');
+      throw new Error("Registration failed: Token not found");
     }
   } catch (error) {
-    console.error('Register error:', error.response?.data?.message || error.message);
-    throw new Error(error.response?.data?.message || 'Register failed');
+    console.error("Register error:", error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || "Registration failed");
+  } finally {
+    // Navigate to /preference after the try-catch block
+    navigate("/preference");
   }
 };

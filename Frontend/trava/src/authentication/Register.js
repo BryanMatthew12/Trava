@@ -28,55 +28,41 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState({ email: "", password: "" });
-  const [showCategorySection, setShowCategorySection] = useState(false); // State to toggle category section
-  const [selectedCategories, setSelectedCategories] = useState([]); // State to store selected categories
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-
+  
     // Reset errors
-    setError({ email: "", password: "" });
-
+    setError({ email: "", password: "", confirmPassword: "" });
+  
     // Simple validation
     if (!email) {
-      setError((prev) => ({
-        ...prev,
-        email: "Please enter your email address",
-      }));
+      setError((prev) => ({ ...prev, email: "Please enter your email address" }));
+      return;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError((prev) => ({
-        ...prev,
-        email: "Please enter a valid email address",
-      }));
+      setError((prev) => ({ ...prev, email: "Please enter a valid email address" }));
       return;
     }
+  
     if (!password) {
       setError((prev) => ({ ...prev, password: "Please enter a password" }));
       return;
     }
-
-    if (email && password) {
-      register(name, email, password, confirmPassword, dispatch, navigate);
+  
+    if (password !== confirmPassword) {
+      setError((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
+      return;
     }
-  };
-
-  const handleCategoryToggle = (category) => {
-    if (selectedCategories.includes(category)) {
-      setSelectedCategories(
-        selectedCategories.filter((item) => item !== category)
-      );
-    } else {
-      setSelectedCategories([...selectedCategories, category]);
+  
+    // Call the register API function
+    try {
+      await register(name, email, password, confirmPassword, dispatch, navigate);
+      // navigate("/preference"); // Navigate to /preference only on success
+    } catch (error) {
+      console.error("Registration failed:", error.message);
+    } finally {
+      navigate("/preference");
     }
-  };
-
-  const handleCategorySubmit = () => {
-    if (selectedCategories.length === 0) {
-      alert("No category selected. Proceeding without preferences.");
-    } else {
-      alert(`You selected: ${selectedCategories.join(", ")}`);
-    }
-    navigate("/Home"); // Redirect to threads or another page
   };
 
   return (
