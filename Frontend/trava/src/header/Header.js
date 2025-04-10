@@ -1,4 +1,5 @@
 import React from 'react';
+import Profile from './profile/Profile';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/img/travalogo.png';
 
@@ -25,6 +26,9 @@ const Header = () => {
             </li>
             <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/PlanningItinerary?source=header')}>
               Plan Your Itinerary
+            </li>
+            <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/Profile')}>
+              Profile
             </li>
           </ul>
         </nav>
