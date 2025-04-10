@@ -10,6 +10,9 @@ import PlanningItinerary from './planItinerary/PlanningItinerary';
 import PrePlanningItinerary from './planItinerary/prePlanningItinerary';
 import Register from './authentication/Register';
 import Login from './authentication/Login';
+import Profile from './header/profile/Profile';
+import ProtectedRoute from './ProtectedRoute';
+
 const Layout = () => {
   const location = useLocation();
   const isPlanningItinerary = location.pathname.startsWith('/PlanningItinerary');
@@ -17,7 +20,7 @@ const Layout = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Conditionally render the Header */}
-      {!isPlanningItinerary && <Header/>}
+      {!isPlanningItinerary && <Header />}
       <main className="flex-grow">
         <Outlet />
       </main>
@@ -31,13 +34,58 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<RootPage />} />
-        <Route path="home" element={<Home />} />
-        <Route path="destinations" element={<Destinations />} />
-        <Route path="threads" element={<Threads />} />
-        <Route path="planningitinerary" element={<PlanningItinerary />} />
-        <Route path="preplanningitinerary" element={<PrePlanningItinerary />} />
         <Route path="register" element={<Register />} />
         <Route path="login" element={<Login />} />
+        
+        {/* Protected Routes */}
+        <Route
+          path="home"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="destinations"
+          element={
+            <ProtectedRoute>
+              <Destinations />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="threads"
+          element={
+            <ProtectedRoute>
+              <Threads />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="planningitinerary"
+          element={
+            <ProtectedRoute>
+              <PlanningItinerary />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="preplanningitinerary"
+          element={
+            <ProtectedRoute>
+              <PrePlanningItinerary />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Route>
     </Routes>
