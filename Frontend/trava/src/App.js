@@ -11,7 +11,8 @@ import PrePlanningItinerary from './planItinerary/prePlanningItinerary';
 import Register from './authentication/Register';
 import Login from './authentication/Login';
 import Profile from './header/profile/Profile';
-import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute from './routes/ProtectedRoute';
+import PublicRoute from './routes/PublicRoute';
 
 const Layout = () => {
   const location = useLocation();
@@ -34,8 +35,24 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<RootPage />} />
-        <Route path="register" element={<Register />} />
-        <Route path="login" element={<Login />} />
+        
+        {/* Public Routes */}
+        <Route
+          path="register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
         
         {/* Protected Routes */}
         <Route
