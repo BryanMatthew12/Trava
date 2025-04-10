@@ -13,6 +13,7 @@ import Login from './authentication/Login';
 import Profile from './header/profile/Profile';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicRoute from './routes/PublicRoute';
+import CategorySelector from './authentication/CategorySelector';
 
 const Layout = () => {
   const location = useLocation();
@@ -34,7 +35,14 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<RootPage />} />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <RootPage />
+            </PublicRoute>
+          }
+        />
         
         {/* Public Routes */}
         <Route
@@ -55,6 +63,14 @@ const App = () => {
         />
         
         {/* Protected Routes */}
+        <Route
+          path="preference"
+          element={
+            <ProtectedRoute>
+              <CategorySelector />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="home"
           element={
