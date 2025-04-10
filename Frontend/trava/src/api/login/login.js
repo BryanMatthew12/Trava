@@ -1,4 +1,4 @@
-import { setToken } from "../../slices/auth/authSlice";
+import { setToken, setName } from "../../slices/auth/authSlice";
 import { BASE_URL } from '../../config';
 import axios from "axios";
 
@@ -9,10 +9,10 @@ export const login = async (email, password, dispatch, navigate) => {
       password: password,
     });
 
-    console.log('Response:', response.data); // Log the response data
-
-    if (response.data && response.data.token) {
-      dispatch(setToken(response.data.token)); // Set token in Redux
+    if (response.data) {
+      console.log(response.data.user.username);
+      dispatch(setToken(response.data.token));
+      dispatch(setName(response.data.user.username));
       navigate('/Home'); // Redirect to /Home
       return response.data;
     } else {
