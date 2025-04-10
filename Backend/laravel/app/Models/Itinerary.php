@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Day;
 use App\Models\Destination;
+use App\Models\Threads;
 
 
 class Itinerary extends Model
@@ -37,6 +38,11 @@ class Itinerary extends Model
     public function destinations()
     {
         return $this->belongsToMany(Destination::class, 'destination_itinerary', 'itinerary_id', 'destination_id');
+    }
+
+    public function thread()
+    {
+        return $this->hasOne(Threads::class, 'itinerary_id', 'itinerary_id');
     }
 
 }
