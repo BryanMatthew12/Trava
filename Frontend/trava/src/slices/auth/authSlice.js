@@ -10,7 +10,7 @@ const authSlice = createSlice({
   reducers: {
     setToken: (state, action) => {
       state.token = action.payload;
-      Cookies.set('token', action.payload); // Save token to the cookie
+      Cookies.set('token', action.payload, { expires: 1 / 24 }); // Set token to expire in 1 hour (60 minutes)
     },
     setName: (state, action) => {
       state.name = action.payload;
