@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Itinerary;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,11 +21,9 @@ class ThreadsFactory extends Factory
         return [
             'thread_id' => $this->faker->unique()->randomNumber(5), 
             'user_id' => User::inRandomOrder()->first()?->user_id ?? User::factory(),
-            'thread_title' => $this->faker->sentence(),
-            'thread_content' => $this->faker->paragraph(),
-            'thread_picture' => $this->faker->imageUrl(),
-            'likes' => $this->faker->numberBetween(0, 100),
+            'itinerary_id' => Itinerary::inRandomOrder()->first()?->itinerary_id ?? Itinerary::factory(),
             'views' => $this->faker->numberBetween(0, 1000),
+            'likes' => $this->faker->numberBetween(0, 100),
         ];
     }
 }

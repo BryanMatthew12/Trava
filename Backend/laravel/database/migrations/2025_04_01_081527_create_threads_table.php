@@ -12,17 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('threads', function (Blueprint $table) {
-            $table->bigIncrements('thread_id'); // Primary Key
-            $table->unsignedBigInteger('user_id'); // Foreign Key
-            $table->string('thread_title'); // Thread title
-            $table->text('thread_content'); // Thread content
-            $table->string('thread_picture')->nullable(); // Image path column
-            $table->unsignedBigInteger('likes')->default(0);   
+            $table->id('thread_id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('itinerary_id');
             $table->unsignedBigInteger('views')->default(0);
+            $table->unsignedBigInteger('likes')->default(0);
             $table->timestamps();
-
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('itinerary_id')->references('itinerary_id')->on('itineraries')->onDelete('cascade');
         });
+        
     }
 
     /**
