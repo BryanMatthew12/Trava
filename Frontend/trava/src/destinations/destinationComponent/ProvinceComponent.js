@@ -71,7 +71,6 @@ const ExploreComponent = ({dispatch}) => {
           <GemComponent province={selectedProvinceId} />
         </>
       )}
-
     </div>
   );
 };

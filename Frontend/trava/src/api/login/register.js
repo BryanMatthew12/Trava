@@ -12,15 +12,9 @@ export const register = async (name, email, password, confirmPassword, dispatch,
     });
 
     if (response.data && response.data.token) {
-<<<<<<< HEAD
       dispatch(setToken(response.data.token));
       dispatch(setName(response.data.user.username));
       return response.data;
-=======
-      dispatch(setToken(response.data.token)); // Save token to Redux and cookie
-      dispatch(setName(response.data.user.username)); // Save username to Redux
-      return response.data; // Return the response to indicate success
->>>>>>> a71e7607833731f0962e08f95507a09601e0b286
     } else {
       throw new Error("Registration failed: Token not found");
     }
@@ -28,10 +22,6 @@ export const register = async (name, email, password, confirmPassword, dispatch,
     console.error("Register error:", error.response?.data?.message || error.message);
     throw new Error(error.response?.data?.message || "Registration failed");
   } finally {
-<<<<<<< HEAD
-=======
-    // Navigate to /preference after the try-catch block
->>>>>>> a71e7607833731f0962e08f95507a09601e0b286
     navigate("/preference");
   }
 };
