@@ -21,9 +21,9 @@ class Itinerary extends Model
         'user_id',
         'start_date',
         'end_date',
-        'days',
         'budget',
         'itinerary_description',
+        'days',
     ];
 
     public function user() {
@@ -43,6 +43,11 @@ class Itinerary extends Model
     public function thread()
     {
         return $this->hasOne(Threads::class, 'itinerary_id', 'itinerary_id');
+    }
+
+    public function itineraryDestinations()
+    {
+        return $this->hasMany(ItineraryDestination::class, 'itinerary_id', 'itinerary_id');
     }
 
 }
