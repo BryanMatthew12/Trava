@@ -14,7 +14,6 @@ const GemComponent = ({ province }) => {
     setCategory(selectedOption.id);
   };
 
-  // Map categories to react-select options
   const categoryOptions = categories.map((category) => ({
     value: category.id,
     label: category.name,

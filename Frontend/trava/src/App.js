@@ -21,7 +21,6 @@ const Layout = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Conditionally render the Header */}
       {!isPlanningItinerary && <Header />}
       <main className="flex-grow">
         <Outlet />
@@ -66,9 +65,7 @@ const App = () => {
         <Route
           path="preference"
           element={
-            <ProtectedRoute>
               <CategorySelector />
-            </ProtectedRoute>
           }
         />
         <Route
