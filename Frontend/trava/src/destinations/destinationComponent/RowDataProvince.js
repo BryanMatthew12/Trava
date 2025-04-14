@@ -1,68 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import javalandscape from "../../assets/img/javalandscape.jpg";
-import balilandscape from "../../assets/img/carousel-java-1.jpeg";
+import { fetchPlaces } from "../../api/places/places";
+import { selectPlaces } from "../../slices/places/placeSlice";
+import { useSelector } from "react-redux";
 
-const baliDes = [
-  { image: balilandscape, title: "Bali 1", desc: "Beautiful place to visit" },
-  { image: balilandscape, title: "Bali 2", desc: "Enjoy the scenic views" },
-  { image: balilandscape, title: "Bali 3", desc: "Great cultural experience" },
-  { image: balilandscape, title: "Bali 4", desc: "Perfect for relaxation" },
-  { image: balilandscape, title: "Bali 5", desc: "Adventure awaits" },
-];
 
-const javaDes = [
-  { image: javalandscape, title: "Java 1", desc: "Beautiful place to visit" },
-  { image: javalandscape, title: "Java 2", desc: "Enjoy the scenic views" },
-  { image: javalandscape, title: "Java 3", desc: "Great cultural experience" },
-  { image: javalandscape, title: "Java 4", desc: "Perfect for relaxation" },
-  { image: javalandscape, title: "Java 5", desc: "Adventure awaits" },
-];
-
-const RowDataProvince = ({ province }) => {
+const RowDataProvince = ({}) => {
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+  const places = useSelector(selectPlaces);
 
-  // Determine the data to display based on the selected province
-  const data = province === 1 ? baliDes : javaDes;
 
-  // Check if the viewport is mobile
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768); // Mobile if width is less than 768px
+      setIsMobile(window.innerWidth < 768);
     };
 
-    handleResize(); // Check on initial render
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Handle navigation on item click
+
   const handleItemClick = (item) => {
     navigate('/PlanningItinerary?source=rowdataprovince')
   };
 
   if (isMobile) {
-    // Horizontal scrollable list for mobile view
     return (
       <div className="w-full overflow-x-auto">
         <div className="flex gap-4 p-4">
-          {data.map((item, index) => (
+          {places.map((place, index) => (
             <div
               key={index}
-              onClick={() => handleItemClick(item)} // Navigate on click
+              onClick={() => handleItemClick(place)}
               className="flex-shrink-0 w-64 border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
             >
               <img
-                src={item.image}
-                alt={item.title}
+                src={place.place_picture}
+                alt={place.name}
                 className="w-full h-48 object-cover rounded-lg"
               />
               <h2 className="text-lg font-bold mt-2 text-center truncate w-full">
-                {item.title}
+                {place.name}
               </h2>
               <p className="text-gray-600 text-center text-sm truncate w-full">
-                {item.desc}
+                {place.description}
               </p>
             </div>
           ))}
@@ -71,25 +54,24 @@ const RowDataProvince = ({ province }) => {
     );
   }
 
-  // Grid for desktop view
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 w-full">
-      {data.map((item, index) => (
+      {places.map((place, index) => (
         <div
           key={index}
-          onClick={() => handleItemClick(item)} // Navigate on click
+          onClick={() => handleItemClick(place)}
           className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
         >
           <img
-            src={item.image}
-            alt={item.title}
+            src={place.place_picture}
+            alt={place.name}
             className="w-full h-48 object-cover rounded-lg"
           />
           <h2 className="text-lg font-bold mt-2 text-center truncate w-full">
-            {item.title}
+            {place.name}
           </h2>
           <p className="text-gray-600 text-center text-sm truncate w-full">
-            {item.desc}
+            {place.description}
           </p>
         </div>
       ))}

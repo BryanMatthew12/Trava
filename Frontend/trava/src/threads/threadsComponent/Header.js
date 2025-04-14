@@ -2,23 +2,22 @@ import React, { useState } from 'react';
 
 const Header = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [typingTimeout, setTypingTimeout] = useState(null); // Timeout for debouncing
+  const [typingTimeout, setTypingTimeout] = useState(null); 
 
-  // Function to handle input changes
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    // Clear the previous timeout
+
     if (typingTimeout) {
       clearTimeout(typingTimeout);
     }
 
-    // Set a new timeout to delay the API call
+
     setTypingTimeout(
       setTimeout(() => {
-        onSearch(value); // Pass the search query to the parent component
-      }, 500) // Delay the API call by 500ms
+        onSearch(value);
+      }, 500)
     );
   };
 
@@ -34,7 +33,7 @@ const Header = ({ onSearch }) => {
           placeholder="Explore threads to get more itinerary from other users"
           className="border border-gray-300 rounded-md px-4 py-2 w-full max-w-md outline-none"
           value={searchTerm}
-          onChange={handleInputChange} // Trigger search on input change
+          onChange={handleInputChange}
         />
       </div>
     </>

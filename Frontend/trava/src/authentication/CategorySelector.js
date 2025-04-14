@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHiking, faUtensils, faShoppingCart, faLandmark, faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { BASE_URL } from '../config'; // Adjust the import based on your project structure
+import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 
 const CategorySelector = () => {
@@ -17,42 +17,41 @@ const CategorySelector = () => {
 
   const [selectedCategories, setSelectedCategories] = useState([]);
   const navigate = useNavigate();
-  // Get the token from Redux store
   const token = useSelector((state) => state.auth.token);
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategories((prev) =>
       prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId) // Remove if already selected
-        : [...prev, categoryId] // Add if not selected
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
     );
   };
 
   const handleSubmit = async () => {
     try {
-      // If no categories are selected, default to all categories (1-5)
       const categoriesToSave =
         selectedCategories.length === 0
-          ? categories.map((category) => category.id) // Save all category IDs
+          ? categories.map((category) => category.id)
           : selectedCategories;
 
       const response = await axios.post(
         `${BASE_URL}/v1/user-preference`,
         {
-          category_ids: categoriesToSave, // Correct field name
+          category_ids: categoriesToSave,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Use token from Redux
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      alert(response.data.message); // Show success message
-      navigate("/Home"); // Redirect to home page
+      alert(response.data.message);
+      navigate("/Home");
     } catch (error) {
       console.error('Error saving categories:', error);
       alert('Failed to save categories. Please try again.');
-    }
+    }finally {
+      navigate("/Home");}
   };
 
   return (
@@ -72,16 +71,16 @@ const CategorySelector = () => {
             key={category.id}
             style={{
               border: selectedCategories.includes(category.id)
-                ? '2px solid #87CEEB' // Lighter blue border
-                : '1px solid #ccc', // Default gray border
+                ? '2px solid #87CEEB'
+                : '1px solid #ccc',
               backgroundColor: selectedCategories.includes(category.id)
-                ? '#E6F7FF' // Soft blue background
-                : '#fff', // Default white background
+                ? '#E6F7FF'
+                : '#fff',
               borderRadius: '10px',
               padding: '20px',
               textAlign: 'center',
               cursor: 'pointer',
-              transition: 'all 0.3s ease', // Smooth transition for border and background
+              transition: 'all 0.3s ease',
             }}
             onClick={() => handleCategoryChange(category.id)}
           >

@@ -4,13 +4,13 @@ import Cookies from 'js-cookie';
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    token: Cookies.get('token') || null, // Load token from the cookie
+    token: Cookies.get('token') || null,
     name: null,
   },
   reducers: {
     setToken: (state, action) => {
       state.token = action.payload;
-      Cookies.set('token', action.payload, { expires: 1 / 24 }); // Set token to expire in 1 hour (60 minutes)
+      Cookies.set('token', action.payload, { expires: 1 / 24 });
     },
     setName: (state, action) => {
       state.name = action.payload;
@@ -18,7 +18,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.token = null;
       state.name = null;
-      Cookies.remove('token'); // Remove token from the cookie
+      Cookies.remove('token');
     },
   },
 });

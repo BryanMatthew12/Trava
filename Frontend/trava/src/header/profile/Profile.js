@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout, name } from '../../slices/auth/authSlice'; // Import the name selector
+import { logout, name } from '../../slices/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
@@ -10,8 +10,8 @@ const Profile = () => {
   const userName = useSelector(name);
 
   const handleLogout = () => {
-    dispatch(logout()); // Clear the token from Redux
-    navigate('/'); // Redirect to the login page or home
+    dispatch(logout());
+    navigate('/');
   };
 
   return (
