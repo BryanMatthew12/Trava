@@ -39,7 +39,6 @@ const Register = () => {
     // Call the register API function
     try {
       await register(name, email, password, confirmPassword, dispatch, navigate);
-      // navigate("/preference"); // Navigate to /preference only on success
     } catch (error) {
       console.error("Registration failed:", error.message);
     } finally {
