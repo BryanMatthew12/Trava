@@ -21,22 +21,19 @@ const javaDes = [
 const RowDataTrending = ({ province }) => {
   const [isMobile, setIsMobile] = useState(false);
 
-  // Determine the data to display based on the selected province
   const data = province === 1 ? baliDes : javaDes;
 
-  // Check if the viewport is mobile
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768); // Mobile if width is less than 768px
+      setIsMobile(window.innerWidth < 768);
     };
 
-    handleResize(); // Check on initial render
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (isMobile) {
-    // Horizontal scrollable list for mobile view
     return (
       <div className="w-full overflow-x-auto">
         <div className="flex gap-4 p-4">
@@ -60,7 +57,6 @@ const RowDataTrending = ({ province }) => {
     );
   }
 
-  // Grid for desktop view
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 w-full">
       {data.map((item, index) => (

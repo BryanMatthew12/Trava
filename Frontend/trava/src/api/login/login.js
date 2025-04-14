@@ -11,9 +11,9 @@ export const login = async (email, password, dispatch, navigate) => {
 
     if (response.data) {
       console.log(response.data.user.username);
-      dispatch(setToken(response.data.token)); // Save token to Redux and cookie
+      dispatch(setToken(response.data.token));
       dispatch(setName(response.data.user.username));
-      navigate('/home'); // Redirect to /home
+      navigate('/home'); 
       return response.data;
     } else {
       throw new Error('Login failed: Token not found');

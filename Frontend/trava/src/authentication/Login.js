@@ -13,10 +13,8 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Reset errors
     setError({ email: '', password: '' });
 
-    // Simple validation
     let hasError = false;
     if (!email) {
       setError((prev) => ({ ...prev, email: 'Please enter your email address' }));
@@ -33,13 +31,12 @@ const Login = () => {
 
     if (hasError) return;
 
-    // Call the login function
     try {
       await login(email, password, dispatch, navigate);
       console.log('Login successful');
     } catch (error) {
       console.error('Login error:', error.message);
-      setError((prev) => ({ ...prev, email: error.message })); // Display server error
+      setError((prev) => ({ ...prev, email: error.message }));
     }
   };
 
@@ -49,7 +46,6 @@ const Login = () => {
         <h1 className="text-xl font-bold text-center mb-6">Log in to Trava</h1>
 
         <form onSubmit={handleLogin}>
-          {/* Email Input */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
@@ -65,7 +61,6 @@ const Login = () => {
             {error.email && <p className="text-red-500 text-sm mt-1">{error.email}</p>}
           </div>
 
-          {/* Password Input */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <div className="relative">
@@ -84,7 +79,6 @@ const Login = () => {
             {error.password && <p className="text-red-500 text-sm mt-1">{error.password}</p>}
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none"
@@ -93,7 +87,7 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Footer */}
+
         <p className="text-center text-sm text-gray-600 mt-4">
           Don't have an account?{' '}
           <a href="/register" className="text-blue-500 hover:underline">
