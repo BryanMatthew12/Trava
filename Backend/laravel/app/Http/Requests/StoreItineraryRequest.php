@@ -22,7 +22,11 @@ class StoreItineraryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'budget' => ['required', 'numeric', 'min:0'],
+            'itinerary_description' => ['nullable', 'string'],
+            'destination_name' => ['required', 'string', 'exists:destinations,destination_name'],
         ];
     }
 }

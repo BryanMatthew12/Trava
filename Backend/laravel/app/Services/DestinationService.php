@@ -38,6 +38,14 @@ class DestinationService
     }
 
     /**
+     * Get a single destination by its name.
+     */
+    public function getDestinationNames()
+    {
+        return \App\Models\Destination::select('id', 'destination_name')->get();
+    }
+
+    /**
      * Create a new destination.
      */
     public function create(array $data)

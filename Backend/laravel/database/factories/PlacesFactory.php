@@ -23,7 +23,7 @@ class PlacesFactory extends Factory
             'destination_id' => Destination::inRandomOrder()->first()?->destination_id ?? Destination::factory(),
             'category_id' => Category::inRandomOrder()->first()->category_id ?? 1,
             'place_name' => $this->faker->word(),
-            'description' => $this->faker->paragraph(),
+            'place_description' => $this->faker->paragraph(),
             'location' => $this->faker->address(),
             'place_rating' => $this->faker->randomFloat(1, 2, 3, 4, 5),
             'place_picture' => $this->faker->imageUrl(),

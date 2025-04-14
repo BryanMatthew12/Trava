@@ -48,11 +48,19 @@ Route::middleware(['auth:api'])->group(function () {
         Route::apiResource('days', DayController::class);
         Route::apiResource('admins', AdminController::class);
         Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
-        Route::apiResource('user-preference', UserPreferenceController::class);
+        Route::apiResource('user-preferences', UserPreferenceController::class);
 
-        //Testing route
+        // Route to create itineraries
+        Route::post('/v1/itineraries', [ItineraryController::class, 'store']);
+
+        // Route to search destinations names
+        Route::get('/v1/destinations/search', [DestinationController::class, 'search']);
+
+        // Routes to check preference
         // Route::get('/v1/users/{id}/preferences', [UserController::class, 'getPreferences']);
-        Route::get('/v1/user-preference/{userId}', [UserPreferenceController::class, 'getByUserId']);
+        Route::get('/v1/user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);
+
+        // Route to get all places 
         Route::get('/places/{id}', [PlacesController::class, 'show']);
 
     });

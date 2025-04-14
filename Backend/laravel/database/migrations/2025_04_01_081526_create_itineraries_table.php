@@ -16,13 +16,16 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id'); // Foreign Key
             $table->date('start_date');
             $table->date('end_date');
-            $table->integer('days');
             $table->decimal('budget', 10, 2);
-            $table->text('description');
+            $table->text('itinerary_description');
+            $table->integer('days')->default(1); // Add the 'days' column with a default value
+
             $table->timestamps();
 
             // Foreign Key Constraint
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+
+            // $table->foreign('destination_id')->references('destination_id')->on('destinations')->onDelete('cascade');
         });
     }
 
@@ -32,5 +35,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('itineraries');
+        // Schema::table('itineraries', function (Blueprint $table) {
+        //     $table->dropColumn('days');
+        // });
     }
 };
