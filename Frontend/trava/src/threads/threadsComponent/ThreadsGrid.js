@@ -6,8 +6,8 @@ const ThreadsGrid = ({ guides, loading }) => {
       {guides.map((guide) => (
         <div key={guide.thread_id} className="border rounded-lg overflow-hidden shadow-md">
           <img
-            src={guide.thread_picture} // Use the image URL from the API
-            alt={guide.thread_title} // Use the title from the API
+            src={guide.thread_picture}
+            alt={guide.thread_title}
             className="w-full h-40 object-cover"
           />
           <div className="p-4">

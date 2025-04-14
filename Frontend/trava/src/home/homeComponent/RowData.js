@@ -12,19 +12,17 @@ const popDes = [
 const RowData = () => {
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check if the viewport is mobile
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768); // Mobile if width is less than 768px
+      setIsMobile(window.innerWidth < 768);
     };
 
-    handleResize(); // Check on initial render
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (isMobile) {
-    // Horizontal scrollable list for mobile view
     return (
       <div className="w-full overflow-x-auto">
         <div className="flex gap-4 p-4">
@@ -51,7 +49,6 @@ const RowData = () => {
     );
   }
 
-  // Grid for desktop view
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 w-full">
       {popDes.map((item, index) => (

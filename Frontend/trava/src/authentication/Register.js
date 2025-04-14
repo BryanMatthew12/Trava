@@ -1,286 +1,124 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/login/register";
-import { token as selectToken } from "../slices/auth/authSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHiking,
-  faSpa,
-  faLandmark,
-  faTree,
-} from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const token = useSelector((selectToken)); // Get the token from Redux
-
-  useEffect(() => {
-    if(token) {
-      navigate("/Home"); // Redirect to /Home if token exists
-    }
-  }, [token, navigate]);
-  
-
   const [name, setName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState({ email: "", password: "" });
-  const [showCategorySection, setShowCategorySection] = useState(false); // State to toggle category section
-  const [selectedCategories, setSelectedCategories] = useState([]); // State to store selected categories
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState({ email: "", password: "", confirmPassword: "" });
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setError({ email: "", password: "", confirmPassword: "" });
+  
 
-    // Reset errors
-    setError({ email: "", password: "" });
-
-    // Simple validation
     if (!email) {
-      setError((prev) => ({
-        ...prev,
-        email: "Please enter your email address",
-      }));
+      setError((prev) => ({ ...prev, email: "Please enter your email address" }));
+      return;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError((prev) => ({
-        ...prev,
-        email: "Please enter a valid email address",
-      }));
+      setError((prev) => ({ ...prev, email: "Please enter a valid email address" }));
       return;
     }
+  
     if (!password) {
       setError((prev) => ({ ...prev, password: "Please enter a password" }));
       return;
     }
-
-    if (email && password) {
-      register(name, email, password, confirmPassword, dispatch, navigate);
+  
+    if (password !== confirmPassword) {
+      setError((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
+      return;
     }
-  };
-
-  const handleCategoryToggle = (category) => {
-    if (selectedCategories.includes(category)) {
-      setSelectedCategories(
-        selectedCategories.filter((item) => item !== category)
-      );
-    } else {
-      setSelectedCategories([...selectedCategories, category]);
+  
+    // Call the register API function
+    try {
+      await register(name, email, password, confirmPassword, dispatch, navigate);
+      // navigate("/preference"); // Navigate to /preference only on success
+    } catch (error) {
+      console.error("Registration failed:", error.message);
+    } finally {
+      navigate("/preference");
     }
-  };
-
-  const handleCategorySubmit = () => {
-    if (selectedCategories.length === 0) {
-      alert("No category selected. Proceeding without preferences.");
-    } else {
-      alert(`You selected: ${selectedCategories.join(", ")}`);
-    }
-    navigate("/Home"); // Redirect to threads or another page
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        {!showCategorySection ? (
-          <>
-            <h1 className="text-xl font-bold text-center mb-6">
-              Sign up to Trava
-            </h1>
+        <h1 className="text-xl font-bold text-center mb-6">Sign up to Trava</h1>
 
-            <form onSubmit={handleRegister}>
-              {/* Name Input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className={`w-full border ${
-                    error.name ? "border-red-500" : "border-gray-300"
-                  } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.name ? "focus:ring-red-500" : "focus:ring-blue-500"
-                  }`}
-                  placeholder="Enter your name"
-                />
-                {error.name && (
-                  <p className="text-red-500 text-sm mt-1">{error.name}</p>
-                )}
-              </div>
+        <form onSubmit={handleRegister}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your name"
+            />
+          </div>
 
-              {/* Email Input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full border ${
-                    error.email ? "border-red-500" : "border-gray-300"
-                  } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.email ? "focus:ring-red-500" : "focus:ring-blue-500"
-                  }`}
-                  placeholder="Enter your email"
-                />
-                {error.email && (
-                  <p className="text-red-500 text-sm mt-1">{error.email}</p>
-                )}
-              </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full border ${
+                error.email ? "border-red-500" : "border-gray-300"
+              } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
+                error.email ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
+              placeholder="Enter your email"
+            />
+            {error.email && <p className="text-red-500 text-sm mt-1">{error.email}</p>}
+          </div>
 
-              {/* Password Input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full border ${
-                    error.password ? "border-red-500" : "border-gray-300"
-                  } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.password
-                      ? "focus:ring-red-500"
-                      : "focus:ring-blue-500"
-                  }`}
-                  placeholder="Enter your password"
-                />
-                {error.password && (
-                  <p className="text-red-500 text-sm mt-1">{error.password}</p>
-                )}
-              </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`w-full border ${
+                error.password ? "border-red-500" : "border-gray-300"
+              } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
+                error.password ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
+              placeholder="Enter your password"
+            />
+            {error.password && <p className="text-red-500 text-sm mt-1">{error.password}</p>}
+          </div>
 
-              {/* Confirm Password Input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full border ${
-                    error.confirmPassword ? "border-red-500" : "border-gray-300"
-                  } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.confirmPassword
-                      ? "focus:ring-red-500"
-                      : "focus:ring-blue-500"
-                  }`}
-                  placeholder="Confirm your password"
-                />
-                {error.confirmPassword && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {error.confirmPassword}
-                  </p>
-                )}
-              </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`w-full border ${
+                error.confirmPassword ? "border-red-500" : "border-gray-300"
+              } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
+                error.confirmPassword ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
+              placeholder="Confirm your password"
+            />
+            {error.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">{error.confirmPassword}</p>
+            )}
+          </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none"
-              >
-                Sign up with email
-              </button>
-            </form>
-            {/* Footer */}
-            <p className="text-center text-sm text-gray-600 mt-4">
-              Already have an account?{" "}
-              <a href="/login" className="text-blue-500 hover:underline">
-                Log in
-              </a>
-            </p>
-          </>
-        ) : (
-          <>
-            <h1 className="text-xl font-bold text-center mb-6">
-              Choose Your Preferences
-            </h1>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {/* Adventure */}
-              <div
-                className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
-                  selectedCategories.includes("Adventure")
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                }`}
-                onClick={() => handleCategoryToggle("Adventure")}
-              >
-                <FontAwesomeIcon
-                  icon={faHiking}
-                  className="text-blue-500 text-2xl mb-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  Adventure
-                </span>
-              </div>
-
-              {/* Cullinary */}
-              <div
-                className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
-                  selectedCategories.includes("Relaxation")
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                }`}
-                onClick={() => handleCategoryToggle("Relaxation")}
-              >
-                <FontAwesomeIcon
-                  icon={faSpa}
-                  className="text-blue-500 text-2xl mb-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  Cullinary
-                </span>
-              </div>
-
-              {/* Cultural */}
-              <div
-                className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
-                  selectedCategories.includes("Cultural")
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                }`}
-                onClick={() => handleCategoryToggle("Cultural")}
-              >
-                <FontAwesomeIcon
-                  icon={faLandmark}
-                  className="text-blue-500 text-2xl mb-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  Cultural
-                </span>
-              </div>
-
-              {/* Nature */}
-              <div
-                className={`border rounded-md p-4 flex flex-col items-center cursor-pointer ${
-                  selectedCategories.includes("Nature")
-                    ? "border-blue-500"
-                    : "border-gray-300"
-                }`}
-                onClick={() => handleCategoryToggle("Nature")}
-              >
-                <FontAwesomeIcon
-                  icon={faTree}
-                  className="text-blue-500 text-2xl mb-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  Nature
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={handleCategorySubmit}
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none"
-            >
-              Submit Preferences
-            </button>
-          </>
-        )}
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+          >
+            Sign up with email
+          </button>
+        </form>
       </div>
     </div>
   );

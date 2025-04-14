@@ -13,6 +13,7 @@ import Login from './authentication/Login';
 import Profile from './header/profile/Profile';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicRoute from './routes/PublicRoute';
+import CategorySelector from './authentication/CategorySelector';
 
 const Layout = () => {
   const location = useLocation();
@@ -20,7 +21,6 @@ const Layout = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Conditionally render the Header */}
       {!isPlanningItinerary && <Header />}
       <main className="flex-grow">
         <Outlet />
@@ -34,7 +34,14 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<RootPage />} />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <RootPage />
+            </PublicRoute>
+          }
+        />
         
         {/* Public Routes */}
         <Route
@@ -55,6 +62,12 @@ const App = () => {
         />
         
         {/* Protected Routes */}
+        <Route
+          path="preference"
+          element={
+              <CategorySelector />
+          }
+        />
         <Route
           path="home"
           element={
