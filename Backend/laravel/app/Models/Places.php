@@ -18,7 +18,7 @@ class Places extends Model
         'destination_id',
         'category_id',
         'place_name',
-        'description',
+        'place_description',
         'location',
         'place_rating',
         'place_picture',

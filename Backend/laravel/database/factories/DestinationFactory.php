@@ -20,7 +20,6 @@ class DestinationFactory extends Factory
             'destination_id' => $this->faker->unique()->randomNumber(5), 
             'destination_name' => $this->faker->randomElement(['Bali', 'Tokyo', 'Paris', 'New York', 'Sydney']),
             'description' => $this->faker->paragraph(),
-            'content' => $this->faker->paragraph(),
             'destination_picture' => $this->faker->imageUrl(),
             'destination_location' => $this->faker->address(),
             'operational' => $this->faker->time(),

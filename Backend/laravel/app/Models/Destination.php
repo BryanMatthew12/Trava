@@ -18,7 +18,7 @@ class Destination extends Model
 
     protected $fillable = [
         'itinerary_id',
-        'content',
+        'description',
         'picture',
         'location',
         'operational',
