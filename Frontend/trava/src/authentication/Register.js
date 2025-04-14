@@ -10,6 +10,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+<<<<<<< HEAD
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState({ email: "", password: "", confirmPassword: "" });
 
@@ -18,6 +19,17 @@ const Register = () => {
     setError({ email: "", password: "", confirmPassword: "" });
   
 
+=======
+  const [error, setError] = useState({ email: "", password: "" });
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+  
+    // Reset errors
+    setError({ email: "", password: "", confirmPassword: "" });
+  
+    // Simple validation
+>>>>>>> a71e7607833731f0962e08f95507a09601e0b286
     if (!email) {
       setError((prev) => ({ ...prev, email: "Please enter your email address" }));
       return;
@@ -36,11 +48,21 @@ const Register = () => {
       return;
     }
   
+<<<<<<< HEAD
     try {
       await register(name, email, password, confirmPassword, dispatch, navigate);
     } catch (error) {
       console.error("Registration failed:", error.message);
     }finally{
+=======
+    // Call the register API function
+    try {
+      await register(name, email, password, confirmPassword, dispatch, navigate);
+      // navigate("/preference"); // Navigate to /preference only on success
+    } catch (error) {
+      console.error("Registration failed:", error.message);
+    } finally {
+>>>>>>> a71e7607833731f0962e08f95507a09601e0b286
       navigate("/preference");
     }
   };
