@@ -16,7 +16,7 @@ const PlanningItinerary = () => {
       alert('Please fill in all fields before continuing.');
       return;
     }
-    navigate('/PlanningItinerary');
+    navigate('/PlanningItinerary?source=header');
   };
 
   return (
