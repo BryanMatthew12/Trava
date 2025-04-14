@@ -14,7 +14,32 @@ class ItineraryController extends Controller
      */
     public function index()
     {
-        return Itinerary::all();
+        // Check if the 'itinerary_id' query parameter is present
+        $itineraryId = request()->query('itinerary_id');
+    
+        if ($itineraryId) {
+            // Filter itineraries by itinerary_id if the parameter is provided
+            $itinerary = Itinerary::where('itinerary_id', $itineraryId)->first();
+        } else {
+            // Return all itineraries if no itinerary_id is provided
+            $itinerary = Itinerary::all();
+        }
+    
+        return response()->json($itinerary);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($itineraries_id)
+    {
+        $itinerary = Itinerary::find($itineraries_id);
+
+        if (!$itinerary) {
+            return response()->json(['message' => 'Itinerary not found.'], 404);
+        }
+
+        return response()->json($itinerary, 200);
     }
 
     /**
@@ -29,14 +54,6 @@ class ItineraryController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreItineraryRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Itinerary $itinerary)
     {
         //
     }
