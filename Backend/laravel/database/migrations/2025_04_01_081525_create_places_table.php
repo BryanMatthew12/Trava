@@ -13,7 +13,7 @@ class CreatePlacesTable extends Migration
             $table->unsignedBigInteger('destination_id');
             $table->unsignedBigInteger('category_id'); 
             $table->string('place_name'); 
-            $table->text('description')->nullable(); 
+            $table->text('place_description')->nullable(); 
             $table->string('location'); 
             $table->decimal('place_rating', 3, 2);
             $table->string('place_picture');

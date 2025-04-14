@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Destination;
 use App\Services\DestinationService;
 use App\Http\Requests\StoreDestinationRequest;
 use App\Http\Requests\UpdateDestinationRequest;
@@ -82,4 +83,20 @@ class DestinationController extends Controller
 
         return response()->json(['message' => 'Destination deleted successfully']);
     }
+
+    /**
+     * Get destination names.
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+
+        $destinations = Destination::where('destination_name', 'LIKE', "%{$query}%")
+                                ->select('id', 'destination_name')
+                                ->get();
+
+        return response()->json($destinations);
+    }
+
+
 }

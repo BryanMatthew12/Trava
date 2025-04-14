@@ -22,9 +22,8 @@ class ItineraryFactory extends Factory
             'user_id' => User::inRandomOrder()->first()?->user_id ?? User::factory(),
             'start_date' => $this->faker->date(),
             'end_date' => $this->faker->date(),
-            'days' => $this->faker->numberBetween(1, 30),
             'budget' => $this->faker->randomFloat(10000, 100000, 1000000),
-            'description' => $this->faker->paragraph(),
+            'itinerary_description' => $this->faker->paragraph(),
         ];
     }
 }

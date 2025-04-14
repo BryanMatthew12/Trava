@@ -1,41 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/login/register";
-import { token as selectToken } from "../slices/auth/authSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHiking,
-  faSpa,
-  faLandmark,
-  faTree,
-} from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const token = useSelector(selectToken); // Get the token from Redux
-
-  useEffect(() => {
-    if (token) {
-      navigate("/Home"); // Redirect to /Home if token exists
-    }
-  }, [token, navigate]);
-
   const [name, setName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState({ email: "", password: "" });
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState({ email: "", password: "", confirmPassword: "" });
 
   const handleRegister = async (e) => {
     e.preventDefault();
-  
-    // Reset errors
     setError({ email: "", password: "", confirmPassword: "" });
   
-    // Simple validation
+
     if (!email) {
       setError((prev) => ({ ...prev, email: "Please enter your email address" }));
       return;
@@ -67,112 +49,75 @@ const Register = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-            <h1 className="text-xl font-bold text-center mb-6">
-              Sign up to Trava
-            </h1>
+        <h1 className="text-xl font-bold text-center mb-6">Sign up to Trava</h1>
 
-            <form onSubmit={handleRegister}>
-              {/* Name Input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className={`w-full border ${
-                    error.name ? "border-red-500" : "border-gray-300"
-                  } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.name ? "focus:ring-red-500" : "focus:ring-blue-500"
-                  }`}
-                  placeholder="Enter your name"
-                />
-                {error.name && (
-                  <p className="text-red-500 text-sm mt-1">{error.name}</p>
-                )}
-              </div>
+        <form onSubmit={handleRegister}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your name"
+            />
+          </div>
 
-              {/* Email Input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full border ${
-                    error.email ? "border-red-500" : "border-gray-300"
-                  } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.email ? "focus:ring-red-500" : "focus:ring-blue-500"
-                  }`}
-                  placeholder="Enter your email"
-                />
-                {error.email && (
-                  <p className="text-red-500 text-sm mt-1">{error.email}</p>
-                )}
-              </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full border ${
+                error.email ? "border-red-500" : "border-gray-300"
+              } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
+                error.email ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
+              placeholder="Enter your email"
+            />
+            {error.email && <p className="text-red-500 text-sm mt-1">{error.email}</p>}
+          </div>
 
-              {/* Password Input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full border ${
-                    error.password ? "border-red-500" : "border-gray-300"
-                  } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.password ? "focus:ring-red-500" : "focus:ring-blue-500"
-                  }`}
-                  placeholder="Enter your password"
-                />
-                {error.password && (
-                  <p className="text-red-500 text-sm mt-1">{error.password}</p>
-                )}
-              </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`w-full border ${
+                error.password ? "border-red-500" : "border-gray-300"
+              } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
+                error.password ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
+              placeholder="Enter your password"
+            />
+            {error.password && <p className="text-red-500 text-sm mt-1">{error.password}</p>}
+          </div>
 
-              {/* Confirm Password Input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full border ${
-                    error.confirmPassword ? "border-red-500" : "border-gray-300"
-                  } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                    error.confirmPassword
-                      ? "focus:ring-red-500"
-                      : "focus:ring-blue-500"
-                  }`}
-                  placeholder="Confirm your password"
-                />
-                {error.confirmPassword && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {error.confirmPassword}
-                  </p>
-                )}
-              </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`w-full border ${
+                error.confirmPassword ? "border-red-500" : "border-gray-300"
+              } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
+                error.confirmPassword ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
+              placeholder="Confirm your password"
+            />
+            {error.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">{error.confirmPassword}</p>
+            )}
+          </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none"
-              >
-                Sign up with email
-              </button>
-            </form>
-            {/* Footer */}
-            <p className="text-center text-sm text-gray-600 mt-4">
-              Already have an account?{" "}
-              <a href="/login" className="text-blue-500 hover:underline">
-                Log in
-              </a>
-            </p>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+          >
+            Sign up with email
+          </button>
+        </form>
       </div>
     </div>
   );

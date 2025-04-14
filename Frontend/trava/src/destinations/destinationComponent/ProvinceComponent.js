@@ -1,18 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import Select from "react-select";
 import TrendingRow from "./TrendingRow";
 import RowDataProvince from "./RowDataProvince";
 import GemComponent from "./GemComponent";
+import { selectDestinations } from "../../slices/destination/destinationSlice";
+import { fetchPlaces } from "../../api/places/places";
+import { setPlaces } from "../../slices/places/placeSlice";
 
-const ExploreComponent = () => {
-  const [province, setProvince] = useState(1);
+const ExploreComponent = ({dispatch}) => {
+  const destinations = useSelector(selectDestinations);
+  const [selectedProvinceId, setSelectedProvinceId] = useState(null);
+  const [selectedProvinceLabel, setSelectedProvinceLabel] = useState("");
 
-  const provinces = [
-    { id: 1, name: "Bali" },
-    { id: 2, name: "Java" },
-  ];
+  const mappedDestinations = destinations.map((destination) => ({
+    value: destination.id,
+    label: destination.name,
+  }));
 
-  const handleProvinceChange = (event) => {
-    setProvince(Number(event.target.value));
+  useEffect(() => {
+    if (destinations.length > 0) {
+      setSelectedProvinceId(destinations[0].id);
+      setSelectedProvinceLabel(destinations[0].name);
+    }
+  }, [destinations]);
+
+  useEffect(() => {
+        const fetchPlace = async () => {
+          try {
+            const places = await fetchPlaces(selectedProvinceId);
+            dispatch(setPlaces(places));
+          } catch (error) {
+            console.error('Failed to fetch destinations:', error.message);
+          }
+        };
+    
+        fetchPlace();
+      }, [selectedProvinceId]);
+
+  const handleProvinceChange = (selectedOption) => {
+    setSelectedProvinceId(selectedOption?.value || null);
+    setSelectedProvinceLabel(selectedOption?.label || "");
   };
 
   return (
@@ -21,24 +49,28 @@ const ExploreComponent = () => {
 
       <div className="mb-6">
         <div className="flex justify-between items-center">
-          <select
+          <Select
             id="province-select"
-            value={province}
+            options={mappedDestinations}
+            value={mappedDestinations.find(
+              (option) => option.value === selectedProvinceId
+            )}
             onChange={handleProvinceChange}
-            className="border border-gray-300 rounded-lg p-2 text-gray-700"
-          >
-            {provinces.map((prov) => (
-              <option key={prov.id} value={prov.id}>
-                {prov.name}
-              </option>
-            ))}
-          </select>
+            className="w-full"
+            placeholder="Select a province"
+          />
         </div>
-        <RowDataProvince province={province} />
+        {selectedProvinceId && (
+          <RowDataProvince id={selectedProvinceId} />
+        )}
       </div>
 
-      <TrendingRow province={province} />
-      <GemComponent province={province} />
+      {selectedProvinceId && (
+        <>
+          <TrendingRow province={selectedProvinceId} />
+          <GemComponent province={selectedProvinceId} />
+        </>
+      )}
     </div>
   );
 };

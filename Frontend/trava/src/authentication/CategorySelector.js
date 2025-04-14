@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHiking, faUtensils, faShoppingCart, faLandmark, faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { BASE_URL } from '../config'; // Adjust the import based on your project structure
+import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 
 const CategorySelector = () => {
@@ -29,7 +29,6 @@ const CategorySelector = () => {
 
   const handleSubmit = async () => {
     try {
-      // If no categories are selected, default to all categories (1-5)
       const categoriesToSave =
         selectedCategories.length === 0
           ? categories.map((category) => category.id)
@@ -51,7 +50,8 @@ const CategorySelector = () => {
     } catch (error) {
       console.error('Error saving categories:', error);
       alert('Failed to save categories. Please try again.');
-    }
+    }finally {
+      navigate("/Home");}
   };
 
   return (

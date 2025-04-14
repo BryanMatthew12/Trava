@@ -6,15 +6,15 @@ import ThreadsGrid from './threadsComponent/ThreadsGrid';
 import SortDropdown from './threadsComponent/SortDropdown'; // Import SortDropdown
 import ThreadDetails from './threadsComponent/ThreadDetails'; // Import ThreadDetails
 import axios from 'axios';
-import { BASE_URL } from '../config'; // Import the base URL
+import { BASE_URL } from '../config';
 
 const Threads = () => {
-  const [threads, setThreads] = useState([]); // State to store threads data
-  const [loading, setLoading] = useState(false); // State to handle loading
-  const [page, setPage] = useState(1); // Current page for pagination
-  const [hasMore, setHasMore] = useState(true); // Whether there are more threads to load
-  const [query, setQuery] = useState(''); // Search query for filtering threads
-  const [sortOption, setSortOption] = useState(1); // Default to "Most Recent"
+  const [threads, setThreads] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [query, setQuery] = useState('');
+  const [sortOption, setSortOption] = useState(1);
 
   const token = useSelector((state) => state.auth.token); // Get the token from the Redux store
   console.log('Token:', token); // Debug: Check if the token is being retrieved correctly
@@ -27,14 +27,14 @@ const Threads = () => {
   
   // Fetch threads from the API
   const fetchThreads = async (page, query = '', sortOption = 1) => {
-    setLoading(true); // Set loading to true while fetching
+    setLoading(true);
     try {
       const response = await axios.get(
         `${BASE_URL}/v1/threads?page=${page}&title=${query}&sort_by=${sortOption}`,
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Use the token from the Redux store
+            'Authorization': `Bearer ${token}`,
           },
         }
       );
@@ -42,51 +42,48 @@ const Threads = () => {
       const newThreads = response.data.data; // Assuming the API response has a "data" field
       console.log(newThreads); // Debug: Check if itineraries_id exists in the response
       if (page === 1) {
-        setThreads(newThreads); // Replace threads if it's the first page
+        setThreads(newThreads);
       } else {
-        setThreads((prevThreads) => [...prevThreads, ...newThreads]); // Append new threads to the existing list
+        setThreads((prevThreads) => [...prevThreads, ...newThreads]);
       }
-      setHasMore(page < response.data.last_page); // Check if there are more pages to load
+      setHasMore(page < response.data.last_page);
     } catch (error) {
       console.error('Error fetching threads:', error);
     } finally {
-      setLoading(false); // Set loading to false after fetching
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchThreads(page, query, sortOption); // Fetch threads when the component mounts or page/query/sortOption changes
+    fetchThreads(page, query, sortOption);
   }, [page, query, sortOption]);
 
-  // Handle sorting
   const handleSortChange = (selectedOption) => {
-    setSortOption(selectedOption.value); // Update the sort option
-    setPage(1); // Reset to the first page
-    setHasMore(true); // Re-enable lazy loading
+    setSortOption(selectedOption.value);
+    setPage(1);
+    setHasMore(true);
   };
 
-  // Handle search results from Header
   const handleSearchResults = (searchQuery) => {
-    setQuery(searchQuery); // Update the query state
-    setPage(1); // Reset to the first page
-    setHasMore(true); // Re-enable lazy loading
+    setQuery(searchQuery);
+    setPage(1);
+    setHasMore(true);
   };
 
-  // Handle scroll event for lazy loading
   const handleScroll = () => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
       document.documentElement.offsetHeight - 100
     ) {
       if (hasMore && !loading) {
-        setPage((prevPage) => prevPage + 1); // Load the next page
+        setPage((prevPage) => prevPage + 1);
       }
     }
   };
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll); // Cleanup on unmount
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [hasMore, loading]);
 
   return (
