@@ -13,6 +13,7 @@ const placeSlice = createSlice({
         name: place.place_name,
         description: place.description,
         category: place.category_id,
+        category: place.category_id,
         place_picture: place.place_picture,
         location: place.location,
         price: place.place_est_price,
