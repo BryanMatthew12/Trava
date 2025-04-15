@@ -8,7 +8,7 @@ import { selectDestinations } from "../../slices/destination/destinationSlice";
 import { fetchPlaces } from "../../api/places/places";
 import { setPlaces } from "../../slices/places/placeSlice";
 
-const ExploreComponent = ({dispatch}) => {
+const ExploreComponent = ({ dispatch }) => {
   const destinations = useSelector(selectDestinations);
   const [selectedProvinceId, setSelectedProvinceId] = useState(null);
   const [selectedProvinceLabel, setSelectedProvinceLabel] = useState("");
@@ -26,17 +26,17 @@ const ExploreComponent = ({dispatch}) => {
   }, [destinations]);
 
   useEffect(() => {
-        const fetchPlace = async () => {
-          try {
-            const places = await fetchPlaces(selectedProvinceId);
-            dispatch(setPlaces(places));
-          } catch (error) {
-            console.error('Failed to fetch destinations:', error.message);
-          }
-        };
-    
-        fetchPlace();
-      }, [selectedProvinceId]);
+    const fetchPlace = async () => {
+      try {
+        const places = await fetchPlaces(selectedProvinceId);
+        dispatch(setPlaces(places));
+      } catch (error) {
+        console.error("Failed to fetch destinations:", error.message);
+      }
+    };
+
+    fetchPlace();
+  }, [selectedProvinceId]);
 
   const handleProvinceChange = (selectedOption) => {
     setSelectedProvinceId(selectedOption?.value || null);
@@ -61,13 +61,13 @@ const ExploreComponent = ({dispatch}) => {
           />
         </div>
         {selectedProvinceId && (
-          <RowDataProvince />
+          <RowDataProvince id={selectedProvinceId} />
         )}
       </div>
 
       {selectedProvinceId && (
         <>
-          <TrendingRow province={selectedProvinceId} />
+          <TrendingRow provinceId={selectedProvinceId} provinceName={selectedProvinceLabel} />
           <GemComponent province={selectedProvinceId} />
         </>
       )}

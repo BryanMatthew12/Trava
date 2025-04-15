@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from "react";
-import javalandscape from "../../assets/img/javalandscape.jpg";
-import balilandscape from "../../assets/img/carousel-java-1.jpeg";
+import { useSelector } from "react-redux";
+import { selectPlaces } from "../../slices/places/placeSlice";
+import { useNavigate } from "react-router-dom";
 
-const baliDes = [
-  { image: balilandscape, title: "Trending Bali 1", desc: "Beautiful place to visit" },
-  { image: balilandscape, title: "Trending Bali 2", desc: "Enjoy the scenic views" },
-  { image: balilandscape, title: "Trending Bali 3", desc: "Great cultural experience" },
-  { image: balilandscape, title: "Trending Bali 4", desc: "Perfect for relaxation" },
-  { image: balilandscape, title: "Trending Bali 5", desc: "Adventure awaits" },
-];
-
-const javaDes = [
-  { image: javalandscape, title: "Trending Java 1", desc: "Beautiful place to visit" },
-  { image: javalandscape, title: "Trending Java 2", desc: "Enjoy the scenic views" },
-  { image: javalandscape, title: "Trending Java 3", desc: "Great cultural experience" },
-  { image: javalandscape, title: "Trending Java 4", desc: "Perfect for relaxation" },
-  { image: javalandscape, title: "Trending Java 5", desc: "Adventure awaits" },
-];
-
-const RowDataTrending = ({ province }) => {
+const RowDataTrending = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
+  const allPlaces = useSelector(selectPlaces); // Fetch all places from Redux
 
-  const data = province === 1 ? baliDes : javaDes;
+  // Sort all places by rating in descending order and get the top 5
+  const top5Places = React.useMemo(() => {
+    if (!allPlaces || allPlaces.length === 0) {
+      console.log("No places data available.");
+      return [];
+    }
+
+    // Sort all places by rating in descending order
+    const sortedPlaces = [...allPlaces]
+      .sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0)) // Handle missing or invalid ratings
+      .slice(0, 5); // Take the top 5 places
+    return sortedPlaces;
+  }, [allPlaces]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -33,23 +32,32 @@ const RowDataTrending = ({ province }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleItemClick = (place) => {
+    navigate(`/PlanningItinerary?source=destination&params=${place.id}`);
+  };
+
   if (isMobile) {
     return (
       <div className="w-full overflow-x-auto">
         <div className="flex gap-4 p-4">
-          {data.map((item, index) => (
+          {top5Places.map((place, index) => (
             <div
               key={index}
-              className="flex-shrink-0 w-64 border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center"
+              onClick={() => handleItemClick(place)}
+              className="flex-shrink-0 w-64 border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
             >
               <img
-                src={item.image}
-                alt={item.title}
+                src={place.place_picture}
+                alt={place.name}
                 className="w-full h-48 object-cover rounded-lg"
               />
               <h2 className="text-lg font-bold mt-2 text-center truncate w-full">
-                {item.title}
+                {place.name}
               </h2>
+              <p className="text-gray-600 text-center text-sm truncate w-full">
+                {place.description}
+              </p>
+              <p className="text-sm text-gray-600">{place.rating} ★</p>
             </div>
           ))}
         </div>
@@ -59,19 +67,24 @@ const RowDataTrending = ({ province }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 w-full">
-      {data.map((item, index) => (
+      {top5Places.map((place, index) => (
         <div
           key={index}
-          className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center"
+          onClick={() => handleItemClick(place)}
+          className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
         >
           <img
-            src={item.image}
-            alt={item.title}
+            src={place.place_picture}
+            alt={place.name}
             className="w-full h-48 object-cover rounded-lg"
           />
           <h2 className="text-lg font-bold mt-2 text-center truncate w-full">
-            {item.title}
+            {place.name}
           </h2>
+          <p className="text-gray-600 text-center text-sm truncate w-full">
+            {place.description}
+          </p>
+          <p className="text-sm text-gray-600">{place.rating} ★</p>
         </div>
       ))}
     </div>
