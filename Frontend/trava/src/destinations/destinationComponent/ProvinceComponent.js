@@ -61,7 +61,7 @@ const ExploreComponent = ({dispatch}) => {
           />
         </div>
         {selectedProvinceId && (
-          <RowDataProvince id={selectedProvinceId} />
+          <RowDataProvince />
         )}
       </div>
 
