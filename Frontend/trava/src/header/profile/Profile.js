@@ -1,13 +1,13 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout, name } from '../../slices/auth/authSlice';
+import { logout, selectName } from '../../slices/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const userName = useSelector(name);
+  const userName = useSelector(selectName);
 
   const handleLogout = () => {
     dispatch(logout());

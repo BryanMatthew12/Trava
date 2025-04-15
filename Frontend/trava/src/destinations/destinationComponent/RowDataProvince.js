@@ -4,7 +4,7 @@ import { selectPlaces } from "../../slices/places/placeSlice";
 import { useSelector } from "react-redux";
 
 
-const RowDataProvince = ({ id }) => {
+const RowDataProvince = ({}) => {
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const places = useSelector(selectPlaces);
