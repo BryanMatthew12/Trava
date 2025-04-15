@@ -127,7 +127,7 @@ const App = () => {
           }
         />
         <Route
-          path="trending-more"
+          path="trendingmore"
           element={
             <ProtectedRoute>
               <TrendingMore />

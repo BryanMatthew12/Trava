@@ -6,7 +6,7 @@ const TrendingRow = ({ provinceId, provinceName }) => {
   const navigate = useNavigate();
 
   const handleSeeAllClick = () => {
-    navigate(`/trending-more?province=${provinceName}`); // Pass province name as a query parameter
+    navigate(`/TrendingMore?province=${provinceName}`); // Pass province name as a query parameter
   };
 
   return (
