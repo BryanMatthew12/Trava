@@ -7,6 +7,7 @@ use App\Models\Destination;
 use App\Http\Requests\StoreItineraryRequest;
 use App\Http\Requests\UpdateItineraryRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ItineraryController extends Controller
 {
@@ -60,7 +61,20 @@ class ItineraryController extends Controller
      */
     public function store(StoreItineraryRequest $request)
     {
-        dd(auth()->user()); // <- check this
+        // $user = auth('api')->user();
+
+        // if (!$user) {
+        //     return response()->json(['message' => 'Unauthorized'], 401);
+        // }
+
+        // if ($user->role !== 'user') {
+        //     return response()->json(['message' => 'Forbidden - Only user can access'], 403);
+        // }
+        // dd(Auth::user()->role);
+
+        // if (Auth::user()->role != 'user' && Auth::user()->role != 1) {
+        //     return response()->json(['message' => 'Unauthorized'], 403);
+        // }
 
         // Validate Request
         $validated = $request->validated();
