@@ -17,7 +17,6 @@ const Threads = () => {
   const [sortOption, setSortOption] = useState(1);
 
   const token = useSelector((state) => state.auth.token); // Get the token from the Redux store
-  console.log('Token:', token); // Debug: Check if the token is being retrieved correctly
   const location = useLocation(); // Get the current location
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get('source');
@@ -40,7 +39,6 @@ const Threads = () => {
       );
 
       const newThreads = response.data.data; // Assuming the API response has a "data" field
-      console.log(newThreads); // Debug: Check if itineraries_id exists in the response
       if (page === 1) {
         setThreads(newThreads);
       } else {
