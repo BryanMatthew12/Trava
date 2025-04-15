@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchPlaces } from "../../api/places/places";
 import { selectPlaces } from "../../slices/places/placeSlice";
 import { useSelector } from "react-redux";
 
 
-const RowDataProvince = ({}) => {
+const RowDataProvince = ({ id }) => {
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const places = useSelector(selectPlaces);
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,9 +20,10 @@ const RowDataProvince = ({}) => {
   }, []);
 
 
-  const handleItemClick = (item) => {
-    navigate('/PlanningItinerary?source=rowdataprovince')
+  const handleItemClick = (place) => {
+    navigate(`/PlanningItinerary?source=destination&params=${place.id}`);
   };
+  
 
   if (isMobile) {
     return (

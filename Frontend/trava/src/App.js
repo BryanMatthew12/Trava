@@ -7,13 +7,14 @@ import Home from './home/Home';
 import Threads from './threads/Threads';
 import Destinations from './destinations/Destinations';
 import PlanningItinerary from './planItinerary/PlanningItinerary';
-import PrePlanningItinerary from './planItinerary/prePlanningItinerary';
+import PrePlanningItinerary from './planItinerary/PrePlanningItinerary';
 import Register from './authentication/Register';
 import Login from './authentication/Login';
 import Profile from './header/profile/Profile';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicRoute from './routes/PublicRoute';
 import CategorySelector from './authentication/CategorySelector';
+import ThreadsPage from './threads/threadsComponent/ThreadsPage'; // Import ThreadsPage
 
 const Layout = () => {
   const location = useLocation();
@@ -93,6 +94,14 @@ const App = () => {
           }
         />
         <Route
+          path="threads/details"
+          element={
+            <ProtectedRoute>
+              <ThreadsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="planningitinerary"
           element={
             <ProtectedRoute>
@@ -101,7 +110,7 @@ const App = () => {
           }
         />
         <Route
-          path="preplanningitinerary"
+          path="PrePlanningItinerary"
           element={
             <ProtectedRoute>
               <PrePlanningItinerary />
