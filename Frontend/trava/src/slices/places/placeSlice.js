@@ -11,8 +11,11 @@ const placeSlice = createSlice({
         id: place.place_id,
         name: place.place_name,
         description: place.description,
-        // content: destination.content,
+        category: place.category_id,
         place_picture: place.place_picture,
+        location: place.location,
+        price: place.place_est_price,
+        rating: place.place_rating,
       }));
     },
     clearDestinations: (state) => {

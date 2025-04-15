@@ -6,6 +6,8 @@ const authSlice = createSlice({
   initialState: {
     token: Cookies.get('token') || null,
     name: null,
+    user_id: null,
+    role: null,
   },
   reducers: {
     setToken: (state, action) => {
@@ -15,15 +17,28 @@ const authSlice = createSlice({
     setName: (state, action) => {
       state.name = action.payload;
     },
+    setUserId: (state, action) => {
+      state.user_id = action.payload;
+    },
+    setRole: (state, action) => {
+      state.role = action.payload;
+    },
     logout: (state) => {
       state.token = null;
       state.name = null;
+      state.user_id = null;
+      state.role = null;
       Cookies.remove('token');
     },
   },
 });
 
-export const { setToken, setName, logout } = authSlice.actions;
-export const token = (state) => state.auth.token;
-export const name = (state) => state.auth.name;
+export const { setToken, setName, setUserId, setRole, logout } = authSlice.actions;
+
+// Selectors
+export const selectToken = (state) => state.auth.token;
+export const selectName = (state) => state.auth.name;
+export const selectUserId = (state) => state.auth.user_id;
+export const selectRole = (state) => state.auth.role;
+
 export default authSlice.reducer;

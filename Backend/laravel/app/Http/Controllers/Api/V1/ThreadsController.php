@@ -26,10 +26,16 @@ class ThreadsController extends Controller
             'title' => $request->input('title'), // Get the title from the query string
             'sort_by' => $request->input('sort_by'),
             'order' => $request->input('order', 'desc'), // Default to descending order
+            'user_id' => $request->input('user_id'), // Get the user_id from the query string
         ];
-
+    
         $threadsQuery = $this->threadsService->getThreads($filters);
-
+    
+        // Apply filtering by user_id if provided
+        if (!empty($filters['user_id'])) {
+            $threadsQuery->where('user_id', $filters['user_id']);
+        }
+    
         // Apply sorting
         if ($filters['sort_by'] == 2) {
             $threadsQuery->orderBy('views', $filters['order']);
@@ -38,9 +44,9 @@ class ThreadsController extends Controller
         } else {
             $threadsQuery->orderBy('created_at', $filters['order']); // Default to "Most Recent"
         }
-
+    
         $threads = $threadsQuery->paginate(12);
-
+    
         return response()->json([
             'message' => 'Threads retrieved successfully!',
             'data' => $threads->items(),
@@ -48,7 +54,6 @@ class ThreadsController extends Controller
             'last_page' => $threads->lastPage(),
         ]);
     }
-
     /**
      * Store a newly created resource in storage.
      */
