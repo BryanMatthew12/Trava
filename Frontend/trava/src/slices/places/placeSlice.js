@@ -14,7 +14,7 @@ const placeSlice = createSlice({
         // content: destination.content,
         place_picture: place.place_picture,
       }));
-      console.log(state); // Log the mapped destinations
+      console.log('Places set:', state.places); // Log the updated places
     },
     clearDestinations: (state) => {
       state.places = []; // Clear the destinations
