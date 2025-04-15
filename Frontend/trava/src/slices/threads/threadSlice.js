@@ -3,31 +3,31 @@ import { createSlice } from '@reduxjs/toolkit';
 const threadSlice = createSlice({
   name: 'threads',
   initialState: {
-    threads: [],
+    threads: [], // Initialize threads as an empty array
   },
   reducers: {
     setThreads: (state, action) => {
       state.threads = action.payload.map((thread) => ({
+        user_id: thread.user_id,
         id: thread.thread_id,
-        name: thread.thread_title,
+        title: thread.thread_title,
         description: thread.thread_content,
         picture: thread.thread_picture,
         likes: thread.likes,
         views: thread.views,
-        comments: thread.comments,
       }));
     },
     clearThreads: (state) => {
-      state.places = []; // Clear the destinations
+      state.threads = []; // Clear the threads
     },
   },
 });
 
 export const { setThreads, clearThreads } = threadSlice.actions;
 
+// Selectors
 export const selectThreads = (state) => state.threads.threads;
-
-export const selectThreadById = (id) => (state) =>
-  state.places.places.find((place) => place.id === id);
+export const selectThreadsByUserId = (userId) => (state) =>
+  state.threads.threads.filter((thread) => thread.user_id === userId);
 
 export default threadSlice.reducer;
