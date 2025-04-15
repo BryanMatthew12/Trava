@@ -1,4 +1,4 @@
-import { setToken, setName } from "../../slices/auth/authSlice";
+import { setToken, setName, setUserId, setRole } from "../../slices/auth/authSlice";
 import { BASE_URL } from "../../config";
 import axios from "axios";
 
@@ -14,6 +14,8 @@ export const register = async (name, email, password, confirmPassword, dispatch,
     if (response.data && response.data.token) {
       dispatch(setToken(response.data.token));
       dispatch(setName(response.data.user.username));
+      dispatch(setUserId(response.data.user.user_id));
+      dispatch(setRole(response.data.user.role));
       return response.data;
     } else {
       throw new Error("Registration failed: Token not found");

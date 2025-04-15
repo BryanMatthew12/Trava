@@ -14,20 +14,24 @@ class ItineraryController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        // Check if the 'itinerary_id' query parameter is present
-        $itineraryId = request()->query('itinerary_id');
-    
-        if ($itineraryId) {
-            // Filter itineraries by itinerary_id if the parameter is provided
-            $itinerary = Itinerary::where('itinerary_id', $itineraryId)->first();
-        } else {
-            // Return all itineraries if no itinerary_id is provided
-            $itinerary = Itinerary::all();
-        }
-    
-        return response()->json($itinerary);
+{
+    // Check if the 'itinerary_id' or 'user_id' query parameter is present
+    $itineraryId = request()->query('itinerary_id');
+    $userId = request()->query('user_id');
+
+    if ($itineraryId) {
+        // Filter itineraries by itinerary_id if the parameter is provided
+        $itinerary = Itinerary::where('itinerary_id', $itineraryId)->first();
+    } elseif ($userId) {
+        // Filter itineraries by user_id if the parameter is provided
+        $itinerary = Itinerary::where('user_id', $userId)->get();
+    } else {
+        // Return all itineraries if no parameters are provided
+        $itinerary = Itinerary::all();
     }
+
+    return response()->json($itinerary);
+}
 
     /**
      * Display the specified resource.
