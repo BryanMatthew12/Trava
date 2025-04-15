@@ -25,7 +25,6 @@ return new class extends Migration
             // Foreign Key Constraint
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
 
-            // $table->foreign('destination_id')->references('destination_id')->on('destinations')->onDelete('cascade');
         });
     }
 
@@ -35,8 +34,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('itineraries');
-        // Schema::table('itineraries', function (Blueprint $table) {
-        //     $table->dropColumn('days');
-        // });
     }
 };

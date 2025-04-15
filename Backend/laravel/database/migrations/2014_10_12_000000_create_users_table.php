@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('user_id'); 
             $table->string('username')->default('guest');
-            $table->string('role')->default('user'); // Default role set to 'user'
+            $table->unsignedBigInteger('role_id')->default(2); // Default to 'user' role
             $table->string('email');
             $table->string('password');
             $table->timestamps();
+
+            $table->foreign('role_id')->references('role_id')->on('roles')->onDelete('cascade');
         });
     }
 
@@ -26,6 +28,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['role_id']);
+            $table->dropColumn('role_id');
+        });
+        
         Schema::dropIfExists('users');
+
     }
 };

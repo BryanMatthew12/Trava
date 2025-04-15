@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Role;
 use Illuminate\Support\Str;
 
 /**
@@ -17,13 +18,13 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $role = $this->faker->randomElement(['U', 'A']);
+        $role = Role::inRandomOrder()->first();
 
         return [
             'username' => $this->faker->username(),
-            'role' => $role,
             'email' => $this->faker->email(),
             'password' => $this->faker->password(),
+            'role_id' => $role ? $role->role_id : null, // fallback to null if no roles exist
         ];
     }
 

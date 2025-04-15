@@ -22,16 +22,21 @@ class User extends Authenticatable implements JWTSubject
     protected $keyType = 'integer'; // Match bigIncrements() type 
 
     protected $fillable = [
-        'user_id', 
+        'user_id',
+        'role_id', 
         'username',
         'email', 
         'password', 
-        'role'
     ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'role_id');
+    }
 
     public function isAdmin()
     {
-        return $this->role === 'admin';
+        return $this->role->name === 'admin';
     }
 
     public function admin()
@@ -68,7 +73,7 @@ class User extends Authenticatable implements JWTSubject
         return [
             'username' => $this->username,
             'email' => $this->email,
-            'role' => $this->role,
+            'role' => $this->role->name,
         ]; // Add any custom claims if needed
     }
 }

@@ -13,7 +13,6 @@ use App\Http\Controllers\Api\V1\PlacesController;
 use App\Http\Controllers\Api\V1\ThreadsController;
 use App\Http\Controllers\Auth\LoginRegisterController;
 use App\Http\Controllers\Api\V1\UserPreferenceController;
-use App\Http\Controllers\Api\V1\CategoryController;
 
 
 /*
@@ -39,38 +38,57 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('v1')->group(function () {
-        Route::apiResource('users', UserController::class);
-        Route::apiResource('itineraries', ItineraryController::class);
-        Route::apiResource('destinations', DestinationController::class);
-        Route::apiResource('places', PlacesController::class);
-        Route::apiResource('threads', ThreadsController::class);
-        Route::apiResource('comments', CommentController::class);
-        Route::apiResource('days', DayController::class);
-        Route::apiResource('admins', AdminController::class);
-        Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
-        Route::apiResource('user-preferences', UserPreferenceController::class);
+        Route::middleware(['role:1,2'])->group(function () {
+            Route::apiResource('itineraries', ItineraryController::class);
+            Route::apiResource('destinations', DestinationController::class);
+            Route::apiResource('places', PlacesController::class);
+            Route::apiResource('threads', ThreadsController::class);
+            Route::apiResource('comments', CommentController::class);
+            Route::apiResource('days', DayController::class);
+            Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
+            Route::apiResource('user-preferences', UserPreferenceController::class);
+        });
 
-        // Route to create itineraries
-        Route::post('/v1/itineraries', [ItineraryController::class, 'store']);
+        // Routes accessible only by 'admin' role
+        Route::middleware(['role:admin'])->group(function () {
+            Route::apiResource('admins', AdminController::class);
+        });
+
+        // Routes accessible only by 'user' role
+        Route::middleware(['role:user'])->group(function () {
+            Route::apiResource('users', UserController::class);
+        });
 
         // Route to search destinations names
-        Route::get('/v1/destinations/search', [DestinationController::class, 'search']);
+        Route::get('destinations/search', [DestinationController::class, 'search']);
 
         // Routes to check preference
-        // Route::get('/v1/users/{id}/preferences', [UserController::class, 'getPreferences']);
-        Route::get('/v1/user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);
+        Route::get('user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);
 
-        // Route to get all places 
+        // Route to get all places
         Route::get('/places/{id}', [PlacesController::class, 'show']);
-
     });
+
     // Logout route
     Route::post('auth/logout', [LoginRegisterController::class, 'logout']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/categories', [CategoryController::class, 'store']);
+Route::prefix('public')->group(function () {
+    Route::get('/itineraries', [ItineraryController::class, 'index']); // Publicly accessible itineraries
 });
+
+// Route::middleware(['auth:api', 'role:admin'])->group(function () {
+//     // Routes accessible only by users with the 'admin' role
+//     Route::apiResource('admins', AdminController::class);
+// });
+
+// Route::middleware(['auth:api', 'role:user'])->group(function () {
+//     // Routes accessible only by users with the 'user' role
+//     Route::apiResource('users', UserController::class);
+// });
+
+// Route to post new itineraries
+// Route::middleware(['auth:api', 'role:2'])->post('/itineraries', [ItineraryController::class, 'store']);
 
 // Route to get the authenticated user
 Route::get('/user', function (Request $request) {
