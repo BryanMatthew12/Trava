@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PlanItinerary from './contentPage/PlanItinerary';
 import DestinationInfo from './contentPage/DestinationInfo';
-import { getPlaceById } from '../api/places/getPlaceById';
+import { selectPlacesById } from '../slices/places/placeSlice';
+import { useSelector } from 'react-redux';
 
 const categoryMapping = {
   1: 'Adventure',
@@ -13,37 +14,22 @@ const categoryMapping = {
 };
 
 const PlanningItinerary = () => {
-  const [place, setPlace] = useState(null);
 
   const location = useLocation();
 
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get('source'); // Get the source
-  const params = queryParams.get('params'); // Get the params
+  const params = Number(queryParams.get('params')); // Convert params to a number
+  const place = useSelector(selectPlacesById(params));
 
   const sourceComponents = {
     header: PlanItinerary,
     destination: DestinationInfo,
   };
 
+
+
   const ContentComponent = sourceComponents[source] || (() => <div>Invalid source</div>);
-
-  useEffect(() => {
-    const fetchPlace = async () => {
-      try {
-        const placeData = await getPlaceById(params);
-        if (Array.isArray(placeData) && placeData.length > 0) {
-          setPlace(placeData[0]); // Extract the first element if it's an array
-        } else {
-          setPlace(placeData); // Set directly if it's already an object
-        }
-      } catch (error) {
-        console.error('Failed to fetch place:', error.message);
-      }
-    };
-
-    fetchPlace();
-  }, [params]);
 
   return (
     <div className="flex h-screen">
