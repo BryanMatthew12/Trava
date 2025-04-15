@@ -7,11 +7,8 @@ const PublicRoute = ({ children }) => {
   const userToken = useSelector(selectToken);
 
   if (userToken) {
-    console.log('Token exists:', userToken);
     return <Navigate to="/home" replace />;
   }
-
-  console.log('No token, rendering public route:', userToken);
 
   return children;
 };

@@ -37,7 +37,6 @@ const PlanningItinerary = () => {
         } else {
           setPlace(placeData); // Set directly if it's already an object
         }
-        console.log('Place data:', placeData);
       } catch (error) {
         console.error('Failed to fetch place:', error.message);
       }

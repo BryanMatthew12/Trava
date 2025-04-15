@@ -10,7 +10,6 @@ export const login = async (email, password, dispatch, navigate) => {
     });
 
     if (response.data) {
-      console.log(response.data.user.username);
       dispatch(setToken(response.data.token));
       dispatch(setName(response.data.user.username));
       navigate('/home'); 

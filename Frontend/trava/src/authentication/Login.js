@@ -33,7 +33,6 @@ const Login = () => {
 
     try {
       await login(email, password, dispatch, navigate);
-      console.log('Login successful');
     } catch (error) {
       console.error('Login error:', error.message);
       setError((prev) => ({ ...prev, email: error.message }));

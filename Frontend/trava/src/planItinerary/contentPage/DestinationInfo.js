@@ -1,7 +1,6 @@
 import React from 'react';
 
 const DestinationInfo = ({ place, categoryMapping }) => {
-  console.log('DestinationInfo place:', place); // Log the place data
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">{place.place_name}</h1>
