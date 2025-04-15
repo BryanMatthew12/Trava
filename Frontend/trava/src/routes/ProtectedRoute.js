@@ -7,7 +7,6 @@ const ProtectedRoute = ({ children }) => {
   const userToken = useSelector(selectToken);
 
   if (!userToken) {
-    console.log('No token, redirecting to login');
     return <Navigate to="/Login" replace />;
   }
 
