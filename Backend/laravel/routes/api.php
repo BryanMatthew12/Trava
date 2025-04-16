@@ -50,12 +50,12 @@ Route::middleware(['auth:api'])->group(function () {
         });
 
         // Routes accessible only by 'admin' role
-        Route::middleware(['role:admin'])->group(function () {
+        Route::middleware(['role:1'])->group(function () {
             Route::apiResource('admins', AdminController::class);
         });
 
         // Routes accessible only by 'user' role
-        Route::middleware(['role:user'])->group(function () {
+        Route::middleware(['role:2'])->group(function () {
             Route::apiResource('users', UserController::class);
         });
 
