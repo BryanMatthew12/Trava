@@ -1,54 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../../config'; // Import the base URL
+import { fetchItineraryById } from '../../api/itinerary/fetchItineraryById';
+import { getThreadById } from '../../api/thread/getThreadById';
+import ThreadContent from './threadsPage/ThreadContent';
 
 const ThreadsPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const itineraries_id = queryParams.get('source'); // Get the source (itineraries_id) from the query parameters
+  const threads_id = queryParams.get('threads_id');
+  const itineraries_id = queryParams.get('itineraries_id');
 
   const [itinerary, setItinerary] = useState(null);
+  const [thread, setThread] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchItinerary = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/v1/itineraries/${itineraries_id}`);
-        setItinerary(response.data); // Assuming the API returns the itinerary details
+        const [itineraryData, threadResponse] = await Promise.all([
+          fetchItineraryById(itineraries_id),
+          getThreadById(threads_id),
+        ]);
+
+        setItinerary(itineraryData);
+        setThread(threadResponse.data[0]);
       } catch (error) {
-        console.error('Error fetching itinerary:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (itineraries_id) {
-      fetchItinerary();
+    if (itineraries_id && threads_id) {
+      fetchData();
     }
-  }, [itineraries_id]);
+  }, [itineraries_id, threads_id]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-lg font-semibold text-gray-600">Loading...</div>
+      </div>
+    );
   }
 
-  if (!itinerary) {
-    return <div>Itinerary not found.</div>;
+  if (!itinerary || !thread) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-lg font-semibold text-red-500">Data not found.</div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">{itinerary.title}</h1>
-      <img
-        src={itinerary.picture}
-        alt={itinerary.title}
-        className="w-full h-64 object-cover mb-4"
-      />
-      <p className="text-gray-700 mb-4">{itinerary.description}</p>
-      <p className="text-sm text-gray-500">Budget: ${itinerary.budget}</p>
-      <p className="text-sm text-gray-500">Start Date: {itinerary.start_date}</p>
-      <p className="text-sm text-gray-500">End Date: {itinerary.end_date}</p>
-    </div>
+    <ThreadContent
+    itinerary={itinerary}
+    thread = {thread}/>
   );
 };
 

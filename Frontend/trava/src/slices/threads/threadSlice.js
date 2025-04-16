@@ -9,6 +9,7 @@ const threadSlice = createSlice({
     setThreads: (state, action) => {
       state.threads = action.payload.map((thread) => ({
         user_id: thread.user_id,
+        itinerary_id: thread.itinerary_id,
         id: thread.thread_id,
         title: thread.thread_title,
         description: thread.thread_content,
