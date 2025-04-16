@@ -35,7 +35,7 @@ const CategorySelector = () => {
           : selectedCategories;
 
       const response = await axios.post(
-        `${BASE_URL}/v1/user-preference`,
+        `${BASE_URL}/v1/user-preferences`,
         {
           category_ids: categoriesToSave,
         },

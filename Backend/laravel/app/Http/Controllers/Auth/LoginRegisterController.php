@@ -46,7 +46,8 @@ class LoginRegisterController extends Controller
         $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'role_id'=> 2,
         ]);
         
         $token = JWTAuth::fromUser($user);
