@@ -47,6 +47,15 @@ Route::middleware(['auth:api'])->group(function () {
             Route::apiResource('days', DayController::class);
             Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
             Route::apiResource('user-preferences', UserPreferenceController::class);
+            
+            // Route to search destinations names
+            Route::get('destinations/search', [DestinationController::class, 'search']);
+
+            // Routes to check preference
+            Route::get('user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);
+
+            // Route to get all places
+            Route::get('/places/{id}', [PlacesController::class, 'show']);
         });
 
         // Routes accessible only by 'admin' role
@@ -59,14 +68,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::apiResource('users', UserController::class);
         });
 
-        // Route to search destinations names
-        Route::get('destinations/search', [DestinationController::class, 'search']);
-
-        // Routes to check preference
-        Route::get('user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);
-
-        // Route to get all places
-        Route::get('/places/{id}', [PlacesController::class, 'show']);
+        
     });
 
     // Logout route
