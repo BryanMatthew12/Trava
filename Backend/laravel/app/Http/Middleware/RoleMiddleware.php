@@ -26,12 +26,6 @@ class RoleMiddleware
 
         // Get the authenticated user
         $user = Auth::user();
-        
-        $roleMap = [
-            1 => 'admin',
-            2 => 'user',
-        ];
-
         $userRole = $user->role_id ?? null;
 
         Log::info('User Role: ' . $userRole);

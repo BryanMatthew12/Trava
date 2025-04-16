@@ -7,7 +7,7 @@ use App\Models\Destination;
 use App\Http\Requests\StoreItineraryRequest;
 use App\Http\Requests\UpdateItineraryRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ItineraryController extends Controller
 {
@@ -82,17 +82,35 @@ class ItineraryController extends Controller
         // Calculate days using start and end date
         $startDate = \Carbon\Carbon::parse($validated['start_date']);
         $endDate = \Carbon\Carbon::parse($validated['end_date']);
-        $days = $startDate->diffInDays($endDate) + 1;
+        
+
+        Log::info('Start Date: ' . $startDate);
+        Log::info('End Date: ' . $endDate);
+        
+        // if ($startDate > $endDate) {
+        //     return response()->json(['message' => 'Start date cannot be later than end date'], 400);
+        // }
+
+        $days = $startDate->diffInDays($endDate);
+
+        Log::info('Days: ' . $days);
 
         // Create the itinerary with calulcated days
         $itinerary = Itinerary::create([
             'user_id' => auth()->user()->user_id,
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
-            'day_number' => $days,
+            'days' => $days,
             'budget' => $validated['budget'],
             'itinerary_description' => $validated['itinerary_description'],
         ]);
+
+        for ($i = 0; $i < $days; $i++) {
+            \App\Models\Day::create([
+                'itinerary_id' => $itinerary->itinerary_id,
+                'day_number' => $itinerary->days,
+            ]);
+        }
 
         // Attach destinations name to the itinerary
         $destination = Destination::firstOrCreate([
@@ -101,6 +119,7 @@ class ItineraryController extends Controller
 
         // Attach to pivot table
         $itinerary->destinations()->attach($destination->destination_id);
+
         
         
     }
