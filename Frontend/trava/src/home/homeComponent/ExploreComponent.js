@@ -1,7 +1,12 @@
 import React from "react";
 import RowData from "./RowData";
+import RowDataRecommended from "./RowDataRecommended";
 
 const ExploreComponent = () => {
+  const userPreferences = {
+    category_ids: [1, 2, 3, 4, 5], // Example category IDs
+  };
+
   return (
     <div className="w-full max-w-4xl px-4">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Explore</h2>
@@ -12,7 +17,9 @@ const ExploreComponent = () => {
           <h3 className="text-lg font-semibold text-gray-700">
             Popular Destinations
           </h3>
-          <span>See all</span>
+          <span className="text-blue-500 cursor-pointer hover:underline">
+            See all
+          </span>
         </div>
         <RowData />
       </div>
@@ -25,7 +32,7 @@ const ExploreComponent = () => {
           </h3>
           <span>See all</span>
         </div>
-        <RowData />
+        <RowDataRecommended categoryIds={userPreferences.category_ids} />
       </div>
 
       {/* Hidden Gems */}
