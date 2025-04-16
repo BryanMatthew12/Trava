@@ -14,21 +14,36 @@ class PlacesController extends Controller
      */
     public function index()
     {
-        // Check if the 'destination_id' or 'place_id' query parameter is present
+        // Get query parameters
         $destinationId = request()->query('destination_id');
         $placeId = request()->query('place_id');
-    
+        $sortBy = request()->query('sort_by', 'descending'); // Default to descending
+
+        // Determine the sorting direction
+        $sortDirection = $sortBy === 'ascending' ? 'asc' : 'desc';
+
         if ($placeId) {
-            // Filter places by place_id if the parameter is provided
-            $places = Places::where('place_id', $placeId)->with('category')->get();
+            // Filter places by place_id and sort, limit to 5
+            $places = Places::where('place_id', $placeId)
+                ->with('category')
+                ->orderBy('place_rating', $sortDirection)
+                ->take(5) // Limit to 5 results
+                ->get();
         } elseif ($destinationId) {
-            // Filter places by destination_id if the parameter is provided
-            $places = Places::where('destination_id', $destinationId)->with('category')->get();
+            // Filter places by destination_id and sort, limit to 5
+            $places = Places::where('destination_id', $destinationId)
+                ->with('category')
+                ->orderBy('place_rating', $sortDirection)
+                ->take(5) // Limit to 5 results
+                ->get();
         } else {
-            // Return all places if no parameters are provided
-            $places = Places::with('category')->get();
+            // Return all places sorted by rating, limit to 5
+            $places = Places::with('category')
+                ->orderBy('place_rating', $sortDirection)
+                ->take(5) // Limit to 5 results
+                ->get();
         }
-    
+
         return response()->json($places);
     }
 

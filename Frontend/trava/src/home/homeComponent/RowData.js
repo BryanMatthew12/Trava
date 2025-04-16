@@ -1,72 +1,72 @@
-import React, { useState, useEffect } from "react";
-import javalandscape from "../../assets/img/javalandscape.jpg";
-
-const popDes = [
-  { image: javalandscape, title: "Destination 1", desc: "Beautiful place to visit" },
-  { image: javalandscape, title: "Destination 2", desc: "Enjoy the scenic views" },
-  { image: javalandscape, title: "Destination 3", desc: "Great cultural experience" },
-  { image: javalandscape, title: "Destination 4", desc: "Perfect for relaxation" },
-  { image: javalandscape, title: "Destination 5", desc: "Adventure awaits" },
-];
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setHome, selectHome } from "../../slices/home/homeSlice";
+import { BASE_URL } from "../../config";
+import Cookies from "js-cookie"; // Import js-cookie to access cookies
 
 const RowData = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const homes = useSelector(selectHome); // Get homes from Redux state
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+    const fetchHomes = async () => {
+      try {
+        const token = Cookies.get("token"); // Get the token from cookies
+
+        const response = await fetch(`${BASE_URL}/v1/places?sort_by=descending`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add the token as a Bearer token
+          },
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text(); // Get error details
+          console.error("Error response:", errorText);
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched homes:", data); // Debugging
+        dispatch(setHome(data)); // Dispatch the data to Redux
+      } catch (error) {
+        console.error("Failed to fetch homes:", error);
+      }
     };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    fetchHomes();
+  }, [dispatch]);
 
-  if (isMobile) {
-    return (
-      <div className="w-full overflow-x-auto">
-        <div className="flex gap-4 p-4">
-          {popDes.map((item, index) => (
-            <div
-              key={index}
-              className="flex-shrink-0 w-64 border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center"
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-48 object-cover rounded-lg"
-              />
-              <h2 className="text-lg font-bold mt-2 text-center truncate w-full">
-                {item.title}
-              </h2>
-              <p className="text-gray-600 text-center text-sm truncate w-full">
-                {item.desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+  // Handle navigation to a detailed page
+  const handleItemClick = (home) => {
+    navigate(`/PlanningItinerary?source=home&params=${home.id}`);
+  };
+
+  if (!homes || homes.length === 0) {
+    return <p>No homes available to display.</p>; // Show a message if no homes are available
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 w-full">
-      {popDes.map((item, index) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {homes.map((home, index) => (
         <div
           key={index}
-          className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center"
+          onClick={() => handleItemClick(home)}
+          className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
         >
           <img
-            src={item.image}
-            alt={item.title}
+            src={home.place_picture}
+            alt={home.name}
             className="w-full h-48 object-cover rounded-lg"
           />
           <h2 className="text-lg font-bold mt-2 text-center truncate w-full">
-            {item.title}
+            {home.name}
           </h2>
           <p className="text-gray-600 text-center text-sm truncate w-full">
-            {item.desc}
+            {home.description}
           </p>
+          <p className="text-sm text-gray-500">Rating: {home.rating} ★</p>
         </div>
       ))}
     </div>

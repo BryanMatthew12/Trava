@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PlanItinerary from './contentPage/PlanItinerary';
 import DestinationInfo from './contentPage/DestinationInfo';
+import { selectHomeById } from '../slices/home/homeSlice';
 import { selectPlacesById } from '../slices/places/placeSlice';
 import { useSelector } from 'react-redux';
 
@@ -14,22 +15,25 @@ const categoryMapping = {
 };
 
 const PlanningItinerary = () => {
-
   const location = useLocation();
 
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get('source'); // Get the source
   const params = Number(queryParams.get('params')); // Convert params to a number
-  const place = useSelector(selectPlacesById(params));
 
+  // Select data based on the source
+  const place = useSelector(selectPlacesById(params));
+  const home = useSelector(selectHomeById(params)); // Get the home by ID from Redux state
+
+  // Map source to components and data
   const sourceComponents = {
     header: PlanItinerary,
     destination: DestinationInfo,
+    home: DestinationInfo, // Use DestinationInfo for Home source
   };
 
-
-
   const ContentComponent = sourceComponents[source] || (() => <div>Invalid source</div>);
+  const contentData = source === 'home' ? home : place; // Use home if source is 'home'
 
   return (
     <div className="flex h-screen">
@@ -41,8 +45,8 @@ const PlanningItinerary = () => {
           <button className="text-blue-500 hover:underline">Export to PDF</button>
         </div>
         <div className="flex-grow p-4 overflow-y-auto">
-          {place ? (
-            <ContentComponent place={place} categoryMapping={categoryMapping} />
+          {contentData ? (
+            <ContentComponent place={contentData} categoryMapping={categoryMapping} />
           ) : (
             <p>Loading place details...</p>
           )}

@@ -11,7 +11,7 @@ const placeSlice = createSlice({
       state.places = action.payload.map((place) => ({
         id: place.place_id,
         name: place.place_name,
-        description: place.description,
+        description: place.place_description,
         category: place.category_id,
         category: place.category_id,
         place_picture: place.place_picture,
