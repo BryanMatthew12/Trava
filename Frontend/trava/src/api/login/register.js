@@ -15,7 +15,7 @@ export const register = async (name, email, password, confirmPassword, dispatch,
       dispatch(setToken(response.data.token));
       dispatch(setName(response.data.user.username));
       dispatch(setUserId(response.data.user.user_id));
-      dispatch(setRole(response.data.user.role));
+      dispatch(setRole(response.data.user.role_id));
       return response.data;
     } else {
       throw new Error("Registration failed: Token not found");
