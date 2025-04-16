@@ -6,15 +6,21 @@ use App\Models\ItineraryDestination;
 use App\Http\Requests\StoreItineraryDestinationRequest;
 use App\Http\Requests\UpdateItineraryDestinationRequest;
 use App\Http\Controllers\Controller;
+use App\Models\Itinerary;
 
 class ItineraryDestinationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($userId)
     {
-        return ItineraryDestination::all();
+        $itineraries = Itinerary::with('destinations')
+        ->where('user_id', $userId)
+        ->get();
+
+    return response()->json($itineraries);
+        // return ItineraryDestination::all();
     }
 
     /**
