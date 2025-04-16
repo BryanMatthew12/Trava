@@ -1,4 +1,4 @@
-import { setToken, setName, setUserId, setRole } from "../../slices/auth/authSlice";
+import { setToken, setName, setUserId, setRoleId } from "../../slices/auth/authSlice";
 import { BASE_URL } from '../../config';
 import axios from "axios";
 
@@ -13,7 +13,7 @@ export const login = async (email, password, dispatch, navigate) => {
       dispatch(setToken(response.data.token));
       dispatch(setName(response.data.user.username));
       dispatch(setUserId(response.data.user.user_id));
-      dispatch(setRole(response.data.user.role));
+      dispatch(setRoleId(response.data.user.role));
       navigate('/home'); 
       return response.data;
     } else {
