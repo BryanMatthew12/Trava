@@ -22,7 +22,18 @@ class StorePlacesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'destination_id' => 'required|exists:destinations,destination_id',
+            'place_name' => 'required|string|max:255',
+            'place_description' => 'nullable|string',
+            'location' => 'nullable|string',
+            'place_rating' => 'nullable|numeric|min:0|max:5',
+            'place_picture' => 'nullable|string', // if it's a URL or filename
+            'place_est_price' => 'nullable|numeric|min:0',
+            'views' => 'nullable|integer|min:0',
+
+            // Many-to-many category IDs
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'exists:categories,category_id',
         ];
     }
 }

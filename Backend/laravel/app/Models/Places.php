@@ -16,7 +16,6 @@ class Places extends Model
 
     protected $fillable = [
         'destination_id',
-        'category_id',
         'place_name',
         'place_description',
         'location',
@@ -36,8 +35,8 @@ class Places extends Model
         return $this->hasMany(ItineraryDestination::class, 'place_id', 'place_id');
     }
 
-    public function category()
+    public function categories()
     {
-        return $this->belongsTo(Category::class, 'category_id', 'category_id');
+        return $this->belongsToMany(Category::class, 'category_place', 'place_id', 'category_id');
     }
 }

@@ -11,7 +11,6 @@ class CreatePlacesTable extends Migration
         Schema::create('places', function (Blueprint $table) {
             $table->id('place_id'); // Primary Key
             $table->unsignedBigInteger('destination_id');
-            $table->unsignedBigInteger('category_id'); 
             $table->string('place_name'); 
             $table->text('place_description')->nullable(); 
             $table->string('location'); 
@@ -23,7 +22,6 @@ class CreatePlacesTable extends Migration
 
             // Foreign Key Constraint
             $table->foreign('destination_id')->references('destination_id')->on('destinations')->onDelete('cascade');
-            $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('cascade');
         });     
     }
 
