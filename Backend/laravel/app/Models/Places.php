@@ -22,7 +22,8 @@ class Places extends Model
         'location',
         'place_rating',
         'place_picture',
-        'place_est_price'
+        'place_est_price',
+        'views'
     ];
 
     public function destination()
