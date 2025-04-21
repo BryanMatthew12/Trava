@@ -1,16 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectHomesByCategoryIds } from "../../slices/home/homeSlice";
+import { selectHomesByUserAndCategory } from "../../slices/home/homeSlice";
 
-const RowDataRecommended = ({ categoryIds = [] }) => {
+const RowDataRecommended = ({ userId, categoryIds }) => {
   const navigate = useNavigate();
 
-  // Filter homes by category IDs
-  const recommendedHomes = useSelector((state) => {
-    console.log("Category IDs passed to RowDataRecommended:", categoryIds); // Debugging
-    return selectHomesByCategoryIds(categoryIds)(state);
-  });
+  // Get filtered and sorted homes
+  const recommendedHomes = useSelector((state) =>
+    selectHomesByUserAndCategory(userId, categoryIds)(state)
+  );
 
   // Handle navigation to a detailed page
   const handleItemClick = (home) => {
@@ -18,7 +17,7 @@ const RowDataRecommended = ({ categoryIds = [] }) => {
   };
 
   if (!recommendedHomes || recommendedHomes.length === 0) {
-    return <p>No recommended homes available to display.</p>; // Show a message if no homes are available
+    return <p>No recommended available to display.</p>; // Show a message if no homes are available
   }
 
   return (

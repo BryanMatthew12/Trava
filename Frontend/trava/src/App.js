@@ -16,6 +16,7 @@ import PublicRoute from './routes/PublicRoute';
 import CategorySelector from './authentication/CategorySelector';
 import ThreadsPage from './threads/threadsComponent/ThreadsPage'; // Import ThreadsPage
 import TrendingMore from './destinations/destinationComponent/TrendingMore'; // Import TrendingMore
+import PopularDestinationsMore from './home/homeComponent/PopularDestinationsMore';
 
 const Layout = () => {
   const location = useLocation();
@@ -131,6 +132,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <TrendingMore />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="populardestinationsmore"
+          element={
+            <ProtectedRoute>
+              <PopularDestinationsMore />
             </ProtectedRoute>
           }
         />
