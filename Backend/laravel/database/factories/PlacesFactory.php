@@ -28,6 +28,7 @@ class PlacesFactory extends Factory
             'place_rating' => $this->faker->randomFloat(1, 2, 3, 4, 5),
             'place_picture' => $this->faker->imageUrl(),
             'place_est_price' => $this->faker->randomFloat(20000, 50000, 100000),
+            'place_views' => $this->faker->randomNumber(3),
         ];
     }
 }
