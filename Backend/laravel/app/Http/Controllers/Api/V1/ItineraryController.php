@@ -120,7 +120,10 @@ class ItineraryController extends Controller
         // Attach to pivot table
         $itinerary->destinations()->attach($destination->destination_id);
 
-        
+        return response()->json([
+            'message' => 'Itinerary created successfully',
+            'id' => $itinerary->itinerary_id,
+        ], 201);
         
     }
 
