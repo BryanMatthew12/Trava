@@ -1,0 +1,46 @@
+import axios from "axios";
+import Cookies from "js-cookie"; // Import js-cookie to access cookies
+import { BASE_URL } from "../../config";
+
+export const postPrePlanning = async (
+  start,
+  end,
+  budget,
+  desc,
+  destination,
+  navigate
+) => {
+  try {
+    const token = Cookies.get("token");
+
+    const response = await axios.post(
+      `${BASE_URL}/v1/itineraries`,
+      {
+        start_date: start,
+        end_date: end,
+        budget: budget,
+        itinerary_description: desc,
+        destination_name: destination,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const itineraryId = response.data.id; // 👈 get the id from the response
+    console.log("Itinerary ID:", itineraryId); // 👈 log the id to the console
+
+    navigate(`/PlanningItinerary?source=header&id=${itineraryId}`);
+  } catch (error) {
+    console.error(
+      "Error posting itinerary:",
+      error.response?.data?.message || error.message
+    );
+    throw new Error(
+      error.response?.data?.message || "Error posting itinerary"
+    );
+  }
+};
