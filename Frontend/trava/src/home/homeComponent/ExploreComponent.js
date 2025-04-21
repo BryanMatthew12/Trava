@@ -1,11 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectUserId } from "../../slices/auth/authSlice";
+import { Link } from "react-router-dom";
 import RowData from "./RowData";
 import RowDataRecommended from "./RowDataRecommended";
+import { BASE_URL } from "../../config";
 
 const ExploreComponent = () => {
-  const userPreferences = {
-    category_ids: [1, 2, 3, 4, 5], // Example category IDs
-  };
+  const userId = useSelector(selectUserId); // Get the logged-in user's ID
+  const [categoryIds, setCategoryIds] = useState([]); // State to store category IDs
+
+  useEffect(() => {
+    const fetchUserPreferences = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/v1/user_preferences/${userId}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch user preferences: ${response.status}`);
+        }
+        const data = await response.json();
+        setCategoryIds(data.category_ids); // Set the category IDs from the response
+      } catch (error) {
+        console.error("Error fetching user preferences:", error);
+      }
+    };
+
+    if (userId) {
+      fetchUserPreferences(); // Fetch preferences only if userId is available
+    }
+  }, [userId]);
 
   return (
     <div className="w-full max-w-4xl px-4">
@@ -17,9 +39,12 @@ const ExploreComponent = () => {
           <h3 className="text-lg font-semibold text-gray-700">
             Popular Destinations
           </h3>
-          <span className="text-blue-500 cursor-pointer hover:underline">
+          <Link
+            to="/PopularDestinationsMore"
+            className="text-blue-500 cursor-pointer hover:underline"
+          >
             See all
-          </span>
+          </Link>
         </div>
         <RowData />
       </div>
@@ -32,7 +57,7 @@ const ExploreComponent = () => {
           </h3>
           <span>See all</span>
         </div>
-        <RowDataRecommended categoryIds={userPreferences.category_ids} />
+        <RowDataRecommended userId={userId} categoryIds={categoryIds} />
       </div>
 
       {/* Hidden Gems */}
