@@ -11,7 +11,7 @@ const ThreadsGrid = ({ guides, loading }) => {
       {guides.map((guide) => (
         <Link
           key={guide.thread_id}
-          to={`/threads/details?threads_id=${guide.thread_id}&itineraries_id=${guide.itineraries_id}`} // Pass threads_id and itineraries_id as query parameters
+          to={`/threads/details?threads_id=${guide.thread_id}&itineraries_id=${guide.itinerary_id}`} // Pass threads_id and itineraries_id as query parameters
         >
           <div className="border rounded-lg overflow-hidden shadow-md">
             <img
