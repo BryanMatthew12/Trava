@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\ItineraryController;
 use App\Http\Controllers\Api\V1\ItineraryDestinationController;
 use App\Http\Controllers\Api\V1\PlacesController;
+use App\Http\Controllers\Api\V1\RecommendationController;
 use App\Http\Controllers\Api\V1\ThreadsController;
 use App\Http\Controllers\Auth\LoginRegisterController;
 use App\Http\Controllers\Api\V1\UserPreferenceController;
@@ -54,7 +55,10 @@ Route::middleware(['auth:api'])->group(function () {
             // Routes to check preference
             Route::get('user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);
             Route::post('user-preferences', [UserPreferenceController::class, 'store']);   
-                   
+             
+            // Route to get recommended places based on user preferences
+            Route::get('recommended-places/{userId}', [RecommendationController::class, 'recommendedPlaces']);
+
             // Route to get all places
             Route::get('/places/{id}', [PlacesController::class, 'show']);
         });

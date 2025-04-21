@@ -12,9 +12,6 @@ class DestinationSeeder extends Seeder
      */
     public function run(): void
     {
-        Destination::factory()
-            ->count(10) // 10 destinations
-            ->hasPlaces(5) // each has 5 places
-            ->create();
+        Destination::factory(10)->create();
     }
 }

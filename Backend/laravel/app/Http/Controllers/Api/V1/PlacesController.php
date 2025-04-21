@@ -14,37 +14,7 @@ class PlacesController extends Controller
      */
     public function index()
     {
-        // Get query parameters
-        $destinationId = request()->query('destination_id');
-        $placeId = request()->query('place_id');
-        $sortBy = request()->query('sort_by', 'descending'); // Default to descending
-
-        // Determine the sorting direction
-        $sortDirection = $sortBy === 'ascending' ? 'asc' : 'desc';
-
-        if ($placeId) {
-            // Filter places by place_id and sort, limit to 5
-            $places = Places::where('place_id', $placeId)
-                ->with('category')
-                ->orderBy('place_rating', $sortDirection)
-                ->take(5) // Limit to 5 results
-                ->get();
-        } elseif ($destinationId) {
-            // Filter places by destination_id and sort, limit to 5
-            $places = Places::where('destination_id', $destinationId)
-                ->with('category')
-                ->orderBy('place_rating', $sortDirection)
-                ->take(5) // Limit to 5 results
-                ->get();
-        } else {
-            // Return all places sorted by rating, limit to 5
-            $places = Places::with('category')
-                ->orderBy('place_rating', $sortDirection)
-                ->take(5) // Limit to 5 results
-                ->get();
-        }
-
-        return response()->json($places);
+        //
     }
 
     /**
@@ -60,7 +30,22 @@ class PlacesController extends Controller
      */
     public function store(StorePlacesRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $place = Places::create([
+            'destination_id' => $validated['destination_id'],
+            'place_name' => $validated['place_name'],
+            'place_description' => $validated['place_description'] ?? null,
+            'location' => $validated['location'] ?? null,
+            'place_rating' => $validated['place_rating'] ?? null,
+            'place_picture' => $validated['place_picture'] ?? null,
+            'place_est_price' => $validated['place_est_price'] ?? null,
+            'views' => $validated['views'] ?? 0,
+        ]);
+
+        $place->categories()->sync($validated['category_ids']);
+
+        return response()->json($place->load('categories'), 201);
     }
 
     /**
