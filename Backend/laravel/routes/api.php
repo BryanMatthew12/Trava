@@ -46,14 +46,15 @@ Route::middleware(['auth:api'])->group(function () {
             Route::apiResource('comments', CommentController::class);
             Route::apiResource('days', DayController::class);
             Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
-            Route::apiResource('user-preferences', UserPreferenceController::class);
+            // Route::apiResource('user-preferences', UserPreferenceController::class);
             
             // Route to search destinations names
             Route::get('destinations/search', [DestinationController::class, 'search']);
 
             // Routes to check preference
             Route::get('user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);
-
+            Route::post('user-preferences', [UserPreferenceController::class, 'store']);   
+                   
             // Route to get all places
             Route::get('/places/{id}', [PlacesController::class, 'show']);
         });
