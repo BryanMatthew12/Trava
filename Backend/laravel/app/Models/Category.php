@@ -9,6 +9,9 @@ class Category extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'category_id';
+
+
     protected $fillable = [
         'name'
     ];
@@ -21,6 +24,6 @@ class Category extends Model
 
     public function places()
     {
-        return $this->hasMany(Places::class, 'category_id', 'id');
+        return $this->belongsToMany(Places::class, 'category_place', 'category_id', 'place_id');
     }
 }

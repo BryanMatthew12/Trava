@@ -21,7 +21,6 @@ class PlacesFactory extends Factory
         return [
             'place_id' => $this->faker->unique()->randomNumber(5), 
             'destination_id' => Destination::inRandomOrder()->first()?->destination_id ?? Destination::factory(),
-            'category_id' => Category::inRandomOrder()->first()->category_id ?? 1,
             'place_name' => $this->faker->word(),
             'place_description' => $this->faker->paragraph(),
             'location' => $this->faker->address(),

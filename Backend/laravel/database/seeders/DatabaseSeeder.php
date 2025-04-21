@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             DestinationSeeder::class,
             DestinationItinerarySeeder::class,
             ItinerarySeeder::class, 
+            PlaceSeeder::class,
+            CategoryPlaceSeeder::class,
         ]);
     }
 
