@@ -55,4 +55,20 @@ export const selectTop5Places = (state) => {
     .slice(0, 5);
 };
 
+// Selector to get places by user_id and category_id, sorted by rating
+export const selectHomesByUserAndCategory = (userId, categoryIds) => (state) => {
+  console.log("Filtering homes by user_id and category_ids:", { userId, categoryIds }); // Debugging
+
+  // Filter places based on user_id and category_ids
+  const filteredHomes = state.home.home.filter((place) => {
+    return (
+      place.user_id === userId && // Match user_id
+      categoryIds.includes(place.category) // Match category_id
+    );
+  });
+
+  // Sort the filtered places by rating in descending order
+  return filteredHomes.sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0));
+};
+
 export default homeSlice.reducer;
