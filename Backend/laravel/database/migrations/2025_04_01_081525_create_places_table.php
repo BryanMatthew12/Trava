@@ -18,6 +18,7 @@ class CreatePlacesTable extends Migration
             $table->decimal('place_rating', 3, 2);
             $table->string('place_picture');
             $table->decimal('place_est_price', 10, 2);
+            $table->integer('views')->default(0);
             $table->timestamps();
 
             // Foreign Key Constraint
