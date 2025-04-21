@@ -4,20 +4,44 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { postPrePlanning } from '../api/itinerary/postPrePlanning';
 
 const PlanningItinerary = () => {
-  const [destination, setDestination] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [budget, setBudget] = useState(null);
+  const [description, setDescription] = useState('');
+  const [destination, setDestination] = useState('');
   const navigate = useNavigate();
 
-  const handleContinue = () => {
-    if (!destination || !startDate || !endDate) {
+  const handleContinue = async () => {
+    if (!destination || !startDate || !endDate || !budget || !description) {
       alert('Please fill in all fields before continuing.');
       return;
     }
-    navigate('/PlanningItinerary?source=header');
+  
+    const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
+    const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
+  
+    try {
+      const itineraryId = await postPrePlanning(
+        formattedStartDate,
+        formattedEndDate,
+        budget,
+        description,
+        destination,
+        navigate
+      );
+    } catch (error) {
+      console.error('Error posting itinerary:', error);
+      alert('There was an error submitting your itinerary. Please try again.');
+    } finally {
+      // if (itineraryId) {
+      //   navigate(`/PlanningItinerary?source=header&id=${itineraryId}`);
+      // }
+    }
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-white pt-10">
@@ -31,6 +55,28 @@ const PlanningItinerary = () => {
           placeholder="Where To Go?"
           value={destination}
           onChange={(e) => setDestination(e.target.value)}
+          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div className="mb-6 w-full max-w-md">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Budget</label>
+        <input
+          type="text"
+          placeholder="Input your budget"
+          value={budget}
+          onChange={(e) => setBudget(e.target.value)}
+          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div className="mb-6 w-full max-w-md">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+        <input
+          type="text"
+          placeholder="Input your description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
