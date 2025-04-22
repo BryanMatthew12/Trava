@@ -13,7 +13,8 @@ const ExploreComponent = () => {
   useEffect(() => {
     const fetchUserPreferences = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/v1/user_preferences/${userId}`);
+        
+        const response = await fetch(`${BASE_URL}/v1/user-preferences/${userId}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch user preferences: ${response.status}`);
         }
@@ -27,6 +28,10 @@ const ExploreComponent = () => {
     if (userId) {
       fetchUserPreferences(); // Fetch preferences only if userId is available
     }
+  }, [userId]);
+
+  useEffect(() => {
+    console.log("User ID in ExploreComponent:", userId); // Debugging
   }, [userId]);
 
   return (
@@ -57,7 +62,8 @@ const ExploreComponent = () => {
           </h3>
           <span>See all</span>
         </div>
-        <RowDataRecommended userId={userId} categoryIds={categoryIds} />
+        {console.log("User ID passed to RowDataRecommended:", userId)}
+        <RowDataRecommended userId={userId} />
       </div>
 
       {/* Hidden Gems */}
