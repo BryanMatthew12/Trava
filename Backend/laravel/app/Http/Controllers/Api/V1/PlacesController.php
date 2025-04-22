@@ -14,7 +14,34 @@ class PlacesController extends Controller
      */
     public function index()
     {
-        //
+        // Get query parameters
+        $destinationId = request()->query('destination_id');
+        $placeId = request()->query('place_id');
+        $sortBy = request()->query('sort_by', 'descending'); // Default to descending
+
+        // Determine the sorting direction
+        $sortDirection = $sortBy === 'ascending' ? 'asc' : 'desc';
+
+        if ($placeId) {
+            // Filter places by place_id and sort, limit to 5
+            $places = Places::where('place_id', $placeId)
+                ->orderBy('place_rating', $sortDirection)
+                ->take(5)
+                ->get();
+        } elseif ($destinationId) {
+            // Filter places by destination_id and sort, limit to 5
+            $places = Places::where('destination_id', $destinationId)
+                ->orderBy('place_rating', $sortDirection)
+                ->take(5)
+                ->get();
+        } else {
+            // Return all places sorted by rating, limit to 5
+            $places = Places::orderBy('place_rating', $sortDirection)
+                ->take(5)
+                ->get();
+        }
+
+        return response()->json($places);
     }
 
     /**
