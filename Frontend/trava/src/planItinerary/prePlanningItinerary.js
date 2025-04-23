@@ -5,14 +5,27 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { postPrePlanning } from '../api/itinerary/postPrePlanning';
+import { useSelector } from 'react-redux';
+import { selectDestinations } from '../slices/destination/destinationSlice';
+import Select from 'react-select';
 
 const PlanningItinerary = () => {
+  const destinations = useSelector(selectDestinations);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [budget, setBudget] = useState(null);
   const [description, setDescription] = useState('');
   const [destination, setDestination] = useState('');
   const navigate = useNavigate();
+  const mappedDestinations = destinations.map((destination) => ({
+    value: destination.id,
+    label: destination.name,
+  }));
+
+  const handleDestinationChange = (selectedOption) => {
+    console.log('Selected destination:', selectedOption);
+    setDestination(selectedOption?.label || '');
+  }
 
   const handleContinue = async () => {
     if (!destination || !startDate || !endDate || !budget || !description) {
@@ -48,15 +61,19 @@ const PlanningItinerary = () => {
       <h1 className="text-2xl font-bold mb-6">Plan Your Trip</h1>
       
       {/* Destination Input */}
-      <div className="mb-6 w-full max-w-md">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Plan Your Trip</label>
-        <input
-          type="text"
-          placeholder="Where To Go?"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+      <div className="mb-6">
+        <div className="flex justify-between items-center">
+          <Select
+            id="province-select"
+            options={mappedDestinations}
+            value={mappedDestinations.find(
+              (option) => option.label === destination
+            )}
+            onChange={handleDestinationChange}
+            className="w-full"
+            placeholder="Select a province"
+          />
+        </div>
       </div>
 
       <div className="mb-6 w-full max-w-md">
