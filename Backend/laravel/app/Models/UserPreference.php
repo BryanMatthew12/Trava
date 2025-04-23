@@ -13,7 +13,8 @@ class UserPreference extends Model
     protected $fillable = [
         'user_id',
         'category_id', 
-        'interest_level'
+        'interest_level',
+        'last_clicked_at',
     ];
 
     public function user()
@@ -25,4 +26,6 @@ class UserPreference extends Model
     {
         return $this->belongsTo(Category::class, 'category_id', 'category_id');
     }
-}
+
+    
+}   
