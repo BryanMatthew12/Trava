@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use Illuminate\Http\Request;
 use App\Models\UserPreference;
 use App\Http\Controllers\Controller;
-
+use App\Services\UserPreferenceService;
 
 class UserPreferenceController extends Controller
 {
@@ -28,21 +28,42 @@ class UserPreferenceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    // public function store(Request $request, UserPreferenceService $service)
+    // {
+    //     $user = auth()->user();
+
+    //     // Validate category_ids as array
+    //     $request->validate([
+    //         'category_ids' => 'required|array',
+    //         'category_ids.*' => 'exists:categories,category_id',
+    //     ]);
+
+    //     $now = now(); // current timestamp
+
+    //     foreach ($request->category_ids as $category_id) {
+    //         UserPreference::updateOrCreate([
+    //             'user_id' => $user->user_id,
+    //             'category_id' => $category_id
+    //         ],
+    //         [
+    //             'last_clicked_at' => $now,
+    //         ]);
+    //     }
+
+    //     return response()->json(['message' => 'Preferences saved successfully']);
+    // }
+
+    public function store(Request $request, UserPreferenceService $service)
     {
         $user = auth()->user();
 
-        // Validate category_ids as array
         $request->validate([
             'category_ids' => 'required|array',
             'category_ids.*' => 'exists:categories,category_id',
         ]);
 
         foreach ($request->category_ids as $category_id) {
-            UserPreference::updateOrCreate([
-                'user_id' => $user->user_id,
-                'category_id' => $category_id
-            ]);
+            $service->updateInterestLevel($user->user_id, $category_id, true); // Called after register
         }
 
         return response()->json(['message' => 'Preferences saved successfully']);
@@ -70,7 +91,7 @@ class UserPreferenceController extends Controller
     public function update(Request $request, string $id)
     {
         //
-    }
+    }   
 
     /**
      * Remove the specified resource from storage.
@@ -89,5 +110,19 @@ class UserPreferenceController extends Controller
             'user_id' => $userId,
             'preference' => $preference
         ]);
+    }
+
+    public function updateLastClicked(Request $request)
+    {
+        // Validate the incoming request
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+            'category_id' => 'required|exists:categories,category_id',
+        ]);
+
+        // Call the updateLastClickedAt function
+        UserPreference::updateLastClickedAt($validated['user_id'], $validated['category_id']);
+
+        return response()->json(['message' => 'Last clicked timestamp updated successfully']);
     }
 }
