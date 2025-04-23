@@ -46,7 +46,7 @@ const PlanningItinerary = () => {
         navigate
       );
     } catch (error) {
-      console.error('Error posting itinerary:', error);
+      // console.error('Error posting itinerary:', error);
       alert('There was an error submitting your itinerary. Please try again.');
     } finally {
       // if (itineraryId) {

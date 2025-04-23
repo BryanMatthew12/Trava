@@ -34,10 +34,14 @@ const CategorySelector = () => {
           ? categories.map((category) => category.id)
           : selectedCategories;
 
+      
+      const timestamp = new Date().toISOString();
+
       const response = await axios.post(
         `${BASE_URL}/v1/user-preferences`,
         {
           category_ids: categoriesToSave,
+          last_clicked_at: timestamp,
         },
         {
           headers: {
