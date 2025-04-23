@@ -1,10 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 const ThreadsGrid = ({ guides, loading }) => {
   if (!guides || guides.length === 0) {
-
-    return <div className="text-center col-span-full">No threads available.</div>;
+    return (
+      <div className="text-center col-span-full">No threads available.</div>
+    );
   }
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -21,14 +22,16 @@ const ThreadsGrid = ({ guides, loading }) => {
             />
             <div className="p-4">
               <h3 className="text-lg font-bold mb-1">{guide.thread_title}</h3>
-              <p className="text-sm text-gray-600 mb-2">{guide.thread_content}</p>
+              <p className="text-sm text-gray-600 mb-2">
+                {guide.thread_content}
+              </p>
               <div className="flex justify-between items-center text-sm text-gray-500">
-                <span>{guide.author || 'Unknown Author'}</span>
-                <div className="flex items-center space-x-2">
+                {/* <span>{guide.author || 'Unknown Author'}</span> */}
+                <div className="flex items-center space-x-2 ml-auto">
                   <span>👁 {guide.views}</span>
                   <span>❤️ {guide.likes}</span>
                 </div>
-              </div>
+              </div>d
             </div>
           </div>
         </Link>
