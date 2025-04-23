@@ -55,6 +55,7 @@ Route::middleware(['auth:api'])->group(function () {
             // Routes to check preference
             Route::get('user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);
             Route::post('user-preferences', [UserPreferenceController::class, 'store']);   
+            Route::post('update-last-clicked', [UserPreferenceController::class, 'updateLastClicked']);
              
             // Route to get recommended places based on user preferences
             Route::get('recommended-places/{userId}', [RecommendationController::class, 'recommendedPlaces']);

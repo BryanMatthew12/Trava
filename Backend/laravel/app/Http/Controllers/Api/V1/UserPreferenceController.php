@@ -38,10 +38,15 @@ class UserPreferenceController extends Controller
             'category_ids.*' => 'exists:categories,category_id',
         ]);
 
+        $now = now(); // current timestamp
+
         foreach ($request->category_ids as $category_id) {
             UserPreference::updateOrCreate([
                 'user_id' => $user->user_id,
                 'category_id' => $category_id
+            ],
+            [
+                'last_clicked_at' => $now,
             ]);
         }
 
@@ -70,7 +75,7 @@ class UserPreferenceController extends Controller
     public function update(Request $request, string $id)
     {
         //
-    }
+    }   
 
     /**
      * Remove the specified resource from storage.
@@ -89,5 +94,19 @@ class UserPreferenceController extends Controller
             'user_id' => $userId,
             'preference' => $preference
         ]);
+    }
+
+    public function updateLastClicked(Request $request)
+    {
+        // Validate the incoming request
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+            'category_id' => 'required|exists:categories,category_id',
+        ]);
+
+        // Call the updateLastClickedAt function
+        UserPreference::updateLastClickedAt($validated['user_id'], $validated['category_id']);
+
+        return response()->json(['message' => 'Last clicked timestamp updated successfully']);
     }
 }
