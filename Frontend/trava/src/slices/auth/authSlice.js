@@ -6,7 +6,7 @@ const authSlice = createSlice({
   initialState: {
     token: Cookies.get('token') || null,
     name: null,
-    user_id: null,
+    user_id: Cookies.get('user_id') || null, // Retrieve user_id from cookies
     role_id: null,
   },
   reducers: {
@@ -19,6 +19,7 @@ const authSlice = createSlice({
     },
     setUserId: (state, action) => {
       state.user_id = action.payload;
+      Cookies.set('user_id', action.payload, { expires: 1 / 24 }); // Persist user_id in cookies
     },
     setRoleId: (state, action) => {
       state.role_id = action.payload;
@@ -29,6 +30,7 @@ const authSlice = createSlice({
       state.user_id = null;
       state.role_id = null;
       Cookies.remove('token');
+      Cookies.remove('user_id'); // Remove user_id from cookies
     },
   },
 });
