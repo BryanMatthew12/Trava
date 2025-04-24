@@ -7,7 +7,6 @@ const placeSlice = createSlice({
   },
   reducers: {
     setPlaces: (state, action) => {
-      console.log("Places data from API:", action.payload); // Debugging
       state.places = action.payload.map((place) => ({
         id: place.place_id,
         name: place.place_name,
@@ -19,7 +18,6 @@ const placeSlice = createSlice({
         price: place.place_est_price,
         rating: place.place_rating, // Ensure this is mapped correctly
       }));
-      console.log("Mapped places:", state.places); // Debugging
     },
     clearPlaces: (state) => {
       state.places = []; // Clear the places

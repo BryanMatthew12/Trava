@@ -9,7 +9,6 @@ const homeSlice = createSlice({
   },
   reducers: {
     setHome: (state, action) => {
-      console.log("setHome Data di terima:", action.payload); // Debugging
       state.home = action.payload.map((home) => ({
         id: home.place_id,
         name: home.place_name,
@@ -21,10 +20,8 @@ const homeSlice = createSlice({
         rating: home.place_rating,
         views: home.views, // Pastikan views ada
       }));
-      console.log("Mapped places:", state.home); // Debugging
     },
     setHome2: (state, action) => {
-      console.log("Recommended places data from API:", action.payload); // Debugging
       state.home2 = action.payload.map((home) => ({
         id: home.place_id,
         name: home.place_name,
@@ -36,10 +33,9 @@ const homeSlice = createSlice({
         rating: home.place_rating,
         views: home.views, // Pastikan views ada
       }));
-      console.log("Mapped recommended places:", state.home2); // Debugging
+
     },
     setHome3: (state, action) => {
-      console.log("Hiddengems 3 places data from API:", action.payload); // Debugging
       state.home3 = action.payload.map((home) => ({
         id: home.place_id,
         name: home.place_name,
@@ -51,7 +47,6 @@ const homeSlice = createSlice({
         rating: home.place_rating,
         views: home.views, // Pastikan views ada
       }));
-      console.log("Mapped Gem places:", state.home3); // Debugging
     },
     clearHome: (state) => {
       state.home = []; // Clear the places
@@ -77,13 +72,10 @@ export const selectHome3ById = (id) => (state) =>
 
 // Selector to get places by category IDs
 export const selectHomesByCategoryIds = (categoryIds) => (state) => {
-  console.log("Filtering homes by category IDs:", categoryIds); // Debugging
   if (!categoryIds || categoryIds.length === 0) {
-    console.log("No category IDs provided. Returning all homes.");
     return state.home.home; // Return all homes if no category IDs are provided
   }
   return state.home.home.filter((place) => {
-    console.log("Place category:", place.category); // Debugging
     return categoryIds.includes(place.category || 0);
   });
 };
@@ -97,7 +89,6 @@ export const selectTop5Places = (state) => {
 
 // Selector to get places by user_id and category_id, sorted by rating
 export const selectHomesByUserAndCategory = (userId, categoryIds) => (state) => {
-  console.log("Filtering homes by user_id and category_ids:", { userId, categoryIds }); // Debugging
 
   // Filter places based on user_id and category_ids
   const filteredHomes = state.home.home2.filter((place) => {
@@ -119,13 +110,11 @@ export const selectHiddenGems = (state) => {
 
   // Find the highest rating
   const highestRating = Math.max(...homes.map((home) => parseFloat(home.rating || 0)));
-  console.log("Highest rating:", highestRating); // Debugging
 
   // Filter homes with rating >= (highestRating - 0.3)
   const filteredHomes = homes.filter(
     (home) => parseFloat(home.rating || 0) >= highestRating - 0.3
   );
-  console.log("Filtered homes by rating:", filteredHomes); // Debugging
 
   // Sort the filtered homes by views (ascending), then by rating (descending)
   const sortedHomes = filteredHomes.sort((a, b) => {
@@ -134,7 +123,6 @@ export const selectHiddenGems = (state) => {
     }
     return parseInt(a.views || 0) - parseInt(b.views || 0); // Sort by views (ascending)
   });
-  console.log("Sorted homes by views and rating:", sortedHomes); // Debugging
 
   // Return the sorted homes
   return sortedHomes;
