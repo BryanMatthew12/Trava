@@ -8,13 +8,13 @@ export const fetchHomes = async (userId) => {
 
     // Make the API request with the token in the headers
     const response = await axios.get(`${BASE_URL}/v1/recommended-places/${userId}`, {
+  
       headers: {
         Authorization: `Bearer ${token}`, // Add the token as a Bearer token
       },
     });
-    console.log('3', response);
+    console.log('resp data',response.data);
     if (response.data) {
-        console.log('4', response.data);
       return response.data;
     } else {
       throw new Error('Error: No data received from the API');
@@ -24,3 +24,4 @@ export const fetchHomes = async (userId) => {
     throw new Error(error.response?.data?.message || 'Error fetching destinations');
   }
 };
+

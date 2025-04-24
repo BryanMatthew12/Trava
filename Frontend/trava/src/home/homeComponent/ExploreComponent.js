@@ -4,6 +4,7 @@ import { selectUserId } from "../../slices/auth/authSlice";
 import { Link } from "react-router-dom";
 import RowData from "./RowData";
 import RowDataRecommended from "./RowDataRecommended";
+import RowDataHiddenGem from "./RowDataHiddenGem";
 import { BASE_URL } from "../../config";
 
 const ExploreComponent = () => {
@@ -60,9 +61,13 @@ const ExploreComponent = () => {
           <h3 className="text-lg font-semibold text-gray-700">
             Recommended Experiences
           </h3>
-          <span>See all</span>
+          <Link
+            to="/RecommendedDestinationsMore"
+            className="text-blue-500 cursor-pointer hover:underline"
+          >
+          See all
+          </Link>
         </div>
-        {console.log("User ID passed to RowDataRecommended:", userId)}
         <RowDataRecommended userId={userId} />
       </div>
 
@@ -70,9 +75,14 @@ const ExploreComponent = () => {
       <div>
         <div className="flex justify-between">
           <h3 className="text-lg font-semibold text-gray-700">Hidden Gems</h3>
-          <span>See all</span>
+          <Link
+            to="/HiddenGemsMore"
+            className="text-blue-500 cursor-pointer hover:underline"
+          >
+          See all
+          </Link>
         </div>
-        <RowData />
+        <RowDataHiddenGem />
       </div>
     </div>
   );

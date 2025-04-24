@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { selectDestinations } from '../slices/destination/destinationSlice';
 import Select from 'react-select';
 
-const PlanningItinerary = () => {
+const PrePlanningItinerary = () => {
   const destinations = useSelector(selectDestinations);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -144,4 +144,4 @@ const PlanningItinerary = () => {
   );
 };
 
-export default PlanningItinerary;
+export default PrePlanningItinerary;
