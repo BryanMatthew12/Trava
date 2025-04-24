@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { fetchHomes } from "../../api/home/home";
 import { useSelector } from "react-redux";
 import { selectUserId } from "../../slices/auth/authSlice";
-import { setHome } from "../../slices/home/homeSlice";
+import { setHome2 } from "../../slices/home/homeSlice";
 import { useDispatch } from "react-redux";
 
-const RowDataRecommended = ({ userId }) => {
+const RowDataRecommended = ({ home2 }) => {
   const navigate = useNavigate();
   const [recommendedHomes, setRecommendedHomes] = useState([]); // State to store fetched data
   const [loading, setLoading] = useState(true); // State to manage loading state
@@ -18,7 +18,7 @@ const RowDataRecommended = ({ userId }) => {
         const response = await fetchHomes(id); // Fetch data using the API function
         if (response) {
           setRecommendedHomes(response); // Set the fetched data
-          dispatch(setHome(response));
+          dispatch(setHome2(response));
         }
       } catch (error) {
         console.error("Error fetching recommended places:", error);
@@ -34,12 +34,12 @@ const RowDataRecommended = ({ userId }) => {
 
   // Handle navigation to a detailed page
   const handleItemClick = (home) => {
-    navigate(`/PlanningItinerary?source=home&params=${home.place_id}`);
+    navigate(`/PlanningItinerary?source=recommended&params=${home.place_id}`);
   };
 
-  if (loading) {
-    return <p>Loading recommended places...</p>; // Show a loading message
-  }
+  // if (loading) {
+  //   return <p>Loading recommended places...</p>; // Show a loading message
+  // }
 
   if (!recommendedHomes || recommendedHomes.length === 0) {
     return <p>No recommended places available to display.</p>; // Show a message if no data is available
@@ -49,7 +49,7 @@ const RowDataRecommended = ({ userId }) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {recommendedHomes.map((home) => (
         <div
-          key={home.place_id}
+          key={home.id}
           onClick={() => handleItemClick(home)}
           className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
         >

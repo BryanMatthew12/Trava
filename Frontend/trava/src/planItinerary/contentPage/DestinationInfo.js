@@ -9,12 +9,12 @@ const DestinationInfo = ({ place, categoryMapping }) => {
         alt={place.name}
         className="w-full h-64 object-cover rounded-lg mb-4"
       />
-      <p className="text-gray-600 mb-2">
+      {/* <p className="text-gray-600 mb-2">
         <strong>Category:</strong>{' '}
         {Array.isArray(place.category)
           ? place.category.map((id) => categoryMapping[id]).join(', ')
           : categoryMapping[place.category]}
-      </p>
+      </p> */}
       <p className="text-gray-600 mb-2">
         <strong>Description:</strong> {place.description}
       </p>

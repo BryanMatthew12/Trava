@@ -58,7 +58,7 @@ Route::middleware(['auth:api'])->group(function () {
              
             // Route to get recommended places based on user preferences
             Route::get('recommended-places/{userId}', [RecommendationController::class, 'recommendedPlaces']);
-
+            Route::get('/filtered-places', [PlacesController::class, 'getFilteredPlaces']);
             // Route to get all places
             Route::get('/places/{id}', [PlacesController::class, 'show']);
         });
@@ -101,3 +101,4 @@ Route::prefix('public')->group(function () {
 Route::get('/user', function (Request $request) {
     return $request->user();
 });
+

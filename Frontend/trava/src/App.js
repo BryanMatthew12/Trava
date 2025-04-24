@@ -17,7 +17,8 @@ import CategorySelector from './authentication/CategorySelector';
 import ThreadsPage from './threads/threadsComponent/ThreadsPage'; // Import ThreadsPage
 import TrendingMore from './destinations/destinationComponent/TrendingMore'; // Import TrendingMore
 import PopularDestinationsMore from './home/homeComponent/PopularDestinationsMore';
-
+import RecommendedDestinationsMore from './home/homeComponent/RecommendedDestinationsMore';
+import HiddenGemsMore from './home/homeComponent/HiddenGemsMore';
 const Layout = () => {
   const location = useLocation();
   const isPlanningItinerary = location.pathname.startsWith('/PlanningItinerary');
@@ -140,6 +141,22 @@ const App = () => {
           element={
             <ProtectedRoute>
               <PopularDestinationsMore />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="recommendeddestinationsmore"
+          element={
+            <ProtectedRoute>
+              <RecommendedDestinationsMore />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="hiddengemsmore"
+          element={
+            <ProtectedRoute>
+              <HiddenGemsMore />
             </ProtectedRoute>
           }
         />

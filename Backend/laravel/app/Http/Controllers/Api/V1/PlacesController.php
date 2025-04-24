@@ -107,4 +107,39 @@ class PlacesController extends Controller
     {
         //
     }
+
+    /**
+     * Get filtered places.
+     */
+    public function getFilteredPlaces()
+    {
+        // Ambil semua tempat
+        $places = Places::select('place_id', 'place_name', 'place_description', 'location', 'place_picture', 'place_rating', 'views')
+            ->get();
+
+        if ($places->isEmpty()) {
+            return response()->json(['message' => 'No places available'], 404);
+        }
+
+        // Cari rating tertinggi
+        $highestRating = $places->max('place_rating');
+
+        // Filter tempat dengan rating >= (rating tertinggi - 0.3)
+        $filteredPlaces = $places->filter(function ($place) use ($highestRating) {
+            return $place->place_rating >= ($highestRating - 0.3);
+        });
+
+        // Urutkan tempat berdasarkan views (ascending), lalu rating (descending)
+        $sortedPlaces = $filteredPlaces->sort(function ($a, $b) {
+            if ($a->views == $b->views) {
+                return $b->place_rating <=> $a->place_rating; // Jika views sama, urutkan berdasarkan rating (descending)
+            }
+            return $a->views <=> $b->views; // Urutkan berdasarkan views (ascending)
+        })->values(); // Reset indeks array
+
+        // Ambil hanya 5 tempat teratas
+        $limitedPlaces = $sortedPlaces->take(5);
+
+        return response()->json($limitedPlaces);
+    }
 }
