@@ -20,18 +20,14 @@ const RowData = () => {
             Authorization: `Bearer ${token}`, // Add the token as a Bearer token
           },
         });
-
         if (!response.ok) {
           const errorText = await response.text(); // Get error details
           console.error("Error response:", errorText);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
-        console.log("Fetched homes:", data); // Debugging
         dispatch(setHome(data)); // Dispatch the data to Redux
       } catch (error) {
-        console.error("Failed to fetch homes:", error);
       }
     };
 
@@ -42,6 +38,7 @@ const RowData = () => {
   const handleItemClick = (home) => {
     navigate(`/PlanningItinerary?source=home&params=${home.id}`);
   };
+
 
   if (!homes || homes.length === 0) {
     return <p>No homes available to display.</p>; // Show a message if no homes are available

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PlanItinerary from './contentPage/PlanItinerary';
 import DestinationInfo from './contentPage/DestinationInfo';
-import { selectHomeById } from '../slices/home/homeSlice';
+import { selectHome3ById, selectHome2ById, selectHomeById } from '../slices/home/homeSlice';
 import { selectPlacesById } from '../slices/places/placeSlice';
 import { useSelector } from 'react-redux';
 
@@ -24,16 +24,29 @@ const PlanningItinerary = () => {
   // Select data based on the source
   const place = useSelector(selectPlacesById(params));
   const home = useSelector(selectHomeById(params)); // Get the home by ID from Redux state
-
+  const home2 = useSelector(selectHome2ById(params)); // Get the recommended home by ID from Redux state
+  const home3 = useSelector(selectHome3ById(params)); // Get the hidden gem home by ID from Redux state
   // Map source to components and data
   const sourceComponents = {
     header: PlanItinerary,
     destination: DestinationInfo,
-    home: DestinationInfo, // Use DestinationInfo for Home source
+    home: DestinationInfo,
+    recommended: DestinationInfo,
+    hiddenGem: DestinationInfo, // Use DestinationInfo for Home source
   };
 
   const ContentComponent = sourceComponents[source] || (() => <div>Invalid source</div>);
-  const contentData = source === 'home' ? home : place; // Use home if source is 'home'
+  const contentData = (() => {
+    if (source === 'home') {
+      return home; // Use home if source is 'home'
+    } else if (source === 'recommended') {
+      return home2; // Use home2 if source is 'recommended'
+    } else if (source === 'hiddenGem') {
+      return home3; // Use home3 if source is 'hiddenGem'
+    } else {
+      return place; // Default to place for other sources
+    }
+  })();
 
   return (
     <div className="flex h-screen">
