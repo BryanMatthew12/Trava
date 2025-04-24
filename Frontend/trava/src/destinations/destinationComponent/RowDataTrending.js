@@ -11,7 +11,6 @@ const RowDataTrending = () => {
   // Sort all places by rating in descending order and get the top 5
   const top5Places = React.useMemo(() => {
     if (!allPlaces || allPlaces.length === 0) {
-      console.log("No places data available.");
       return [];
     }
 

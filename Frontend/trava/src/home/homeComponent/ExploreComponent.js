@@ -32,7 +32,6 @@ const ExploreComponent = () => {
   }, [userId]);
 
   useEffect(() => {
-    console.log("User ID in ExploreComponent:", userId); // Debugging
   }, [userId]);
 
   return (

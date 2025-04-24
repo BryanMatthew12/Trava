@@ -13,7 +13,6 @@ export const fetchHomes = async (userId) => {
         Authorization: `Bearer ${token}`, // Add the token as a Bearer token
       },
     });
-    console.log('resp data',response.data);
     if (response.data) {
       return response.data;
     } else {

@@ -39,8 +39,6 @@ const RowDataHiddenGem = () => {
     return <p>No hidden gems available to display.</p>; // Tampilkan pesan jika data kosong
   }
 
-  console.log("Hidden gems in RowDataHiddenGem:", hiddenGems);
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {hiddenGems.map((home, index) => (
