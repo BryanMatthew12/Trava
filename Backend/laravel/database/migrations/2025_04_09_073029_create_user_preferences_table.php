@@ -16,7 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('category_id');
             $table->integer('interest_level')->default(1);
-            $table->timestamps();
+            $table->timestamp('last_clicked_at')->nullable();
+            $table->timestamps(); 
         
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('cascade');
@@ -29,6 +30,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('user_preferences', function (Blueprint $table) {
+            $table->dropColumn('last_clicked_at');
+        });
+
         Schema::dropIfExists('user_preferences');
     }
 };
