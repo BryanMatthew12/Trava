@@ -23,7 +23,6 @@ const PrePlanningItinerary = () => {
   }));
 
   const handleDestinationChange = (selectedOption) => {
-    console.log('Selected destination:', selectedOption);
     setDestination(selectedOption?.label || '');
   }
 

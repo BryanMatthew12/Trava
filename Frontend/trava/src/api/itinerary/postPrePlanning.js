@@ -31,7 +31,6 @@ export const postPrePlanning = async (
     );
 
     const itineraryId = response.data.id; // 👈 get the id from the response
-    console.log("Itinerary ID:", itineraryId); // 👈 log the id to the console
 
     navigate(`/PlanningItinerary?source=header&id=${itineraryId}`);
   } catch (error) {
