@@ -13,7 +13,7 @@ class CreatePlacesTable extends Migration
             $table->unsignedBigInteger('destination_id');
             $table->string('place_name'); 
             $table->text('place_description')->nullable(); 
-            $table->string('location'); 
+            $table->unsignedBigInteger('location_id')->nullable();
             $table->decimal('place_rating', 3, 2);
             $table->string('place_picture');
             $table->decimal('place_est_price', 10, 2);
@@ -22,6 +22,7 @@ class CreatePlacesTable extends Migration
 
             // Foreign Key Constraint
             $table->foreign('destination_id')->references('destination_id')->on('destinations')->onDelete('cascade');
+            $table->foreign('location_id')->references('location_id')->on('locations')->onDelete('set null'); // Optional: or 'cascade' or 'restrict'
         });     
     }
 

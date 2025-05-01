@@ -16,9 +16,9 @@ class Places extends Model
 
     protected $fillable = [
         'destination_id',
+        'location_id',
         'place_name',
         'place_description',
-        'location',
         'place_rating',
         'place_picture',
         'place_est_price',
@@ -38,5 +38,9 @@ class Places extends Model
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_place', 'place_id', 'category_id');
+    }
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id', 'location_id');
     }
 }

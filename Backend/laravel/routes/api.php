@@ -14,7 +14,9 @@ use App\Http\Controllers\Api\V1\RecommendationController;
 use App\Http\Controllers\Api\V1\ThreadsController;
 use App\Http\Controllers\Auth\LoginRegisterController;
 use App\Http\Controllers\Api\V1\UserPreferenceController;
+use App\Http\Controllers\Api\V1\LocationController;
 
+;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +64,11 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/filtered-places', [PlacesController::class, 'getFilteredPlaces']);
             // Route to get all places
             Route::get('/places/{id}', [PlacesController::class, 'show']);
+
+            // Route for Google Maps geocoding
+            // Route::get('/geocode', [GoogleMapsController::class, 'geocode']);
+            Route::post('/locations', [LocationController::class, 'store']);
+
         });
 
         // Routes accessible only by 'admin' role
