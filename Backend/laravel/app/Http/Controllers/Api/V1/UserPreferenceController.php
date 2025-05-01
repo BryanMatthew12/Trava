@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\UserPreference;
 use App\Http\Controllers\Controller;
 use App\Services\UserPreferenceService;
+use Illuminate\Support\Facades\Log;
 
 class UserPreferenceController extends Controller
 {
@@ -112,17 +113,21 @@ class UserPreferenceController extends Controller
         ]);
     }
 
-    public function updateLastClicked(Request $request)
+    public function updateLastClicked(Request $request, UserPreferenceService $service)
     {
         // Validate the incoming request
         $validated = $request->validate([
             'user_id' => 'required|exists:users,user_id',
-            'category_id' => 'required|exists:categories,category_id',
+            'category_ids' => 'required|exists:categories,category_id',
+            'category_ids.*' => 'exists:categories,category_id',
         ]);
 
+        foreach ($validated['category_ids'] as $category_id) {
+            $service->updateInterestLevel($validated['user_id'], $category_id);
+        }
         // Call the updateLastClickedAt function
-        UserPreference::updateLastClickedAt($validated['user_id'], $validated['category_id']);
-
+        // UserPreference::updateLastClickedAt($validated['user_id'], $validated['category_id']);
         return response()->json(['message' => 'Last clicked timestamp updated successfully']);
     }
+    
 }
