@@ -7,6 +7,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@react-google-maps/api": "^2.20.6",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/cli": "^4.1.1",
     "@testing-library/dom": "^10.4.0",
