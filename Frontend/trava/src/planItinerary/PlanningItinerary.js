@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PlanItinerary from './contentPage/PlanItinerary';
 import DestinationInfo from './contentPage/DestinationInfo';
@@ -6,7 +6,7 @@ import { selectHome3ById, selectHome2ById, selectHomeById } from '../slices/home
 import { selectPlacesById } from '../slices/places/placeSlice';
 import { useSelector } from 'react-redux';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
-import GOOGLE_MAPS_API_KEY from '../api/googleKey/googleKey';
+import GOOGLE_MAPS_API_KEY from '../api/googleKey/googleKey'; 
 
 const categoryMapping = {
   1: 'Adventure',
@@ -16,22 +16,25 @@ const categoryMapping = {
   5: 'Religious',
 };
 
+
 const PlanningItinerary = () => {
+  const [latitude, setLatitude] = useState(0);
+  const [langitude, setLangitude] = useState(0);
+
   const containerStyle = {
-    width: '100%', // Full width
-    height: '100%', // Full height
+    width: '100%',
+    height: '100%',
   };
 
   const center = {
-    lat: -6.2088, // Jakarta latitude
-    lng: 106.8456, // Jakarta longitude
+    lat: latitude,
+    lng: langitude,
   };
 
   const location = useLocation();
-
   const queryParams = new URLSearchParams(location.search);
-  const source = queryParams.get('source'); // Get the source
-  const params = Number(queryParams.get('params')); // Convert params to a number
+  const source = queryParams.get('source');
+  const params = Number(queryParams.get('params'));
 
   const place = useSelector(selectPlacesById(params));
   const home = useSelector(selectHomeById(params));
@@ -59,7 +62,14 @@ const PlanningItinerary = () => {
     }
   })();
 
+  // State to store the destination name received from DestinationInfo
+  const [destinationName, setDestinationName] = useState('');
 
+  // Callback function to receive the destination name
+  const handleCoordinates = (lat, lng) => {
+    setLangitude(lng);
+    setLatitude(lat);
+  };
 
   return (
     <div className="flex h-screen">
@@ -72,25 +82,30 @@ const PlanningItinerary = () => {
           <button className="text-blue-500 hover:underline">Export to PDF</button>
         </div>
         <div className="p-4">
-          {/* {contentData ? ( */}
-            <ContentComponent place={contentData} categoryMapping={categoryMapping} />
-          {/* ) : (
+          {contentData ? (
+            <ContentComponent
+              place={contentData}
+              categoryMapping={categoryMapping}
+              onPlaceChange={handleCoordinates} // Pass the callback function
+            />
+          ) : (
             <p>Loading place details...</p>
-          )} */}
+          )}
         </div>
       </div>
 
       {/* Right Section: Google Map */}
       <div className="w-1/2 bg-gray-200">
-        {/* <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}> */}
-          {/* <GoogleMap
+        <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+          <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={12}
-          > */}
-            {/* Add markers or other components here */}
-          {/* </GoogleMap> */}
-        {/* </LoadScript> */}
+            zoom={15}
+          >
+            {/* Use destinationName for markers or other map logic */}
+            <p>{destinationName}</p>
+          </GoogleMap>
+        </LoadScript>
       </div>
     </div>
   );
