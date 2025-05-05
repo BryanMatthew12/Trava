@@ -1,6 +1,32 @@
-import React from 'react';
+import React, { useEffect, useRef } from "react";
+import { fetchCoord } from "../../api/mapCoord/fetchCoord";
 
-const DestinationInfo = ({ place, categoryMapping }) => {
+const DestinationInfo = ({
+  place,
+  categoryMapping,
+  onPlaceChange,
+}) => {
+
+  const test = "citra 5";
+
+  useEffect(() => {
+    const getCoordinates = async () => {
+      try {
+        const destinations = await fetchCoord(test);
+        const coordinates = destinations?.data;
+
+        if (coordinates) {
+          const { latitude, longitude } = coordinates;
+          onPlaceChange(latitude, longitude); // pass to callback
+        }
+      } catch (error) {
+        console.error("Failed to fetch coord", error.message);
+      }
+    };
+
+    getCoordinates();
+  }, [place]);
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">{place.name}</h1>
