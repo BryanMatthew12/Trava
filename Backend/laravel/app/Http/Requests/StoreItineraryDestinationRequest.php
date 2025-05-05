@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class StoreItineraryDestinationRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreItineraryDestinationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -19,10 +20,18 @@ class StoreItineraryDestinationRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules()
     {
+        Log::info('Validation rules applied in StoreItineraryDestinationRequest');
+
         return [
-            //
+            'itinerary_id' => 'required|exists:itineraries,itinerary_id',
+            'destinations' => 'required|array|min:1',
+            'destinations.*.place_id' => 'required|exists:places,place_id',
+            'destinations.*.day_id' => 'required|exists:days,day_id',
+            'destinations.*.visit_order' => 'required|integer',  // Add validation for visit_order
+
         ];
     }
+
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\ThreadsController;
 use App\Http\Controllers\Auth\LoginRegisterController;
 use App\Http\Controllers\Api\V1\UserPreferenceController;
 use App\Http\Controllers\Api\V1\LocationController;
+use Illuminate\Support\Facades\Log;
 
 ;
 
@@ -48,7 +49,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::apiResource('threads', ThreadsController::class);
             Route::apiResource('comments', CommentController::class);
             Route::apiResource('days', DayController::class);
-            Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
+            // Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
             // Route::apiResource('user-preferences', UserPreferenceController::class);
             
             // Route to search destinations names
@@ -62,8 +63,17 @@ Route::middleware(['auth:api'])->group(function () {
             // Route to get recommended places based on user preferences
             Route::get('recommended-places/{userId}', [RecommendationController::class, 'recommendedPlaces']);
             Route::get('/filtered-places', [PlacesController::class, 'getFilteredPlaces']);
+
             // Route to get all places
             Route::get('/places/{id}', [PlacesController::class, 'show']);
+
+            // Route to itineraries 
+            // Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
+
+            // Route to itineraries destinations
+            Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
+            // Log::info('Route hit: /itinerary-destinations');
+            // return response()->json(['message' => 'Route hit']);
 
             // Route for Google Maps geocoding
             // Route::get('/geocode', [GoogleMapsController::class, 'geocode']);
