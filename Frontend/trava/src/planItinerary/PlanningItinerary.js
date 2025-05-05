@@ -59,7 +59,6 @@ const PlanningItinerary = () => {
     }
   })();
 
-  console.log('Google Maps API Key:', process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
 
 
   return (
@@ -73,25 +72,25 @@ const PlanningItinerary = () => {
           <button className="text-blue-500 hover:underline">Export to PDF</button>
         </div>
         <div className="p-4">
-          {contentData ? (
+          {/* {contentData ? ( */}
             <ContentComponent place={contentData} categoryMapping={categoryMapping} />
-          ) : (
+          {/* ) : (
             <p>Loading place details...</p>
-          )}
+          )} */}
         </div>
       </div>
 
       {/* Right Section: Google Map */}
       <div className="w-1/2 bg-gray-200">
-        <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-          <GoogleMap
+        {/* <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}> */}
+          {/* <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
             zoom={12}
-          >
+          > */}
             {/* Add markers or other components here */}
-          </GoogleMap>
-        </LoadScript>
+          {/* </GoogleMap> */}
+        {/* </LoadScript> */}
       </div>
     </div>
   );
