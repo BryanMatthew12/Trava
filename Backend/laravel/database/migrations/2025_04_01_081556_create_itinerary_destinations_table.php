@@ -14,7 +14,7 @@ class CreateItineraryDestinationsTable extends Migration
             $table->unsignedBigInteger('place_id')->nullable(); // Foreign key (optional if place is not always required)
             $table->unsignedBigInteger('destination_id'); // Foreign key
             $table->unsignedBigInteger('day_id')->nullable(); // Foreign key (optional if day is not always required)
-            $table->string('destination_name');
+            $table->string('place_name');
             $table->integer('visit_order'); // Changed to integer for correct ordering
             $table->decimal('est_price', 10, 2)->nullable(); // Changed to decimal for price accuracy
             $table->timestamps();

@@ -63,7 +63,7 @@ class PlacesController extends Controller
             'destination_id' => $validated['destination_id'],
             'place_name' => $validated['place_name'],
             'place_description' => $validated['place_description'] ?? null,
-            'location' => $validated['location'] ?? null,
+            'location' => $validated['location_id'] ?? null,
             'place_rating' => $validated['place_rating'] ?? null,
             'place_picture' => $validated['place_picture'] ?? null,
             'place_est_price' => $validated['place_est_price'] ?? null,
@@ -114,7 +114,7 @@ class PlacesController extends Controller
     public function getFilteredPlaces()
     {
         // Ambil semua tempat
-        $places = Places::select('place_id', 'place_name', 'place_description', 'location', 'place_picture', 'place_rating', 'views')
+        $places = Places::select('place_id', 'place_name', 'place_description', 'location_id', 'place_picture', 'place_rating', 'views')
             ->get();
 
         if ($places->isEmpty()) {
@@ -141,5 +141,17 @@ class PlacesController extends Controller
         $limitedPlaces = $sortedPlaces->take(5);
 
         return response()->json($limitedPlaces);
+
+        // return response()->json($limitedPlaces->map(function ($place) {
+        //     return [
+        //         'place_id' => $place->place_id,
+        //         'place_name' => $place->place_name,
+        //         'place_description' => $place->place_description,
+        //         'location' => $place->location->name ?? null, // assuming your locations table has a 'name' column
+        //         'place_picture' => $place->place_picture,
+        //         'place_rating' => $place->place_rating,
+        //         'views' => $place->views,
+        //     ];
+        // }));
     }
 }

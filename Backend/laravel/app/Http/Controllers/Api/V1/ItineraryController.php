@@ -7,6 +7,7 @@ use App\Models\Destination;
 use App\Http\Requests\StoreItineraryRequest;
 use App\Http\Requests\UpdateItineraryRequest;
 use App\Http\Controllers\Controller;
+use App\Models\Day;
 use Illuminate\Support\Facades\Log;
 
 class ItineraryController extends Controller
@@ -37,15 +38,21 @@ class ItineraryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($itineraries_id)
+    public function show($itinerary_id)
     {
-        $itinerary = Itinerary::find($itineraries_id);
+        $itinerary = Itinerary::with('destinations')->find($itinerary_id);
 
         if (!$itinerary) {
             return response()->json(['message' => 'Itinerary not found.'], 404);
         }
-
-        return response()->json($itinerary, 200);
+    
+        return response()->json([
+            'start_date' => $itinerary->start_date,
+            'end_date' => $itinerary->end_date,
+            'budget' => $itinerary->budget,
+            'itinerary_description' => $itinerary->itinerary_description,
+            'destination_name' => $itinerary->destinations->pluck('destination_name')->first(), // assuming 1 destination
+        ], 200);
     }
 
     /**
@@ -106,7 +113,7 @@ class ItineraryController extends Controller
         ]);
 
         for ($i = 0; $i < $days; $i++) {
-            \App\Models\Day::create([
+            Day::create([
                 'itinerary_id' => $itinerary->itinerary_id,
                 'day_number' => $itinerary->days,
             ]);

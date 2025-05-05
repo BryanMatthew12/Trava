@@ -18,7 +18,7 @@ class ItineraryDestination extends Model
         'place_id',
         'day_id',
         'destination_id',
-        'destination_name',
+        'place_name',
         'visit_order',
         'est_price', 
     ];

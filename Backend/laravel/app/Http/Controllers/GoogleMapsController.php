@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -9,12 +10,20 @@ class GoogleMapsController extends Controller
 {
     public function geocode(Request $request)
     {
-        $location = $request->input('location'); // e.g., "Cafe Nako"
+        $locationId = $request->input('location_id');
+        $location = Location::find($locationId);
+
+        if (!$location) {
+            return response()->json(['error' => 'Location not found in database'], 404);
+        }
+    
+        $locationName = $location->name;
+
         $apiKey = config('services.google_maps.key');
     
         // Call Google Geocoding API
         $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json", [
-            'address' => $location,
+            'address' => $locationName,
             'key' => $apiKey,
         ]);
     
