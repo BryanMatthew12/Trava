@@ -16,6 +16,7 @@ const PrePlanningItinerary = () => {
   const [budget, setBudget] = useState(null);
   const [description, setDescription] = useState('');
   const [destination, setDestination] = useState('');
+  const [destinationId, setDestinationId] = useState('');
   const navigate = useNavigate();
   const mappedDestinations = destinations.map((destination) => ({
     value: destination.id,
@@ -24,6 +25,7 @@ const PrePlanningItinerary = () => {
 
   const handleDestinationChange = (selectedOption) => {
     setDestination(selectedOption?.label || '');
+    setDestinationId(selectedOption?.value || ''); 
   }
 
   const handleContinue = async () => {
@@ -43,6 +45,7 @@ const PrePlanningItinerary = () => {
         budget,
         description,
         destination,
+        destinationId,
         navigate
       );
     } catch (error) {

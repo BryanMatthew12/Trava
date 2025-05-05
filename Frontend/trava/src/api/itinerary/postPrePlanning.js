@@ -8,6 +8,7 @@ export const postPrePlanning = async (
   budget,
   desc,
   destination,
+  destinationId,
   navigate
 ) => {
   try {
@@ -40,6 +41,7 @@ export const postPrePlanning = async (
         budget,
         desc,
         destination,
+        destinationId,
       },
     });
   } catch (error) {

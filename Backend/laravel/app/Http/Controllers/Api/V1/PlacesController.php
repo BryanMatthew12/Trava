@@ -18,26 +18,37 @@ class PlacesController extends Controller
         $destinationId = request()->query('destination_id');
         $placeId = request()->query('place_id');
         $sortBy = request()->query('sort_by', 'descending'); // Default to descending
+        $page = request()->query('page', 1); // Default to page 1 if not provided or empty
+        $perPage = 5; // Number of items per page
+
+        // Ensure page is a valid number
+        $page = is_numeric($page) && $page > 0 ? (int)$page : 1;
 
         // Determine the sorting direction
         $sortDirection = $sortBy === 'ascending' ? 'asc' : 'desc';
 
+        // Calculate the offset based on the page
+        $offset = ($page - 1) * $perPage;
+
         if ($placeId) {
-            // Filter places by place_id and sort, limit to 5
+            // Filter places by place_id and sort, apply pagination
             $places = Places::where('place_id', $placeId)
                 ->orderBy('place_rating', $sortDirection)
-                ->take(5)
+                ->skip($offset)
+                ->take($perPage)
                 ->get();
         } elseif ($destinationId) {
-            // Filter places by destination_id and sort, limit to 5
+            // Filter places by destination_id and sort, apply pagination
             $places = Places::where('destination_id', $destinationId)
                 ->orderBy('place_rating', $sortDirection)
-                ->take(5)
+                ->skip($offset)
+                ->take($perPage)
                 ->get();
         } else {
-            // Return all places sorted by rating, limit to 5
+            // Return all places sorted by rating, apply pagination
             $places = Places::orderBy('place_rating', $sortDirection)
-                ->take(5)
+                ->skip($offset)
+                ->take($perPage)
                 ->get();
         }
 
@@ -63,7 +74,7 @@ class PlacesController extends Controller
             'destination_id' => $validated['destination_id'],
             'place_name' => $validated['place_name'],
             'place_description' => $validated['place_description'] ?? null,
-            'location' => $validated['location'] ?? null,
+            'location' => $validated['location_id'] ?? null,
             'place_rating' => $validated['place_rating'] ?? null,
             'place_picture' => $validated['place_picture'] ?? null,
             'place_est_price' => $validated['place_est_price'] ?? null,
@@ -114,7 +125,7 @@ class PlacesController extends Controller
     public function getFilteredPlaces()
     {
         // Ambil semua tempat
-        $places = Places::select('place_id', 'place_name', 'place_description', 'location', 'place_picture', 'place_rating', 'views')
+        $places = Places::select('place_id', 'place_name', 'place_description', 'location_id', 'place_picture', 'place_rating', 'views')
             ->get();
 
         if ($places->isEmpty()) {

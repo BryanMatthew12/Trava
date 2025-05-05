@@ -3,11 +3,11 @@ import Cookies from 'js-cookie'; // Import js-cookie to access cookies
 import { BASE_URL } from '../../config';
 import { setPlaces } from '../../slices/places/placeSlice';
 
-export const fetchPlaces = async (id) => {
+export const fetchPlaces = async (id, page) => {
   try {
     const token = Cookies.get('token');
 
-    const response = await axios.get(`${BASE_URL}/v1/places?destination_id=${id}`, {
+    const response = await axios.get(`${BASE_URL}/v1/places?destination_id=${id}&page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add the token as a Bearer token
       },
