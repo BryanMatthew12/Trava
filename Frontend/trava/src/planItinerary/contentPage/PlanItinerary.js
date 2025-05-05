@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPlaces, appendPlaces, clearPlaces, selectPlaces } from '../../slices/places/placeSlice';
 import { useLocation } from 'react-router-dom';
+import { fetchPlaces } from '../../api/places/places'; // Import fetchPlaces
+import Select from 'react-select'; // Import React-Select
 
 const PlanItinerary = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const places = useSelector(selectPlaces); // Get places from Redux store
+  const [page, setPage] = useState(1); // State to manage pagination
+  const [isLoading, setIsLoading] = useState(false); // State to track loading status
+
   const {
     source,
     itineraryId,
@@ -11,15 +20,8 @@ const PlanItinerary = () => {
     budget,
     desc,
     destination,
+    destinationId,
   } = location.state || {}; // Destructure the state object
-
-  console.log('Source:', source);
-  console.log('Itinerary ID:', itineraryId);
-  console.log('Start Date:', start);
-  console.log('End Date:', end);
-  console.log('Budget:', budget);
-  console.log('Description:', desc);
-  console.log('Destination:', destination);
 
   // Calculate the number of days
   const startDate = new Date(start);
@@ -34,10 +36,55 @@ const PlanItinerary = () => {
     Array.from({ length: tripDuration }, () => true) // Default: all days visible
   );
 
+  // State to store selected places for each day
+  const [selectedPlaces, setSelectedPlaces] = useState(
+    Array.from({ length: tripDuration }, () => null) // Default: no place selected for each day
+  );
+
+  // Fetch places based on destinationId when component mounts
+  useEffect(() => {
+    const fetchPlacesByDestination = async () => {
+      if (destinationId) {
+        try {
+          const placesData = await fetchPlaces(destinationId, 1); // Fetch initial places (page 1)
+          dispatch(setPlaces(placesData)); // Dispatch places to Redux store
+        } catch (error) {
+          console.error('Error fetching places by destinationId:', error.message);
+          dispatch(clearPlaces()); // Clear places if there's an error
+        }
+      }
+    };
+
+    fetchPlacesByDestination();
+  }, [destinationId, dispatch]);
+
+  // Handle loading more places when scrolling to the bottom
+  const handleNextPage = async () => {
+    if (isLoading) return; // Prevent multiple requests if already loading
+    setIsLoading(true); // Set loading state to true
+
+    try {
+      const nextPage = page + 1; // Increment the page
+      const newPlaces = await fetchPlaces(destinationId, nextPage); // Fetch places for the next page
+      dispatch(appendPlaces(newPlaces)); // Append new places to Redux store
+      setPage(nextPage); // Update the current page
+    } catch (error) {
+      console.error('Error loading more places:', error.message);
+    } finally {
+      setIsLoading(false); // Reset loading state
+    }
+  };
+
   const toggleDayVisibility = (index) => {
     setVisibleDays((prev) =>
       prev.map((visible, i) => (i === index ? !visible : visible))
     );
+  };
+
+  const handleSelectPlace = (selectedOption, dayIndex) => {
+    const updatedSelectedPlaces = [...selectedPlaces];
+    updatedSelectedPlaces[dayIndex] = selectedOption; // Store the selected place for the specific day
+    setSelectedPlaces(updatedSelectedPlaces);
   };
 
   return (
@@ -82,16 +129,42 @@ const PlanItinerary = () => {
             </div>
             {visibleDays[index] && (
               <div className="mt-2">
+                {selectedPlaces[index] && (
+                  <div className="mb-4 p-4 border border-gray-300 rounded-lg flex items-center">
+                    <div className="flex-grow">
+                      <h4 className="font-semibold">{selectedPlaces[index].label}</h4>
+                      <p className="text-gray-500">{selectedPlaces[index].description}</p>
+                    </div>
+                  </div>
+                )}
                 <div className="mb-2">
                   <label className="block text-gray-500 font-medium">Add a place</label>
-                  <div className="flex items-center">
-                    <span className="mr-2 text-gray-500">📍</span>
-                    <input
-                      type="text"
-                      placeholder="Add a place"
-                      className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+                  <Select
+                    options={places.map((place) => ({
+                      value: place.id,
+                      label: place.name,
+                      description: place.description,
+                    }))}
+                    onChange={(selectedOption) => handleSelectPlace(selectedOption, index)}
+                    placeholder="Search for a place"
+                    className="text-gray-700"
+                    onMenuScrollToBottom={handleNextPage} // Trigger handleNextPage when scrolling to the bottom
+                    isLoading={isLoading} // Show loading indicator while fetching
+                    menuPortalTarget={document.body} // Render dropdown outside the container
+                    menuPlacement="auto" // Automatically place the dropdown
+                    styles={{
+                      menu: (provided) => ({
+                        ...provided,
+                        maxHeight: '200px', // Set max height for the dropdown
+                        overflowY: 'auto', // Enable vertical scrolling
+                      }),
+                      menuList: (provided) => ({
+                        ...provided,
+                        maxHeight: '200px', // Set max height for the dropdown list
+                        overflowY: 'auto', // Enable vertical scrolling
+                      }),
+                    }}
+                  />
                 </div>
               </div>
             )}

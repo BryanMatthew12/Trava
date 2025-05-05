@@ -12,12 +12,24 @@ const placeSlice = createSlice({
         name: place.place_name,
         description: place.place_description,
         category: place.category_id,
-        category: place.category_id,
         place_picture: place.place_picture,
         location: place.location,
         price: place.place_est_price,
         rating: place.place_rating, // Ensure this is mapped correctly
       }));
+    },
+    appendPlaces: (state, action) => {
+      const newPlaces = action.payload.map((place) => ({
+        id: place.place_id,
+        name: place.place_name,
+        description: place.place_description,
+        category: place.category_id,
+        place_picture: place.place_picture,
+        location: place.location,
+        price: place.place_est_price,
+        rating: place.place_rating,
+      }));
+      state.places = [...state.places, ...newPlaces]; // Append new places to the existing array
     },
     clearPlaces: (state) => {
       state.places = []; // Clear the places
@@ -25,7 +37,7 @@ const placeSlice = createSlice({
   },
 });
 
-export const { setPlaces, clearPlaces } = placeSlice.actions;
+export const { setPlaces, appendPlaces, clearPlaces } = placeSlice.actions;
 
 // Selector to get all places
 export const selectPlaces = (state) => state.places.places;
