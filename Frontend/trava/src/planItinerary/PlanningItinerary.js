@@ -88,9 +88,9 @@ const PlanningItinerary = () => {
               categoryMapping={categoryMapping}
               onPlaceChange={handleCoordinates} // Pass the callback function
             />
-          {/* // ) : (
-          //   <p>Loading place details...</p>
-          // )} */}
+          {/* ) : (
+            <p>Loading place details...</p>
+          )} */}
         </div>
       </div>
 
