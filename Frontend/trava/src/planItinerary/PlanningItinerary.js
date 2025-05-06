@@ -82,15 +82,15 @@ const PlanningItinerary = () => {
           <button className="text-blue-500 hover:underline">Export to PDF</button>
         </div>
         <div className="p-4">
-          {contentData ? (
+          {/* {contentData ? ( */}
             <ContentComponent
               place={contentData}
               categoryMapping={categoryMapping}
               onPlaceChange={handleCoordinates} // Pass the callback function
             />
-          ) : (
+          {/* ) : (
             <p>Loading place details...</p>
-          )}
+          )} */}
         </div>
       </div>
 
