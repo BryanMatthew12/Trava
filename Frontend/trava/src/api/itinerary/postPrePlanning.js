@@ -31,8 +31,7 @@ export const postPrePlanning = async (
       }
     );
 
-    const itineraryId = response.data.id; // Get the id from the response
-
+    const itineraryId = response.data.id;
     // Pass the data as an object using the `state` parameter
     navigate(`/PlanningItinerary?source=header&params=${itineraryId}`, {
       state: {
