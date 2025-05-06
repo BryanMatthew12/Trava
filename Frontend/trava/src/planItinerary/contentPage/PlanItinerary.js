@@ -4,17 +4,20 @@ import { setPlaces, appendPlaces, clearPlaces, selectPlaces } from '../../slices
 import { useLocation } from 'react-router-dom';
 import { fetchPlaces } from '../../api/places/places'; // Import fetchPlaces
 import Select from 'react-select'; // Import React-Select
+import { useSearchParams } from 'react-router-dom';
 
 const PlanItinerary = () => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const places = useSelector(selectPlaces); // Get places from Redux store
   const [page, setPage] = useState(1); // State to manage pagination
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
+  const itineraryid = searchParams.get("params");
+
+  console.log("itineraryid", itineraryid);
 
   const {
-    source,
-    itineraryId,
     start,
     end,
     budget,

@@ -37,7 +37,6 @@ const PrePlanningItinerary = () => {
     const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
     const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
     
-    let itineraryId = null; // Initialize itineraryId to null
     try {
       const itineraryId = await postPrePlanning(
         formattedStartDate,
