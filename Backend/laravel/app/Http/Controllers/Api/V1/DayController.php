@@ -64,4 +64,11 @@ class DayController extends Controller
     {
         //
     }
+
+    public function getDaysByItinerary($itinerary_id)
+    {
+        $days = Day::where('itinerary_id', $itinerary_id)->get();
+
+        return response()->json($days);
+    }
 }
