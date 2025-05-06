@@ -36,6 +36,7 @@ export const postPrePlanning = async (
     // Pass the data as an object using the `state` parameter
     navigate(`/PlanningItinerary?source=header&params=${itineraryId}`, {
       state: {
+        itineraryId,
         start,
         end,
         budget,

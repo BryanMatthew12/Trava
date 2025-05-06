@@ -68,8 +68,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/places/{id}', [PlacesController::class, 'show']);
 
             // Route to itineraries 
-            // Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
-
+            Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
+            Route::put('/itineraries/{itinerary_id}/budget', [ItineraryController::class, 'editBudget']);
             // Route to itineraries destinations
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
             // Log::info('Route hit: /itinerary-destinations');

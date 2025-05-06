@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateItineraryRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Day;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class ItineraryController extends Controller
 {
@@ -157,4 +158,32 @@ class ItineraryController extends Controller
     {
         //
     }
+
+    /**
+     * Edit the budget of the specified itinerary.
+     */
+    public function editBudget(Request $request, $itinerary_id)
+    {
+        // Validasi input
+        $validated = $request->validate([
+            'budget' => 'required|numeric|min:0',
+        ]);
+
+        // Cari itinerary berdasarkan ID
+        $itinerary = Itinerary::find($itinerary_id);
+
+        if (!$itinerary) {
+            return response()->json(['message' => 'Itinerary not found.'], 404);
+        }
+
+        // Perbarui budget
+        $itinerary->budget = $validated['budget'];
+        $itinerary->save();
+
+        return response()->json([
+            'message' => 'Budget updated successfully.',
+            'budget' => $itinerary->budget,
+        ], 200);
+    }
+    
 }
