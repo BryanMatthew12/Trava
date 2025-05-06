@@ -8,7 +8,7 @@ export const fetchDayId = async (
   try {
     const token = Cookies.get("token");
 
-    const response = await axios.post(
+    const response = await axios.get(
       `${BASE_URL}/v1/itineraries/${itineraryId}/days`,
       {
         headers: {

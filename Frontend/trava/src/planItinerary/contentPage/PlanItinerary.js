@@ -6,24 +6,24 @@ import { fetchPlaces } from '../../api/places/places'; // Import fetchPlaces
 import { editBudget } from '../../api/itinerary/editBudget';
 import Select from 'react-select'; // Import React-Select
 import { useSearchParams } from 'react-router-dom';
+import { fetchDayId } from '../../api/dayId/fetchDayId'; // Import fetchDayId
+import { useNavigate } from 'react-router-dom';
+import { postItinerary } from '../../api/itinerary/postItinerary'; // Import postItinerary
 
 const PlanItinerary = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Initialize useNavigate hook
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const places = useSelector(selectPlaces); // Get places from Redux store
+  const [dayId, setDayId] = useState([]); // State to store dayId
   const [page, setPage] = useState(1); // State to manage pagination
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
-<<<<<<< HEAD
-  const itineraryid = searchParams.get("params");
-
-  console.log("itineraryid", itineraryid);
-
-=======
   const [isModalOpen, setIsModalOpen] = useState(false); // State untuk modal
   const [currentBudget, setCurrentBudget] = useState(location.state?.budget || 0); // State untuk budget
+  const itineraryId = searchParams.get('params'); // Get itineraryId from URL params
+  const [destinations, setDestinations] = useState([]); // State to store destinations
   
->>>>>>> 5f9be20869aafb059645f6261f4002fdac5cb998
   const {
     start,
     end,
@@ -47,9 +47,7 @@ const PlanItinerary = () => {
   );
 
   // State to store selected places for each day
-  const [selectedPlaces, setSelectedPlaces] = useState(
-    Array.from({ length: tripDuration }, () => []) // Default: empty array for each day
-  );
+  const [selectedPlaces, setSelectedPlaces] = useState([]);
 
   // Fetch places based on destinationId when component mounts
   useEffect(() => {
@@ -67,6 +65,25 @@ const PlanItinerary = () => {
 
     fetchPlacesByDestination();
   }, [destinationId, dispatch]);
+
+  useEffect(() => {
+    const fetchDayData = async () => {
+      try {
+        const dayData = await fetchDayId(itineraryId); // Fetch the day data
+        const dayIds = dayData.map((day) => day.day_id); // Extract all day_id values
+        setDayId(dayIds); // Set the dayId state with the extracted day_id values
+        console.log('Fetched day IDs:', dayIds);
+      } catch (error) {
+        console.error('Error fetching day data:', error.message);
+      }
+    };
+
+    fetchDayData();
+  }, [itineraryId]);
+  
+  useEffect(() => {
+    console.log('Updated destinations:', destinations);
+  }, [destinations]);
 
   // Handle loading more places when scrolling to the bottom
   const handleNextPage = async () => {
@@ -91,17 +108,42 @@ const PlanItinerary = () => {
     );
   };
 
-  const handleSelectPlace = (selectedOption, dayIndex) => {
-    setSelectedPlaces((prev) => {
-      const updatedPlaces = [...prev];
-      const newPlace = {
-        id: selectedOption.value,
-        label: selectedOption.label,
-        description: selectedOption.description,
+  const handleSelectPlace = (selectedOption, dayId) => {
+    setDestinations((prevDestinations) => {
+      // Filter out existing destinations for the same place_id and day_id
+      const filteredDestinations = prevDestinations.filter(
+        (destination) => !(destination.place_id === selectedOption.value && destination.day_id === dayId)
+      );
+
+      // Calculate the visit order for the new place
+      const visitOrder = filteredDestinations.filter((destination) => destination.day_id === dayId).length + 1;
+
+      // Add the new destination
+      const newDestination = {
+        place_id: selectedOption.value,
+        day_id: dayId,
+        visit_order: visitOrder,
       };
-      updatedPlaces[dayIndex] = [...updatedPlaces[dayIndex], newPlace]; // Add new place to the specific day
-      return updatedPlaces;
+
+      return [...filteredDestinations, newDestination];
     });
+  };
+
+  const handleSaveItinerary = async () => {
+    try {
+      // Call the postItinerary API with itineraryId and destinations
+      const response = await postItinerary(itineraryId, destinations, navigate);
+
+      if (response) {
+        console.log('Itinerary saved successfully:', response);
+        alert('Itinerary saved successfully!');
+      } else {
+        return
+      }
+    } catch (error) {
+      console.error('Error saving itinerary:', error.message);
+      alert('An error occurred while saving the itinerary.');
+    }
   };
 
   const openModal = () => setIsModalOpen(true);
@@ -110,6 +152,10 @@ const PlanItinerary = () => {
   const setBudget = (newBudget) => {
     setCurrentBudget(newBudget); // Perbarui state `currentBudget`
   };
+
+  useEffect(() => {
+    console.log('Updated destinations:', selectPlaces);
+  }, [selectedPlaces]);
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -145,27 +191,43 @@ const PlanItinerary = () => {
       <div className="flex-grow p-4 overflow-y-auto">
         <div className="mb-4">
           <h3 className="text-gray-700 font-medium mb-2">Itinerary</h3>
-          {days.map((day, index) => (
-            <div key={index} className="mb-4 border border-gray-300 rounded-lg p-4">
+          {dayId.map((id, index) => (
+            <div key={id} className="mb-4 border border-gray-300 rounded-lg p-4">
               <div
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => toggleDayVisibility(index)}
               >
-                <h3 className="text-lg font-semibold">{new Date(startDate.getTime() + index * 86400000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h3>
+                <h3 className="text-lg font-semibold">
+                  {new Date(startDate.getTime() + index * 86400000).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </h3>
                 <span className="text-blue-500">
                   {visibleDays[index] ? '▼' : '▲'}
                 </span>
               </div>
               {visibleDays[index] && (
                 <div className="mt-2">
-                  {selectedPlaces[index] && selectedPlaces[index].map((place, idx) => (
-                    <div key={idx} className="mb-2 p-2 border border-gray-300 rounded-lg flex items-center">
-                      <div className="flex-grow">
-                        <h4 className="font-semibold">{place.label}</h4>
-                        <p className="text-gray-500">{place.description}</p>
+                  {/* Render selected places */}
+                  {destinations
+                    .filter((destination) => destination.day_id === id)
+                    .map((destination, idx) => (
+                      <div
+                        key={idx}
+                        className="mb-2 p-2 border border-gray-300 rounded-lg flex items-center"
+                      >
+                        <div className="flex-grow">
+                          <h4 className="font-semibold">
+                            {places.find((place) => place.id === destination.place_id)?.name || 'Unknown Place'}
+                          </h4>
+                          <p className="text-gray-500">
+                            {places.find((place) => place.id === destination.place_id)?.description || 'No description available'}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                   <div className="mb-2">
                     <label className="block text-gray-500 font-medium">Add a place</label>
                     <Select
@@ -174,23 +236,23 @@ const PlanItinerary = () => {
                         label: place.name,
                         description: place.description,
                       }))}
-                      onChange={(selectedOption) => handleSelectPlace(selectedOption, index)}
+                      onChange={(selectedOption) => handleSelectPlace(selectedOption, id)} // Pass the correct dayId (id)
                       placeholder="Search for a place"
                       className="text-gray-700"
-                      onMenuScrollToBottom={handleNextPage} // Trigger handleNextPage when scrolling to the bottom
-                      isLoading={isLoading} // Show loading indicator while fetching
-                      menuPortalTarget={document.body} // Render dropdown outside the container
-                      menuPlacement="auto" // Automatically place the dropdown
+                      onMenuScrollToBottom={handleNextPage}
+                      isLoading={isLoading}
+                      menuPortalTarget={document.body}
+                      menuPlacement="auto"
                       styles={{
                         menu: (provided) => ({
                           ...provided,
-                          maxHeight: '200px', // Set max height for the dropdown
-                          overflowY: 'auto', // Enable vertical scrolling
+                          maxHeight: '200px',
+                          overflowY: 'auto',
                         }),
                         menuList: (provided) => ({
                           ...provided,
-                          maxHeight: '200px', // Set max height for the dropdown list
-                          overflowY: 'auto', // Enable vertical scrolling
+                          maxHeight: '200px',
+                          overflowY: 'auto',
                         }),
                       }}
                     />
@@ -200,6 +262,15 @@ const PlanItinerary = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="p-6">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={handleSaveItinerary} // Call handleSaveItinerary on click
+        >
+          Save
+        </button>
       </div>
 
       {isModalOpen && (
