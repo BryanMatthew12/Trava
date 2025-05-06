@@ -98,8 +98,7 @@ class ItineraryController extends Controller
         // if ($startDate > $endDate) {
         //     return response()->json(['message' => 'Start date cannot be later than end date'], 400);
         // }
-
-        $days = $startDate->diffInDays($endDate);
+        $days = $startDate->diffInDays($endDate) +1;
 
         Log::info('Days: ' . $days);
 
@@ -112,6 +111,7 @@ class ItineraryController extends Controller
             'budget' => $validated['budget'],
             'itinerary_description' => $validated['itinerary_description'],
         ]);
+
 
         for ($i = 0; $i < $days; $i++) {
             Day::create([
