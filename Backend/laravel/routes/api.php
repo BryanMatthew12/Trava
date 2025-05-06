@@ -48,7 +48,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::apiResource('places', PlacesController::class);
             Route::apiResource('threads', ThreadsController::class);
             Route::apiResource('comments', CommentController::class);
-            Route::apiResource('days', DayController::class);
+            // Route::apiResource('days', DayController::class);
             // Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
             // Route::apiResource('user-preferences', UserPreferenceController::class);
             
@@ -74,6 +74,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
             // Log::info('Route hit: /itinerary-destinations');
             // return response()->json(['message' => 'Route hit']);
+
+            // Route to get day ID
+            Route::get('/itineraries/{itinerary_id}/days', [DayController::class, 'getDaysByItinerary']);
 
             // Route for Google Maps geocoding
             // Route::get('/geocode', [GoogleMapsController::class, 'geocode']);
