@@ -7,18 +7,18 @@ import { setDestinations } from '../slices/destination/destinationSlice'
 
 const Destinations = () => {
   const dispatch = useDispatch()
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const destinations = await fetchDestinations(); // Fetch the data
-        dispatch(setDestinations(destinations)); // Dispatch the data to Redux
-      } catch (error) {
-        console.error('Failed to fetch destinations:', error.message);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const destinations = await fetchDestinations(); // Fetch the data
+  //       dispatch(setDestinations(destinations)); // Dispatch the data to Redux
+  //     } catch (error) {
+  //       console.error('Failed to fetch destinations:', error.message);
+  //     }
+  //   };
 
-    fetchData();
-  }, [dispatch]);
+  //   fetchData();
+  // }, [dispatch]);
 
   return (
     <div className="flex flex-col items-center space-y-6">
