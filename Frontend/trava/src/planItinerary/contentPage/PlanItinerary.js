@@ -8,9 +8,10 @@ import Select from 'react-select'; // Import React-Select
 import { useSearchParams } from 'react-router-dom';
 import { fetchDayId } from '../../api/dayId/fetchDayId'; // Import fetchDayId
 import { useNavigate } from 'react-router-dom';
-import { postItinerary } from '../../api/itinerary/postItinerary'; // Import postItinerary
+import { postItinerary } from '../../api/itinerary/postItinerary';
+import { fetchCoord } from '../../api/mapCoord/fetchCoord'; // Import fetchCoord
 
-const PlanItinerary = () => {
+const PlanItinerary = (onPlaceChange) => {
   const location = useLocation();
   const navigate = useNavigate(); // Initialize useNavigate hook
   const [searchParams] = useSearchParams();
@@ -23,6 +24,8 @@ const PlanItinerary = () => {
   const [currentBudget, setCurrentBudget] = useState(location.state?.budget || 0); // State untuk budget
   const itineraryId = searchParams.get('params'); // Get itineraryId from URL params
   const [destinations, setDestinations] = useState([]); // State to store destinations
+  const [selectPlace, setSelectPlace] = useState(); // State to store selected places
+  const [activePlaceId, setActivePlaceId] = useState(null); // State to track active place ID
   
   const {
     start,
@@ -81,9 +84,23 @@ const PlanItinerary = () => {
     fetchDayData();
   }, [itineraryId]);
   
-  useEffect(() => {
-    console.log('Updated destinations:', destinations);
-  }, [destinations]);
+    useEffect(() => {
+      const getCoordinates = async () => {
+        try {
+          const destinations = await fetchCoord(selectPlace);
+          const coordinates = destinations?.data;
+  
+          if (coordinates) {
+            const { latitude, longitude } = coordinates;
+            onPlaceChange(latitude, longitude); // pass to callback
+          }
+        } catch (error) {
+          console.error("Failed to fetch coord", error.message);
+        }
+      };
+  
+      getCoordinates();
+    }, [selectPlace, onPlaceChange]);
 
   // Handle loading more places when scrolling to the bottom
   const handleNextPage = async () => {
@@ -109,16 +126,15 @@ const PlanItinerary = () => {
   };
 
   const handleSelectPlace = (selectedOption, dayId) => {
+    setSelectPlace(selectedOption.label);
+
     setDestinations((prevDestinations) => {
-      // Filter out existing destinations for the same place_id and day_id
       const filteredDestinations = prevDestinations.filter(
         (destination) => !(destination.place_id === selectedOption.value && destination.day_id === dayId)
       );
 
-      // Calculate the visit order for the new place
       const visitOrder = filteredDestinations.filter((destination) => destination.day_id === dayId).length + 1;
 
-      // Add the new destination
       const newDestination = {
         place_id: selectedOption.value,
         day_id: dayId,
@@ -129,16 +145,22 @@ const PlanItinerary = () => {
     });
   };
 
+  const handleDeletePlace = (placeId, dayId) => {
+    setDestinations((prevDestinations) =>
+      prevDestinations.filter(
+        (destination) => !(destination.place_id === placeId && destination.day_id === dayId)
+      )
+    );
+  };
+
   const handleSaveItinerary = async () => {
     try {
-      // Call the postItinerary API with itineraryId and destinations
       const response = await postItinerary(itineraryId, destinations, navigate);
 
       if (response) {
-        console.log('Itinerary saved successfully:', response);
-        alert('Itinerary saved successfully!');
-      } else {
         return
+      } else {
+        console.error('Failed to save itinerary:', response.message);
       }
     } catch (error) {
       console.error('Error saving itinerary:', error.message);
@@ -152,10 +174,6 @@ const PlanItinerary = () => {
   const setBudget = (newBudget) => {
     setCurrentBudget(newBudget); // Perbarui state `currentBudget`
   };
-
-  useEffect(() => {
-    console.log('Updated destinations:', selectPlaces);
-  }, [selectedPlaces]);
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -213,21 +231,51 @@ const PlanItinerary = () => {
                   {/* Render selected places */}
                   {destinations
                     .filter((destination) => destination.day_id === id)
-                    .map((destination, idx) => (
-                      <div
-                        key={idx}
-                        className="mb-2 p-2 border border-gray-300 rounded-lg flex items-center"
-                      >
-                        <div className="flex-grow">
-                          <h4 className="font-semibold">
-                            {places.find((place) => place.id === destination.place_id)?.name || 'Unknown Place'}
-                          </h4>
-                          <p className="text-gray-500">
-                            {places.find((place) => place.id === destination.place_id)?.description || 'No description available'}
-                          </p>
+                    .map((destination, idx) => {
+                      const place = places.find((place) => place.id === destination.place_id);
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`mb-2 p-2 border rounded-lg flex items-center cursor-pointer ${
+                            activePlaceId === destination.place_id
+                              ? 'bg-blue-100 scale-105' // Highlight and enlarge the active component
+                              : 'hover:bg-gray-100'
+                          } transition-transform duration-200`}
+                          onClick={() => {
+                            setSelectPlace(place?.name); // Set selectPlace to the name of the place
+                            setActivePlaceId(destination.place_id); // Set the active place ID
+                          }}
+                        >
+                          <div className="flex-grow">
+                            <h4 className="font-semibold">{place?.name || 'Unknown Place'}</h4>
+                            <p className="text-gray-500">{place?.description || 'No description available'}</p>
+                          </div>
+                          <button
+                            className="text-red-500 hover:text-red-700 ml-4"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering the parent onClick
+                              handleDeletePlace(destination.place_id, id); // Call handleDeletePlace
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   <div className="mb-2">
                     <label className="block text-gray-500 font-medium">Add a place</label>
                     <Select
