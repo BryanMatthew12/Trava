@@ -18,8 +18,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->decimal('budget', 10, 2);
             $table->text('itinerary_description');
-            $table->integer('days')->default(1); // Add the 'days' column with a default value
-
+            
             $table->timestamps();
 
             // Foreign Key Constraint

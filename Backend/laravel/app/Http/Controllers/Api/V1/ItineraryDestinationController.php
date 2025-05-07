@@ -101,10 +101,35 @@ class ItineraryDestinationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ItineraryDestination $itineraryDestination)
+    public function show($itinerary_id)
     {
-        //
+        $itinerary = Itinerary::with([
+            'destinations',
+            'days.itineraryDestinations.place', // Eager-load place data
+        ])->find($itinerary_id);
+
+        if (!$itinerary) {
+            return response()->json(['message' => 'Itinerary not found.'], 404);
+        }
+
+        return response()->json([
+            'destination_name' => $itinerary->destinations->pluck('destination_name')->first(),
+            'start_date' => $itinerary->start_date,
+            'end_date' => $itinerary->end_date,
+            'itinerary_description' => $itinerary->itinerary_description,
+            'places' => collect($itinerary->days)->flatMap(function ($day) {
+                return $day->itineraryDestinations->map(function ($dest) use ($day) {
+                    return [
+                        'day_id' => $day->day_id,
+                        'place_id' => $dest->place_id,
+                        'place_name' => $dest->place->place_name ?? null,
+                        'visit_order' => $dest->visit_order,
+                    ];
+                });
+            })->sortBy('visit_order')->values(),
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.

@@ -21,7 +21,7 @@ class ItinerarySeeder extends Seeder
         foreach ($itineraries as $itinerary) {
             // Create day records based on the 'days' column
 
-            $days = (int) $itinerary->days;
+            $days = $itinerary->days->count();
 
             for ($i = 1; $i <= $days; $i++) {
                 $day = Day::create([
