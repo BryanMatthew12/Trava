@@ -70,8 +70,10 @@ Route::middleware(['auth:api'])->group(function () {
             // Route to itineraries 
             Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
             Route::put('/itineraries/{itinerary_id}/budget', [ItineraryController::class, 'editBudget']);
+            
             // Route to itineraries destinations
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
+            Route::get('/itinerary-destinations/{itinerary_id}', [ItineraryDestinationController::class, 'show']);
 
             // Route to get day ID
             Route::get('/itineraries/{itinerary_id}/days', [DayController::class, 'getDaysByItinerary']);

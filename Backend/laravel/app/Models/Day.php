@@ -25,4 +25,9 @@ class Day extends Model
         return $this->belongsTo(itinerary::class, 'itinerary_id', 'itinerary_id');
     }
 
+    public function itineraryDestinations()
+    {
+        return $this->hasMany(ItineraryDestination::class, 'day_id', 'day_id');
+    }
+
 }
