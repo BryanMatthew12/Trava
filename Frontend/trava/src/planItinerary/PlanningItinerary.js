@@ -17,6 +17,7 @@ const categoryMapping = {
 };
 
 
+
 const PlanningItinerary = () => {
   const [latitude, setLatitude] = useState(0);
   const [langitude, setLangitude] = useState(0);
@@ -67,6 +68,7 @@ const PlanningItinerary = () => {
 
   // Callback function to receive the destination name
   const handleCoordinates = (lat, lng) => {
+    console.log('Received coordinates:', lat, lng);
     setLangitude(lng);
     setLatitude(lat);
   };
