@@ -57,6 +57,23 @@ class ItineraryController extends Controller
         ], 200);
     }
 
+    public function getUserItineraries($userId)
+    {
+        $itineraries = Itinerary::with('destinations')
+            ->where('user_id', $userId)
+            ->get();
+
+        $formatted = $itineraries->map(function ($itinerary) {
+            return [
+                'destination_name' => $itinerary->destinations->pluck('destination_name')->first(), // assuming 1 destination
+                'start_date' => $itinerary->start_date,
+                'end_date' => $itinerary->end_date,
+            ];
+        });
+    
+        return response()->json($formatted, 200);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

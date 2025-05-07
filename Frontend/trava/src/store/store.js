@@ -5,7 +5,7 @@ import placeSlice from '../slices/places/placeSlice';
 import threadslice from '../slices/threads/threadSlice';
 import itinerarySlice from '../slices/itinerary/itinerarySlice';    
 import homeSlice from '../slices/home/homeSlice';
-import showItineraryReducer from '../slices/itinerary/showItinerarySlice';
+import showItinerarySlice from '../slices/itinerary/showItinerarySlice';
 
 export const store = configureStore({
     reducer: {
@@ -15,6 +15,6 @@ export const store = configureStore({
         threads: threadslice,
         itineraries: itinerarySlice,
         home: homeSlice,
-        showItinerary: showItineraryReducer
+        showItinerary: showItinerarySlice,
     },
 })

@@ -1,25 +1,30 @@
 import axios from 'axios';
-import Cookies from 'js-cookie'; // Import js-cookie to access cookies
+import Cookies from 'js-cookie'; // Import js-cookie untuk akses token
 import { BASE_URL } from '../../config';
 
-export const showItinerary = async (id) => {
+/**
+ * Fungsi untuk mengambil itinerary berdasarkan user_id.
+ * @param {number} userId - ID user untuk mengambil itinerary.
+ * @returns {Promise<object[]>} - Respons dari server berupa daftar itinerary.
+ */
+export const getUserItineraries = async (userId) => {
   try {
-    const token = Cookies.get('token');
+    const token = Cookies.get('token'); // Ambil token dari cookies
 
-    // Make the API request with the token in the headers
-    const response = await axios.get(`${BASE_URL}/v1/itinerary-destination?itinerary_id=${id}`, {
+    // Lakukan permintaan GET ke API
+    const response = await axios.get(`${BASE_URL}/v1/itineraries/user/${userId}`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token as a Bearer token
+        Authorization: `Bearer ${token}`, // Sertakan token untuk otentikasi
       },
     });
 
     if (response.data) {
-      return response.data;
+      return response.data; // Kembalikan data dari respons server
     } else {
       throw new Error('Error: No data received from the API');
     }
   } catch (error) {
-    console.error('Error fetching destinations:', error.response?.data?.message || error.message);
-    throw new Error(error.response?.data?.message || 'Error fetching destinations');
+    console.error('Error fetching user itineraries:', error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || 'Error fetching user itineraries');
   }
 };

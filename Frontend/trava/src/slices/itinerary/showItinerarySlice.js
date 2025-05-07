@@ -3,31 +3,30 @@ import { createSlice } from '@reduxjs/toolkit';
 const showItinerarySlice = createSlice({
   name: 'showItinerary',
   initialState: {
-    destination_name: '',
-    start_date: '',
-    end_date: '',
-    places: [], // Menyimpan daftar tempat
+    itineraries: [], // Initialize itineraries as an empty array
   },
   reducers: {
-    setItineraryDetails: (state, action) => {
-      const { destination_name, start_date, end_date, places } = action.payload;
-      state.destination_name = destination_name;
-      state.start_date = start_date;
-      state.end_date = end_date;
-      state.places = places;
+    setItineraries: (state, action) => {
+      // Simpan data itinerary ke state
+      state.itineraries = action.payload.map((itinerary) => ({
+        id: itinerary.id,
+        destination_name: itinerary.destination_name,
+        start_date: itinerary.start_date,
+        end_date: itinerary.end_date,
+        itinerary_description: itinerary.itinerary_description,
+        places: itinerary.places || [], // Tambahkan daftar tempat jika ada
+      }));
     },
-    clearItineraryDetails: (state) => {
-      state.destination_name = '';
-      state.start_date = '';
-      state.end_date = '';
-      state.places = [];
+    clearItineraries: (state) => {
+      // Kosongkan data itinerary
+      state.itineraries = [];
     },
   },
 });
 
-export const { setItineraryDetails, clearItineraryDetails } = showItinerarySlice.actions;
+export const { setItineraries, clearItineraries } = showItinerarySlice.actions;
 
-// Selectors
-export const selectItineraryDetails = (state) => state.showItinerary;
+// Selector untuk mengambil data itinerary dari Redux state
+export const selectItineraries = (state) => state.showItinerary.itineraries;
 
 export default showItinerarySlice.reducer;
