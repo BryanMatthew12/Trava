@@ -8,6 +8,7 @@ export const postPrePlanning = async (
   budget,
   desc,
   destination,
+  destinationId,
   navigate
 ) => {
   try {
@@ -30,9 +31,19 @@ export const postPrePlanning = async (
       }
     );
 
-    const itineraryId = response.data.id; // 👈 get the id from the response
-
-    navigate(`/PlanningItinerary?source=header&id=${itineraryId}`);
+    const itineraryId = response.data.id;
+    // Pass the data as an object using the `state` parameter
+    navigate(`/PlanningItinerary?source=header&params=${itineraryId}`, {
+      state: {
+        itineraryId,
+        start,
+        end,
+        budget,
+        desc,
+        destination,
+        destinationId,
+      },
+    });
   } catch (error) {
     console.error(
       "Error posting itinerary:",

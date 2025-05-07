@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Day;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class ItineraryController extends Controller
 {
@@ -83,8 +84,7 @@ class ItineraryController extends Controller
         // if ($startDate > $endDate) {
         //     return response()->json(['message' => 'Start date cannot be later than end date'], 400);
         // }
-
-        $days = $startDate->diffInDays($endDate) + 1;
+        $days = $startDate->diffInDays($endDate) +1;
 
         Log::info('Days: ' . $days);
 
@@ -98,7 +98,9 @@ class ItineraryController extends Controller
             'itinerary_description' => $validated['itinerary_description'],
         ]);
 
-        for ($i = 0; $i <= $days; $i++) {
+
+
+        for ($i = 0; $i < $days; $i++) {
             Day::create([
                 'itinerary_id' => $itinerary->itinerary_id,
                 'day_number' => $itinerary->days,
@@ -143,4 +145,32 @@ class ItineraryController extends Controller
     {
         //
     }
+
+    /**
+     * Edit the budget of the specified itinerary.
+     */
+    public function editBudget(Request $request, $itinerary_id)
+    {
+        // Validasi input
+        $validated = $request->validate([
+            'budget' => 'required|numeric|min:0',
+        ]);
+
+        // Cari itinerary berdasarkan ID
+        $itinerary = Itinerary::find($itinerary_id);
+
+        if (!$itinerary) {
+            return response()->json(['message' => 'Itinerary not found.'], 404);
+        }
+
+        // Perbarui budget
+        $itinerary->budget = $validated['budget'];
+        $itinerary->save();
+
+        return response()->json([
+            'message' => 'Budget updated successfully.',
+            'budget' => $itinerary->budget,
+        ], 200);
+    }
+    
 }

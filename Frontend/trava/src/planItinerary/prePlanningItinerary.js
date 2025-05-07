@@ -16,6 +16,7 @@ const PrePlanningItinerary = () => {
   const [budget, setBudget] = useState(null);
   const [description, setDescription] = useState('');
   const [destination, setDestination] = useState('');
+  const [destinationId, setDestinationId] = useState('');
   const navigate = useNavigate();
   const mappedDestinations = destinations.map((destination) => ({
     value: destination.id,
@@ -24,6 +25,7 @@ const PrePlanningItinerary = () => {
 
   const handleDestinationChange = (selectedOption) => {
     setDestination(selectedOption?.label || '');
+    setDestinationId(selectedOption?.value || ''); 
   }
 
   const handleContinue = async () => {
@@ -34,7 +36,7 @@ const PrePlanningItinerary = () => {
   
     const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
     const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
-  
+    
     try {
       const itineraryId = await postPrePlanning(
         formattedStartDate,
@@ -42,16 +44,18 @@ const PrePlanningItinerary = () => {
         budget,
         description,
         destination,
+        destinationId,
         navigate
       );
     } catch (error) {
       // console.error('Error posting itinerary:', error);
       alert('There was an error submitting your itinerary. Please try again.');
-    } finally {
-      // if (itineraryId) {
-      //   navigate(`/PlanningItinerary?source=header&id=${itineraryId}`);
-      // }
-    }
+    } 
+    // finally {
+    //   if (itineraryId) {
+    //     navigate(`/PlanningItinerary?source=header&id=${itineraryId}`);
+    //   }
+    // }
   };
   
 
