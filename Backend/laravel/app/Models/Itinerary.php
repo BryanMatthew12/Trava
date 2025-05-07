@@ -23,7 +23,6 @@ class Itinerary extends Model
         'end_date',
         'budget',
         'itinerary_description',
-        'days',
     ];
 
     public function user() {
