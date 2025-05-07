@@ -57,7 +57,7 @@ class ItineraryController extends Controller
         ], 200);
     }
 
-    public function getByUserId($userId)
+    public function getUserItineraries($userId)
     {
         $itineraries = Itinerary::with('destinations')
             ->where('user_id', $userId)
