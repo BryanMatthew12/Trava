@@ -70,7 +70,9 @@ Route::middleware(['auth:api'])->group(function () {
             // Route to itineraries 
             Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
             Route::put('/itineraries/{itinerary_id}/budget', [ItineraryController::class, 'editBudget']);
-            
+            Route::get('/itineraries/user/{user_id}', [ItineraryController::class, 'getUserItineraries']); // get all itineraries by user_id
+
+
             // Route to itineraries destinations
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
             Route::get('/itinerary-destinations/{itinerary_id}', [ItineraryDestinationController::class, 'show']);
