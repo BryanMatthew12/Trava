@@ -99,7 +99,7 @@ class ItineraryController extends Controller
         //     return response()->json(['message' => 'Start date cannot be later than end date'], 400);
         // }
 
-        $days = $startDate->diffInDays($endDate);
+        $days = $startDate->diffInDays($endDate) + 1;
 
         Log::info('Days: ' . $days);
 

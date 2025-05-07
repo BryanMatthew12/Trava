@@ -153,6 +153,11 @@ const PlanItinerary = () => {
                 <div className="mt-2">
                   {selectedPlaces[index] && selectedPlaces[index].map((place, idx) => (
                     <div key={idx} className="mb-2 p-2 border border-gray-300 rounded-lg flex items-center">
+                      <img
+                        src={place.place_picture}
+                        alt={place.label}
+                        className="w-24 h-24 rounded-lg mr-4 object-cover"
+                      />
                       <div className="flex-grow">
                         <h4 className="font-semibold">{place.label}</h4>
                         <p className="text-gray-500">{place.description}</p>
