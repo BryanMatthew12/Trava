@@ -72,8 +72,6 @@ Route::middleware(['auth:api'])->group(function () {
 
             // Route to itineraries destinations
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
-            // Log::info('Route hit: /itinerary-destinations');
-            // return response()->json(['message' => 'Route hit']);
 
             // Route to get day ID
             Route::get('/itineraries/{itinerary_id}/days', [DayController::class, 'getDaysByItinerary']);

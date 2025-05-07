@@ -8,6 +8,7 @@ use App\Http\Requests\StoreItineraryRequest;
 use App\Http\Requests\UpdateItineraryRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Day;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ItineraryController extends Controller
@@ -68,27 +69,12 @@ class ItineraryController extends Controller
      */
     public function store(StoreItineraryRequest $request)
     {
-        // $user = auth('api')->user();
-
-        // if (!$user) {
-        //     return response()->json(['message' => 'Unauthorized'], 401);
-        // }
-
-        // if ($user->role !== 'user') {
-        //     return response()->json(['message' => 'Forbidden - Only user can access'], 403);
-        // }
-        // dd(Auth::user()->role);
-
-        // if (Auth::user()->role != 'user' && Auth::user()->role != 1) {
-        //     return response()->json(['message' => 'Unauthorized'], 403);
-        // }
-
         // Validate Request
         $validated = $request->validated();
 
         // Calculate days using start and end date
-        $startDate = \Carbon\Carbon::parse($validated['start_date']);
-        $endDate = \Carbon\Carbon::parse($validated['end_date']);
+        $startDate = Carbon::parse($validated['start_date']);
+        $endDate = Carbon::parse($validated['end_date']);
         
 
         Log::info('Start Date: ' . $startDate);
@@ -98,7 +84,7 @@ class ItineraryController extends Controller
         //     return response()->json(['message' => 'Start date cannot be later than end date'], 400);
         // }
 
-        $days = $startDate->diffInDays($endDate);
+        $days = $startDate->diffInDays($endDate) + 1;
 
         Log::info('Days: ' . $days);
 
@@ -112,7 +98,7 @@ class ItineraryController extends Controller
             'itinerary_description' => $validated['itinerary_description'],
         ]);
 
-        for ($i = 0; $i < $days; $i++) {
+        for ($i = 0; $i <= $days; $i++) {
             Day::create([
                 'itinerary_id' => $itinerary->itinerary_id,
                 'day_number' => $itinerary->days,
