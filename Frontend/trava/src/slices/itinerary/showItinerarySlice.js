@@ -7,9 +7,10 @@ const showItinerarySlice = createSlice({
   },
   reducers: {
     setItineraries: (state, action) => {
+        console.log('action.payload', action.payload);
       // Simpan data itinerary ke state
       state.itineraries = action.payload.map((itinerary) => ({
-        id: itinerary.id,
+        id: itinerary.itinerary_id,
         destination_name: itinerary.destination_name,
         start_date: itinerary.start_date,
         end_date: itinerary.end_date,
