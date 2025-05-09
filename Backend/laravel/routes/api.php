@@ -43,7 +43,7 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('v1')->group(function () {
         Route::middleware(['role:1,2'])->group(function () {
-            Route::apiResource('itineraries', ItineraryController::class);
+            // Route::apiResource('itineraries', ItineraryController::class);
             Route::apiResource('destinations', DestinationController::class);
             Route::apiResource('places', PlacesController::class);
             Route::apiResource('threads', ThreadsController::class);
@@ -69,6 +69,7 @@ Route::middleware(['auth:api'])->group(function () {
 
             // Route to itineraries 
             Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
+            Route::post('/itineraries', [ItineraryController::class, 'store']); // create new itinerary
             Route::put('/itineraries/{itinerary_id}/budget', [ItineraryController::class, 'editBudget']);
             Route::get('/itineraries/user/{user_id}', [ItineraryController::class, 'getUserItineraries']); // get all itineraries by user_id
 
