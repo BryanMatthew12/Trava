@@ -26,11 +26,12 @@ class StoreItineraryDestinationRequest extends FormRequest
 
         return [
             'itinerary_id' => 'required|exists:itineraries,itinerary_id',
+            'destinations.*.destination_id' => 'required|exists:destinations,destination_id',
             'destinations' => 'required|array|min:1',
             'destinations.*.place_id' => 'required|exists:places,place_id',
             'destinations.*.day_id' => 'required|exists:days,day_id',
             'destinations.*.visit_order' => 'required|integer',  // Add validation for visit_order
-
+            'destinations.*.est_price' => 'nullable',  // Add validation for est_price
         ];
     }
 
