@@ -155,7 +155,7 @@ const PlanItinerary = (onPlaceChange) => {
 
   const handleSaveItinerary = async () => {
     try {
-      const response = await postItinerary(itineraryId, destinations, navigate);
+      const response = await postItinerary(itineraryId, destinationId, destinations, navigate);
 
       if (response) {
         return

@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie"; // Import js-cookie to access cookies
 import { BASE_URL } from "../../config";
 
-export const postItinerary = async (id, body, navigate) => {
+export const postItinerary = async (id, destination_id, body, navigate) => {
   try {
     const token = Cookies.get("token");
 
@@ -10,6 +10,7 @@ export const postItinerary = async (id, body, navigate) => {
       `${BASE_URL}/v1/itinerary-destinations`,
       {
         itinerary_id: id, // Use "itinerary_id" as expected by the API
+        destination_id: destination_id, // Use "destination_id" as expected by the API
         destinations: body, // Pass the destinations array
       },
       {

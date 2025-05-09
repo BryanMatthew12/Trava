@@ -76,8 +76,8 @@ class ItineraryDestinationController extends Controller
                 ItineraryDestination::create([
                     'itinerary_id' => $validated['itinerary_id'],
                     'place_id' => $destinationData['place_id'],
-                    'day_id' => $dayId, // Use the correct day_id
-                    'destination_id' => $destinationId,
+                    'day_id' => $destinationData['day_id'], // Use the correct day_id
+                    'destination_id' => $validated['destination_id'],
                     'place_name' => $placeName,
                     'place_rating' => $place->place_rating ?? null,
                     'place_image' => $place->place_image ?? null,
