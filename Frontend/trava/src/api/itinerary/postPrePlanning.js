@@ -21,7 +21,7 @@ export const postPrePlanning = async (
         end_date: end,
         budget: budget,
         itinerary_description: desc,
-        destination_name: destination,
+        destination_id: destinationId,
       },
       {
         headers: {

@@ -119,9 +119,9 @@ class ItineraryController extends Controller
             ]);
         }
 
-        // Attach destinations name to the itinerary
+        // Attach destinations id to the itinerary
         $destination = Destination::firstOrCreate([
-            'destination_name' => $validated['destination_name'],
+            'destination_id' => $validated['destination_id'],
         ]);
 
         // Attach to pivot table

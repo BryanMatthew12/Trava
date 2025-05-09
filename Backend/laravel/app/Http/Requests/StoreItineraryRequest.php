@@ -26,7 +26,7 @@ class StoreItineraryRequest extends FormRequest
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'budget' => ['required', 'numeric', 'min:0'],
             'itinerary_description' => ['nullable', 'string'],
-            'destination_name' => ['required', 'string', 'exists:destinations,destination_name'],
+            'destination_id' => ['required', 'exists:destinations,destination_id'],
         ];
     }
 }
