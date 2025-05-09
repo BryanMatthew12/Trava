@@ -21,7 +21,7 @@ export const postItinerary = async (id, body, navigate) => {
     );
 
     // Explicitly check for success status
-    if (response.status === 201) {
+    if (response) {
       navigate(`/home`); // Navigate to the home page on success
       return response.data; // Return the response data
     } else {
