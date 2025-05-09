@@ -57,7 +57,7 @@ class ItineraryController extends Controller
         ], 200);
     }
 
-    public function getByUserId($userId)
+    public function getUserItineraries($userId)
     {
         $itineraries = Itinerary::with('destinations')
             ->where('user_id', $userId)
@@ -65,6 +65,7 @@ class ItineraryController extends Controller
 
         $formatted = $itineraries->map(function ($itinerary) {
             return [
+                'itinerary_id' => $itinerary->itinerary_id,
                 'destination_name' => $itinerary->destinations->pluck('destination_name')->first(), // assuming 1 destination
                 'start_date' => $itinerary->start_date,
                 'end_date' => $itinerary->end_date,
