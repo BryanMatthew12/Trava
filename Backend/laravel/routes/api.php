@@ -46,8 +46,8 @@ Route::middleware(['auth:api'])->group(function () {
             // Route::apiResource('itineraries', ItineraryController::class);
             Route::apiResource('destinations', DestinationController::class);
             Route::apiResource('places', PlacesController::class);
-            Route::apiResource('threads', ThreadsController::class);
             Route::apiResource('comments', CommentController::class);
+            // Route::apiResource('threads', ThreadsController::class);
             // Route::apiResource('days', DayController::class);
             // Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
             // Route::apiResource('user-preferences', UserPreferenceController::class);
@@ -70,20 +70,22 @@ Route::middleware(['auth:api'])->group(function () {
             // Route to itineraries 
             Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
             Route::post('/itineraries', [ItineraryController::class, 'store']); // create new itinerary
-            Route::put('/itineraries/{itinerary_id}/budget', [ItineraryController::class, 'editBudget']);
             Route::get('/itineraries/user/{user_id}', [ItineraryController::class, 'getUserItineraries']); // get all itineraries by user_id
+            Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'editBudget']); // update Budget
 
             // Route to itineraries destinations
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
             Route::get('/itinerary-destinations/{itinerary_id}', [ItineraryDestinationController::class, 'show']);
 
-            // Route to get day ID
+            // Route to get Day Id
             Route::get('/itineraries/{itinerary_id}/days', [DayController::class, 'getDaysByItinerary']);
+
+            // Route to post to Threads
+            Route::post ('/itinerary-destinations/{itinerary_id}/export-to-thread', [ItineraryDestinationController::class, 'exportToThread']); // export to threads
 
             // Route for Google Maps geocoding
             // Route::get('/geocode', [GoogleMapsController::class, 'geocode']);
             Route::post('/locations', [LocationController::class, 'store']);
-
         });
 
         // Routes accessible only by 'admin' role
