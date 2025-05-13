@@ -162,19 +162,19 @@ class ItineraryController extends Controller
      */
     public function editBudget(Request $request, $itinerary_id)
     {
-        // Validasi input
+        // Validate the request
         $validated = $request->validate([
-            'budget' => 'required|numeric|min:0',
+            'budget' => 'required|numeric|min:100000',
         ]);
 
-        // Cari itinerary berdasarkan ID
+        // Find itinerary base on itinerary_id
         $itinerary = Itinerary::find($itinerary_id);
 
         if (!$itinerary) {
             return response()->json(['message' => 'Itinerary not found.'], 404);
         }
 
-        // Perbarui budget
+        // Update budget
         $itinerary->budget = $validated['budget'];
         $itinerary->save();
 

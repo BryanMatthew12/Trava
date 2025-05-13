@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Day;
 use App\Models\Itinerary;
 use App\Models\Places;
+use App\Models\Threads;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ItineraryDestinationController extends Controller
@@ -47,7 +49,7 @@ class ItineraryDestinationController extends Controller
             $itinerary = Itinerary::findOrFail($validated['itinerary_id']);
             Log::info('Itinerary Found: ', ['itinerary_id' => $itinerary->itinerary_id]);
 
-            $destinationId = $itinerary->destinations()->first()->destination_id ?? null;
+            // $destinationId = $itinerary->destinations()->first()->destination_id ?? null;
 
             foreach ($validated['destinations'] as $destinationData) {
                 Log::info('Processing Destination: ', $destinationData);
@@ -95,6 +97,42 @@ class ItineraryDestinationController extends Controller
         }
     }
 
+
+    public function exportToThread($itinerary_id)
+    {
+        try {
+            $user = Auth::user(); // Make sure you're using auth middleware
+
+            // 1. Fetch itinerary with related destinations
+            $itinerary = Itinerary::with('destinations')->find($itinerary_id);
+
+            if (!$itinerary) {
+                return response()->json(['message' => 'Itinerary not found'], 404);
+            }
+
+            // 2. Check if a thread already exists
+            $existingThread = Threads::where('itinerary_id', $itinerary_id)->first();
+            if ($existingThread) {
+                return response()->json(['message' => 'Thread already exists for this itinerary'], 409);
+            }
+
+            // 3. Create thread
+            $thread = Threads::create([
+                'user_id' => $user->user_id,
+                'itinerary_id' => $itinerary_id,
+                'views' => 0,
+                'likes' => 0,
+            ]);
+
+            return response()->json([
+                'message' => 'Thread exported successfully',
+                'thread_id' => $thread->thread_id,
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Error exporting to thread: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to export thread'], 500);
+        }
+    }
 
     /**
      * Display the specified resource.
