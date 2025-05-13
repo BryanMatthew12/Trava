@@ -12,8 +12,8 @@ export const editBudget = async (itineraryId, newBudget) => {
   try {
     const token = Cookies.get("token"); // Ambil token dari cookie
 
-    const response = await axios.put(
-      `${BASE_URL}/v1/itineraries/${itineraryId}/budget`,
+    const response = await axios.patch(
+      `${BASE_URL}/v1/itineraries/${itineraryId}`, // Gunakan metode PATCH
       {
         budget: newBudget, // Data yang dikirim ke API
       },
