@@ -43,7 +43,7 @@ const PlanItinerary = (onPlaceChange) => {
 
   // Generate an array of days
   const days = Array.from({ length: tripDuration }, (_, i) => `Day ${i + 1}`);
-
+  
   // State to track visibility of each day's details
   const [visibleDays, setVisibleDays] = useState(
     Array.from({ length: tripDuration }, () => true) // Default: all days visible
@@ -345,8 +345,12 @@ const PlanItinerary = (onPlaceChange) => {
                     const data = await editBudget(itineraryId, currentBudget); // Panggil API untuk memperbarui budget
                     setCurrentBudget(data.budget); // Perbarui state budget dengan respons dari server
                     closeModal(); // Tutup modal
+                    if (data.budget) {
+                      setBudget(data.budget); // Perbarui state `budget` di komponen
+                    }
+                    console.log("Budget updated successfully:", data.budget);
                   } catch (error) {
-                    console.error('Failed to update budget:', error.message);
+                    console.error("Failed to update budget:", error.message);
                   }
                 }}
               >
