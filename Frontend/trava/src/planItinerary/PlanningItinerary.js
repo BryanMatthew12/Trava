@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PlanItinerary from './contentPage/PlanItinerary';
 import DestinationInfo from './contentPage/DestinationInfo';
+import ItineraryDetails from './contentPage/ItineraryDetails';
 import { selectHome3ById, selectHome2ById, selectHomeById } from '../slices/home/homeSlice';
 import { selectPlacesById } from '../slices/places/placeSlice';
 import { useSelector } from 'react-redux';
@@ -44,6 +45,7 @@ const PlanningItinerary = () => {
 
   const sourceComponents = {
     header: PlanItinerary,
+    preview: ItineraryDetails,
     destination: DestinationInfo,
     home: DestinationInfo,
     recommended: DestinationInfo,
