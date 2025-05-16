@@ -82,7 +82,8 @@ Route::middleware(['auth:api'])->group(function () {
 
             // Route to post to Threads
             Route::post ('/itinerary-destinations/{itinerary_id}/export-to-thread', [ItineraryDestinationController::class, 'exportToThread']); // export to threads
-
+            Route::get('/threads', [ThreadsController::class, 'index']); // get threads by itinerary_id
+            
             // Route for Google Maps geocoding
             // Route::get('/geocode', [GoogleMapsController::class, 'geocode']);
             Route::post('/locations', [LocationController::class, 'store']);

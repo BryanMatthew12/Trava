@@ -22,7 +22,6 @@ class DestinationFactory extends Factory
             'description' => $this->faker->paragraph(),
             'destination_picture' => $this->faker->imageUrl(),
             'destination_location' => $this->faker->address(),
-            'operational' => $this->faker->time(),
         ];
     }
 }
