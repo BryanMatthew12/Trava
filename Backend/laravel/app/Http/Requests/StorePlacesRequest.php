@@ -29,7 +29,7 @@ class StorePlacesRequest extends FormRequest
             'place_rating' => 'nullable|numeric|min:0|max:5', // dari google API
             'place_picture' => 'nullable|string', // dari google API, bisa diedit
             'place_est_price' => 'nullable|numeric|min:0', // dari google API 
-            'operational' => 'nullable|string', // dari google API
+            'operational' => 'nullable|json', // dari google API
             'views' => 'nullable|integer|min:0',
 
             // Many-to-many category IDs

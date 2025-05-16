@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('itineraries', function (Blueprint $table) {
             $table->bigIncrements('itinerary_id'); // Primary Key
+            $table->string('itinerary_name'); // Example: "Jakarta Trip"
             $table->unsignedBigInteger('user_id'); // Foreign Key
             $table->date('start_date');
             $table->date('end_date');

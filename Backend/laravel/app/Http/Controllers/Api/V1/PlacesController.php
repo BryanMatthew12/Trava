@@ -70,6 +70,17 @@ class PlacesController extends Controller
     {
         $validated = $request->validated();
 
+        $operational = $validated['operational'] ?? null;
+        if (is_array($operational)) {
+            $operational = json_encode($operational);
+        } elseif (is_string($operational)) {
+            // Check if it's valid JSON, if not, set to null or wrap as array
+            json_decode($operational);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $operational = null; // or handle as needed
+            }
+        }
+
         $place = Places::create([
             'destination_id' => $validated['destination_id'],
             'place_name' => $validated['place_name'],
@@ -78,6 +89,7 @@ class PlacesController extends Controller
             'place_rating' => $validated['place_rating'] ?? null,
             'place_picture' => $validated['place_picture'] ?? null,
             'place_est_price' => $validated['place_est_price'] ?? null,
+            'operational' => $validated['operational'] ?? null,
             'views' => $validated['views'] ?? 0,
         ]);
 
