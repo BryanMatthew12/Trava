@@ -30,7 +30,7 @@ class ThreadsController extends Controller
             'thread_id' => $request->input('thread_id'), // Get the thread_id from the query string
         ];
 
-        $threadsQuery = $this->threadsService->getThreads($filters);
+        $threadsQuery = $this->threadsService->getThreads($filters)->with('itinerary');
 
         // Apply filtering by user_id if provided
         if (!empty($filters['user_id'])) {
@@ -60,7 +60,7 @@ class ThreadsController extends Controller
             'last_page' => $threads->lastPage(),
         ]);
     }
-    
+
     /**
      * Store a newly created resource in storage.
      */
