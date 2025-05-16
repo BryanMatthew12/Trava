@@ -17,6 +17,7 @@ const PrePlanningItinerary = () => {
   const [description, setDescription] = useState('');
   const [destination, setDestination] = useState('');
   const [destinationId, setDestinationId] = useState('');
+  const [title, setTitle] = useState('');
   const navigate = useNavigate();
   const mappedDestinations = destinations.map((destination) => ({
     value: destination.id,
@@ -29,7 +30,7 @@ const PrePlanningItinerary = () => {
   }
 
   const handleContinue = async () => {
-    if (!destination || !startDate || !endDate || !budget || !description) {
+    if (!destination || !startDate || !endDate || !budget || !description || !title) {
       alert('Please fill in all fields before continuing.');
       return;
     }
@@ -39,6 +40,7 @@ const PrePlanningItinerary = () => {
     
     try {
       const itineraryId = await postPrePlanning(
+        title,
         formattedStartDate,
         formattedEndDate,
         budget,
@@ -97,6 +99,22 @@ const PrePlanningItinerary = () => {
           placeholder="Input your description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div className="mb-6 w-full max-w-md">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+        <input
+          type="text"
+          placeholder="Input your title"
+          value={title}
+          onChange={(e) => {
+            // Hanya izinkan karakter alphanumeric dan spasi
+            const value = e.target.value.replace(/[^a-zA-Z0-9 ]/g, '');
+            setTitle(value);
+            console.log(value);
+          }}
           className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>

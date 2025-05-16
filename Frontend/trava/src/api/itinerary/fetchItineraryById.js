@@ -7,7 +7,7 @@ export const fetchItineraryById = async (id) => {
     const token = Cookies.get('token');
 
     // Make the API request with the token in the headers
-    const response = await axios.get(`${BASE_URL}/v1/itineraries?itinerary_id=${id}`, {
+    const response = await axios.get(`${BASE_URL}/v1/itineraries/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add the token as a Bearer token
       },
