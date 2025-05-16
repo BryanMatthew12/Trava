@@ -124,7 +124,7 @@ class ItineraryDestinationController extends Controller
                 'likes' => 0,
             ]);
 
-            return response()->json([
+            return response()->json([   
                 'message' => 'Thread exported successfully',
                 'thread_id' => $thread->thread_id,
             ], 201);

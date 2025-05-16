@@ -49,6 +49,7 @@ class ItineraryController extends Controller
         }
     
         return response()->json([
+            'itinerary_name' => $itinerary->itinerary_name,
             'start_date' => $itinerary->start_date,
             'end_date' => $itinerary->end_date,
             'budget' => $itinerary->budget,
