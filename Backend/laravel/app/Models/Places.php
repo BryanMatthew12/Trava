@@ -22,6 +22,7 @@ class Places extends Model
         'place_rating',
         'place_picture',
         'place_est_price',
+        'operational',
         'views'
     ];
 

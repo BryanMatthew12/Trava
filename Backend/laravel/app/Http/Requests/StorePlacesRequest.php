@@ -23,12 +23,13 @@ class StorePlacesRequest extends FormRequest
     {
         return [
             'destination_id' => 'required|exists:destinations,destination_id',
-            'place_name' => 'required|string|max:255',
-            'place_description' => 'nullable|string',
-            'location' => 'nullable|string',
-            'place_rating' => 'nullable|numeric|min:0|max:5',
-            'place_picture' => 'nullable|string', // if it's a URL or filename
-            'place_est_price' => 'nullable|numeric|min:0',
+            'place_name' => 'required|string|max:255', // dari google API
+            'place_description' => 'nullable|string', // dari google API, bisa diedit
+            'location' => 'nullable|string', // dari google API
+            'place_rating' => 'nullable|numeric|min:0|max:5', // dari google API
+            'place_picture' => 'nullable|string', // dari google API, bisa diedit
+            'place_est_price' => 'nullable|numeric|min:0', // dari google API 
+            'operational' => 'nullable|string', // dari google API
             'views' => 'nullable|integer|min:0',
 
             // Many-to-many category IDs
