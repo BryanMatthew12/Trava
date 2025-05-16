@@ -60,7 +60,7 @@ class ThreadsController extends Controller
             'last_page' => $threads->lastPage(),
         ]);
     }
-    
+
     /**
      * Store a newly created resource in storage.
      */

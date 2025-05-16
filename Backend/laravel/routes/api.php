@@ -85,7 +85,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/threads', [ThreadsController::class, 'index']); // get threads by itinerary_id
             
             // Route for Google Maps geocoding
-            // Route::get('/geocode', [GoogleMapsController::class, 'geocode']);
+            Route::get('/locations/{placeName}', [LocationController::class, 'fetchPlaceDetails']);
             Route::post('/locations', [LocationController::class, 'store']);
         });
 
