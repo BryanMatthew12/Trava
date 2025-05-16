@@ -19,6 +19,7 @@ class ItineraryFactory extends Factory
     {
         return [
             'itinerary_id' => $this->faker->unique()->randomNumber(5), // Match model primary key
+            'itinerary_name' => $this->faker->word(),
             'user_id' => User::inRandomOrder()->first()?->user_id ?? User::factory(),
             'start_date' => $this->faker->date(),
             'end_date' => $this->faker->date(),

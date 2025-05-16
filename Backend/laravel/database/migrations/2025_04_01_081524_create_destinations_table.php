@@ -14,7 +14,6 @@ class CreateDestinationsTable extends Migration
             $table->text('description')->nullable(); // General description
             $table->string('destination_picture')->nullable(); // Store image URL or path
             $table->string('destination_location'); // Address or GPS coordinates
-            $table->string('operational')->nullable(); // Example: "08:00 - 17:00"
             $table->timestamps();
         });
     }

@@ -21,45 +21,46 @@ class ThreadsController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $filters = [
-        'title' => $request->input('title'), // Get the title from the query string
-        'sort_by' => $request->input('sort_by'),
-        'order' => $request->input('order', 'desc'), // Default to descending order
-        'user_id' => $request->input('user_id'), // Get the user_id from the query string
-        'thread_id' => $request->input('thread_id'), // Get the thread_id from the query string
-    ];
+    {
+        $filters = [
+            'title' => $request->input('title'), // Get the title from the query string
+            'sort_by' => $request->input('sort_by'),
+            'order' => $request->input('order', 'desc'), // Default to descending order
+            'user_id' => $request->input('user_id'), // Get the user_id from the query string
+            'thread_id' => $request->input('thread_id'), // Get the thread_id from the query string
+        ];
 
-    $threadsQuery = $this->threadsService->getThreads($filters);
+        $threadsQuery = $this->threadsService->getThreads($filters);
 
-    // Apply filtering by user_id if provided
-    if (!empty($filters['user_id'])) {
-        $threadsQuery->where('user_id', $filters['user_id']);
+        // Apply filtering by user_id if provided
+        if (!empty($filters['user_id'])) {
+            $threadsQuery->where('user_id', $filters['user_id']);
+        }
+
+        // Apply filtering by thread_id if provided
+        if (!empty($filters['thread_id'])) {
+            $threadsQuery->where('thread_id', $filters['thread_id']);
+        }
+
+        // Apply sorting
+        if ($filters['sort_by'] == 2) {
+            $threadsQuery->orderBy('views', $filters['order']);
+        } elseif ($filters['sort_by'] == 3) {
+            $threadsQuery->orderBy('likes', $filters['order']);
+        } else {
+            $threadsQuery->orderBy('created_at', $filters['order']); // Default to "Most Recent"
+        }
+
+        $threads = $threadsQuery->paginate(12);
+
+        return response()->json([
+            'message' => 'Threads retrieved successfully!',
+            'data' => $threads->items(),
+            'current_page' => $threads->currentPage(),
+            'last_page' => $threads->lastPage(),
+        ]);
     }
-
-    // Apply filtering by thread_id if provided
-    if (!empty($filters['thread_id'])) {
-        $threadsQuery->where('thread_id', $filters['thread_id']);
-    }
-
-    // Apply sorting
-    if ($filters['sort_by'] == 2) {
-        $threadsQuery->orderBy('views', $filters['order']);
-    } elseif ($filters['sort_by'] == 3) {
-        $threadsQuery->orderBy('likes', $filters['order']);
-    } else {
-        $threadsQuery->orderBy('created_at', $filters['order']); // Default to "Most Recent"
-    }
-
-    $threads = $threadsQuery->paginate(12);
-
-    return response()->json([
-        'message' => 'Threads retrieved successfully!',
-        'data' => $threads->items(),
-        'current_page' => $threads->currentPage(),
-        'last_page' => $threads->lastPage(),
-    ]);
-}
+    
     /**
      * Store a newly created resource in storage.
      */

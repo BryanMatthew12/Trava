@@ -21,7 +21,6 @@ class Destination extends Model
         'description',
         'picture',
         'location',
-        'operational',
     ];
 
     public function places()
