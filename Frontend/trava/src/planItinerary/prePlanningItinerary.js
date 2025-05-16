@@ -30,7 +30,7 @@ const PrePlanningItinerary = () => {
   }
 
   const handleContinue = async () => {
-    if (!destination || !startDate || !endDate || !budget || !description) {
+    if (!destination || !startDate || !endDate || !budget || !description || !title) {
       alert('Please fill in all fields before continuing.');
       return;
     }
@@ -113,6 +113,7 @@ const PrePlanningItinerary = () => {
             // Hanya izinkan karakter alphanumeric dan spasi
             const value = e.target.value.replace(/[^a-zA-Z0-9 ]/g, '');
             setTitle(value);
+            console.log(value);
           }}
           className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

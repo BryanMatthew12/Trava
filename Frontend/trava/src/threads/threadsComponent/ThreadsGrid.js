@@ -18,11 +18,11 @@ const ThreadsGrid = ({ guides, loading }) => {
           <div className="border rounded-lg overflow-hidden shadow-md">
             <img
               src={guide.thread_picture}
-              alt={guide.thread_title}
+              alt={guide.itinerary.itinerary_name}
               className="w-full h-40 object-cover"
             />
             <div className="p-4">
-              <h3 className="text-lg font-bold mb-1">{guide.thread_title}</h3>
+              <h3 className="text-lg font-bold mb-1">{guide.itinerary.itinerary_name}</h3>
               <p className="text-sm text-gray-600 mb-2">
                 {guide.thread_content}
               </p>
