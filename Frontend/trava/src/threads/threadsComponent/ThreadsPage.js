@@ -17,11 +17,10 @@ const ThreadsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [itineraryData, threadResponse] = await Promise.all([
-          fetchItineraryById(itineraries_id),
-          getThreadById(threads_id),
-        ]);
-
+        const itineraryData = await fetchItineraryById(itineraries_id);
+        const threadResponse = await getThreadById(threads_id);
+        console.log('Thread Response:', threadResponse);
+        console.log('Itinerary Data:', itineraryData);
         setItinerary(itineraryData);
         setThread(threadResponse.data[0]);
       } catch (error) {
