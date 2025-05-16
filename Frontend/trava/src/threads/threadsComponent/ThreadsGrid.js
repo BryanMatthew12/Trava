@@ -8,6 +8,7 @@ const ThreadsGrid = ({ guides, loading }) => {
     );
   }
   return (
+    console.log(guides),
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {guides.map((guide) => (
         <Link
@@ -31,7 +32,7 @@ const ThreadsGrid = ({ guides, loading }) => {
                   <span>👁 {guide.views}</span>
                   <span>❤️ {guide.likes}</span>
                 </div>
-              </div>d
+              </div>
             </div>
           </div>
         </Link>
