@@ -3,6 +3,7 @@ import Cookies from "js-cookie"; // Import js-cookie to access cookies
 import { BASE_URL } from "../../config";
 
 export const postPrePlanning = async (
+  title,
   start,
   end,
   budget,
@@ -17,6 +18,7 @@ export const postPrePlanning = async (
     const response = await axios.post(
       `${BASE_URL}/v1/itineraries`,
       {
+        itinerary_name: title,
         start_date: start,
         end_date: end,
         budget: budget,
