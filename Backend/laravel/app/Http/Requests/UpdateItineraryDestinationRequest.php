@@ -22,7 +22,11 @@ class UpdateItineraryDestinationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-        ];
+                'destinations' => 'required|array|min:1',
+                'destinations.*.day_id' => 'required|exists:days,day_id',
+                'destinations.*.place_id' => 'required|exists:places,place_id',
+                'destinations.*.visit_order' => 'required|integer|min:1',
+                'destinations.*.est_price' => 'nullable|numeric',
+            ];
     }
 }
