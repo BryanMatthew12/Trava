@@ -150,6 +150,7 @@ class ItineraryDestinationController extends Controller
 
         return response()->json([
             'itinerary_id' => $itinerary->itinerary_id,
+            'destination_id' => $itinerary->destinations->pluck('destination_id')->first(),
             'destination_name' => $itinerary->destinations->pluck('destination_name')->first(),
             'start_date' => $itinerary->start_date,
             'end_date' => $itinerary->end_date,
