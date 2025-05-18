@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import { getItineraryDetails } from '../../api/itinerary/getItineraryDetails';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { deleteItinerary } from '../../api/itinerary/deleteItinerary';
+import patchItinerary from '../../api/itinerary/patchItinerary';
 
 const ItineraryDetails = () => {
 
     const [itineraryData, setItineraryData] = useState(null);
-     const [searchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
+    const itineraryId = searchParams.get('params'); // Get 'params' from URL
+     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchItineraryDetails = async () => {
@@ -25,6 +29,19 @@ const ItineraryDetails = () => {
       
         fetchItineraryDetails();
       }, [searchParams]);
+
+        const handleDelete = async () => {
+          try {
+            const response = await deleteItinerary(itineraryId, navigate);
+            if (response) {
+              return
+            } else {
+              console.error('Failed to delete itinerary:', response.message);
+            }
+          } catch (error) {
+            console.error('Error deleting itinerary:', error.message);
+          }
+        }
 
   if (!itineraryData) {
     return <div>Loading...</div>; // Show a loading state if data is not available
@@ -79,10 +96,21 @@ const ItineraryDetails = () => {
                 </div>
               </div>
             </div>
+            
           ))}
         </div>
+        
       ))}
+      <div className="p-6">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={handleDelete} // Call handleSaveItinerary on click
+        >
+          Delete
+        </button>
+      </div>
     </div>
+    
   );
 };
 

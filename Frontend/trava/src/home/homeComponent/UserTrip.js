@@ -27,7 +27,7 @@ const UserTrip = () => {
   }, [userId, dispatch]);
 
   const handleClick = (itinerary) => {
-    navigate(`/PlanningItinerary?source=preview&params=${itinerary.id}`);
+    navigate(`/PlanningItinerary?source=edit&params=${itinerary.id}`);
   }
 
   return (
