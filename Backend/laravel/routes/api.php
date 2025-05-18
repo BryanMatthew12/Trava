@@ -72,10 +72,12 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/itineraries', [ItineraryController::class, 'store']); // create new itinerary
             Route::get('/itineraries/user/{user_id}', [ItineraryController::class, 'getUserItineraries']); // get all itineraries by user_id
             Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'editBudget']); // update Budget
+            Route::delete('/itineraries/{itinerary_id}', [ItineraryController::class, 'destroy']);
 
             // Route to itineraries destinations
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
             Route::get('/itinerary-destinations/{itinerary_id}', [ItineraryDestinationController::class, 'show']);
+            Route::put('/itinerary-destinations/{itinerary_id}', [ItineraryDestinationController::class, 'update']);
 
             // Route to get Day Id
             Route::get('/itineraries/{itinerary_id}/days', [DayController::class, 'getDaysByItinerary']);

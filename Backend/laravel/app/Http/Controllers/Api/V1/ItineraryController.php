@@ -8,6 +8,7 @@ use App\Http\Requests\StoreItineraryRequest;
 use App\Http\Requests\UpdateItineraryRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Day;
+use App\Models\ItineraryDestination;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -154,9 +155,28 @@ class ItineraryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Itinerary $itinerary)
+    public function destroy($itinerary_id)
     {
-        //
+        try {
+            $itinerary = Itinerary::findOrFail($itinerary_id);
+
+            // Delete related itinerary destinations
+            ItineraryDestination::where('itinerary_id', $itinerary_id)->delete();
+
+            // Delete related days
+            Day::where('itinerary_id', $itinerary_id)->delete();
+
+            // Optionally delete the destination(s) if not shared across itineraries
+            // Destination::where('itinerary_id', $itinerary_id)->delete();
+
+            // Finally, delete the itinerary
+            $itinerary->delete();
+
+            return response()->json(['message' => 'Itinerary and all related data deleted successfully.'], 200);
+        } catch (\Exception $e) {
+            Log::error('Error deleting itinerary: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete itinerary.'], 500);
+        }
     }
 
     /**
