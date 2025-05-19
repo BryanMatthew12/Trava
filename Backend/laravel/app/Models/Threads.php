@@ -35,4 +35,14 @@ class Threads extends Model
     {
         return $this->hasMany(Comment::class, 'thread_id', 'thread_id');
     }
+
+    public function viewsUsers()
+    {
+        return $this->belongsToMany(User::class, 'thread_user_views', 'thread_id', 'user_id');
+    }
+
+    public function likesUsers()
+    {
+        return $this->belongsToMany(User::class, 'thread_user_likes', 'thread_id', 'user_id');
+    }
 }

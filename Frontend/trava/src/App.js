@@ -20,6 +20,8 @@ import TrendingMore from './destinations/destinationComponent/TrendingMore'; // 
 import PopularDestinationsMore from './home/homeComponent/PopularDestinationsMore';
 import RecommendedDestinationsMore from './home/homeComponent/RecommendedDestinationsMore';
 import HiddenGemsMore from './home/homeComponent/HiddenGemsMore';
+import Admin from './admin/Admin';
+
 const Layout = () => {
   const location = useLocation();
   const isPlanningItinerary = location.pathname.startsWith('/PlanningItinerary');
@@ -166,6 +168,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <HiddenGemsMore />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
             </ProtectedRoute>
           }
         />
