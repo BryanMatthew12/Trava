@@ -9,6 +9,7 @@ import { patchItinerary } from '../../api/itinerary/patchItinerary.js';
 import { useNavigate } from 'react-router-dom';
 import { fetchDayId } from '../../api/dayId/fetchDayId'; // Import if not already
 import { deleteItinerary } from '../../api/itinerary/deleteItinerary.js'; // Import if not already
+import { selectUserId } from '../../slices/auth/authSlice';
 
 const EditItinerary = (onPlaceChange) => {
   const [searchParams] = useSearchParams();
@@ -23,12 +24,14 @@ const EditItinerary = (onPlaceChange) => {
   const [destinations, setDestinations] = useState([]);
   const [dayId, setDayId] = useState([]); // Store all day ids
   const [visibleDays, setVisibleDays] = useState([]); // Track visibility of each day
+  const authUserId = useSelector(selectUserId);
 
   useEffect(() => {
     const fetchItineraryDetails = async () => {
       if (itineraryId) {
         try {
           const data = await getItineraryDetails(itineraryId);
+          console.log(data);
           const { places, ...restWithoutPlaces } = data;
           setItineraryData(restWithoutPlaces);
           setDestinations(data.places);
@@ -282,19 +285,24 @@ const EditItinerary = (onPlaceChange) => {
               </div>
             );
           })}
-          <button
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-            onClick={handleEdit}
-            disabled={!isAllDaysFilled}
-          >
-            Save Changes
-          </button>
-          <button
-            className="mt-4 bg-red-500 text-white px-4 py-2 rounded ml-4"
-            onClick={handleDelete}
-          >
-            Delete Itinerary
-          </button>
+          {/* Hanya tampilkan tombol jika user adalah pemilik itinerary */}
+          {authUserId && Number(authUserId) === Number(itineraryData.user_id) && (
+            <>
+              <button
+                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+                onClick={handleEdit}
+                disabled={!isAllDaysFilled}
+              >
+                Save Changes
+              </button>
+              <button
+                className="mt-4 bg-red-500 text-white px-4 py-2 rounded ml-4"
+                onClick={handleDelete}
+              >
+                Delete Itinerary
+              </button>
+            </>
+          )}
         </>
       ) : (
         <div>Loading...</div>

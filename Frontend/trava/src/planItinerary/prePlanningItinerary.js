@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { postPrePlanning } from '../api/itinerary/postPrePlanning';
-import { useSelector } from 'react-redux';
-import { selectDestinations } from '../slices/destination/destinationSlice';
 import Select from 'react-select';
+import { fetchDestinations } from '../api/destination/destination'; // ambil dari API-mu
+import { setDestinations, selectDestinations } from '../slices/destination/destinationSlice';
 
 const PrePlanningItinerary = () => {
+  const dispatch = useDispatch();
   const destinations = useSelector(selectDestinations);
+
+  // Fetch destinasi dari API jika kosong, lalu simpan ke Redux
+  useEffect(() => {
+    const fetchAndSetDestinations = async () => {
+      if (!destinations || destinations.length === 0) {
+        try {
+          const data = await fetchDestinations();
+          dispatch(setDestinations(data));
+        } catch (err) {
+          console.error('Failed to fetch destinations:', err);
+        }
+      }
+    };
+    fetchAndSetDestinations();
+  }, [destinations, dispatch]);
+
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [budget, setBudget] = useState(null);
@@ -19,6 +37,7 @@ const PrePlanningItinerary = () => {
   const [destinationId, setDestinationId] = useState('');
   const [title, setTitle] = useState('');
   const navigate = useNavigate();
+
   const mappedDestinations = destinations.map((destination) => ({
     value: destination.id,
     label: destination.name,
@@ -26,18 +45,18 @@ const PrePlanningItinerary = () => {
 
   const handleDestinationChange = (selectedOption) => {
     setDestination(selectedOption?.label || '');
-    setDestinationId(selectedOption?.value || ''); 
-  }
+    setDestinationId(selectedOption?.value || '');
+  };
 
   const handleContinue = async () => {
     if (!destination || !startDate || !endDate || !budget || !description || !title) {
       alert('Please fill in all fields before continuing.');
       return;
     }
-  
+
     const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
     const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
-    
+
     try {
       const itineraryId = await postPrePlanning(
         title,
@@ -50,16 +69,9 @@ const PrePlanningItinerary = () => {
         navigate
       );
     } catch (error) {
-      // console.error('Error posting itinerary:', error);
       alert('There was an error submitting your itinerary. Please try again.');
-    } 
-    // finally {
-    //   if (itineraryId) {
-    //     navigate(`/PlanningItinerary?source=header&id=${itineraryId}`);
-    //   }
-    // }
+    }
   };
-  
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-white pt-10">
