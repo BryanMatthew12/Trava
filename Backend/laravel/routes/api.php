@@ -17,8 +17,6 @@ use App\Http\Controllers\Api\V1\UserPreferenceController;
 use App\Http\Controllers\Api\V1\LocationController;
 use Illuminate\Support\Facades\Log;
 
-;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -45,7 +43,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::middleware(['role:1,2'])->group(function () {
             // Route::apiResource('itineraries', ItineraryController::class);
             Route::apiResource('destinations', DestinationController::class);
-            Route::apiResource('places', PlacesController::class);
+            // Route::apiResource('places', PlacesController::class);
             Route::apiResource('comments', CommentController::class);
             // Route::apiResource('threads', ThreadsController::class);
             // Route::apiResource('days', DayController::class);
@@ -66,7 +64,12 @@ Route::middleware(['auth:api'])->group(function () {
 
             // Route to get all places
             Route::get('/places/{id}', [PlacesController::class, 'show']);
-
+            Route::post('/store-places', [PlacesController::class, 'storePlace']); // store new places
+            // Route::post('/store-place', function() {
+            //     Log::info('Store Place route hit');
+            //     return response()->json(['message' => 'Route works']);
+            // });
+         
             // Route to itineraries 
             Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
             Route::post('/itineraries', [ItineraryController::class, 'store']); // create new itinerary
@@ -89,7 +92,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('threads/{id}/like', [ThreadsController::class, 'toggleLike']);
             
             // Route for Google Maps geocoding
-            Route::get('/locations/{placeName}', [LocationController::class, 'fetchPlaceDetails']);
+            Route::get('/locations/{placeName}', [LocationController::class, 'fetchPlaceDetails']); // Fetch places details
             Route::post('/locations', [LocationController::class, 'store']);
         });
 

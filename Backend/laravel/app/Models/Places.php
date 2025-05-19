@@ -14,6 +14,10 @@ class Places extends Model
 
     protected $primaryKey = 'place_id';
 
+    protected $casts = [
+        'operational' => 'array',
+    ];
+
     protected $fillable = [
         'destination_id',
         'location_id',

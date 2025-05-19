@@ -6,6 +6,8 @@ use App\Models\Places;
 use App\Http\Requests\StorePlacesRequest;
 use App\Http\Requests\UpdatePlacesRequest;
 use App\Http\Controllers\Controller;
+use App\Models\Location;
+use Illuminate\Support\Facades\Log;
 
 class PlacesController extends Controller
 {
@@ -66,36 +68,111 @@ class PlacesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePlacesRequest $request)
-    {
-        $validated = $request->validated();
+    // public function store(StorePlacesRequest $request)
+    // {
+    //     $validated = $request->validated();
 
-        $operational = $validated['operational'] ?? null;
-        if (is_array($operational)) {
-            $operational = json_encode($operational);
-        } elseif (is_string($operational)) {
-            // Check if it's valid JSON, if not, set to null or wrap as array
-            json_decode($operational);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                $operational = null; // or handle as needed
+    //     $operational = $validated['operational'] ?? null;
+    //     if (is_array($operational)) {
+    //         $operational = json_encode($operational);
+    //     } elseif (is_string($operational)) {
+    //         // Check if it's valid JSON, if not, set to null or wrap as array
+    //         json_decode($operational);
+    //         if (json_last_error() !== JSON_ERROR_NONE) {
+    //             $operational = null; // or handle as needed
+    //         }
+    //     }
+
+    //     $place = Places::create([
+    //         'destination_id' => $validated['destination_id'],
+    //         'place_name' => $validated['place_name'],
+    //         'place_description' => $validated['place_description'] ?? null,
+    //         'location' => $validated['location_id'] ?? null,
+    //         'place_rating' => $validated['place_rating'] ?? null,
+    //         'place_picture' => $validated['place_picture'] ?? null,
+    //         'place_est_price' => $validated['place_est_price'] ?? null,
+    //         'operational' => $validated['operational'] ?? null,
+    //         'views' => $validated['views'] ?? 0,
+    //     ]);
+
+    //     $place->categories()->sync($validated['category_ids']);
+
+    //     return response()->json($place->load('categories'), 201);
+    // }
+
+
+
+    public function storePlace(StorePlacesRequest $request)
+    {
+        
+        Log::info('storePlace method entered');
+
+        $validated = $request->validated();
+        Log::info('Validated data:', $validated);
+
+        // Try to resolve or create the location
+        $locationId = null;
+
+        if (!empty($validated['location_id'])) {
+            $existingLocation = Location::find($validated['location_id']);
+
+            if ($existingLocation) {
+                $locationId = $existingLocation->location_id;
+            } else {
+                // OPTIONAL: fetch details from Google Places API using location_id
+                // and create a new location if needed.
+                // This is just a placeholder:
+                $googleData = $this->fetchLocationFromGoogleAPI($validated['location_id']); // You’d define this method
+
+                $newLocation = Location::create([
+                    'location_id' => $validated['location_id'],
+                    'latitude'    => $googleData['latitude'],
+                    'longitude'   => $googleData['longitude'],
+                    'address'     => $googleData['address'],
+                    // Add other fields as needed
+                ]);
+
+                $locationId = $newLocation->location_id;
             }
         }
 
+        // $operational = $validated['operational'] ?? null;
+        
+        // if (is_array($operational)) {
+        //     $operational = json_encode($operational);
+        // } elseif (is_string($operational)) {
+        //     json_decode($operational);
+        //     if (json_last_error() !== JSON_ERROR_NONE) {
+        //         $operational = null;
+        //     }
+        // }
+
+
+        // Create the Place
         $place = Places::create([
-            'destination_id' => $validated['destination_id'],
-            'place_name' => $validated['place_name'],
+            'destination_id'    => $validated['destination_id'],
+            'place_name'        => $validated['place_name'],
             'place_description' => $validated['place_description'] ?? null,
-            'location' => $validated['location_id'] ?? null,
-            'place_rating' => $validated['place_rating'] ?? null,
-            'place_picture' => $validated['place_picture'] ?? null,
-            'place_est_price' => $validated['place_est_price'] ?? null,
-            'operational' => $validated['operational'] ?? null,
-            'views' => $validated['views'] ?? 0,
+            'location_id'       => $locationId,
+            'place_rating'      => $validated['place_rating'] ?? null,
+            'place_picture'     => $validated['place_picture'] ?? null,
+            'place_est_price'   => $validated['place_est_price'] ?? null,
+            'operational'       => $validated['operational'] ?? null,
+            'views'             => $validated['views'] ?? 0,
         ]);
 
-        $place->categories()->sync($validated['category_ids']);
+        Log::info('Place created:', $place->toArray());
 
-        return response()->json($place->load('categories'), 201);
+
+        // Handle many-to-many relation (categories)
+        if (isset($validated['category_ids'])) {
+            $place->categories()->sync($validated['category_ids']);
+        }
+
+        return response()->json([
+            'message' => 'Place saved successfully',
+            'place'   => $place
+        ], 201);
     }
 
     /**
