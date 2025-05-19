@@ -61,14 +61,14 @@ export const { setHome, setHome2, setHome3, clearHome } = homeSlice.actions;
 // Selector to get all places
 export const selectHome = (state) => state.home.home;
 export const selectHome2 = (state) => state.home.home2;
-export const selectHome3 = (state) => state.home.home2;
+export const selectHome3 = (state) => state.home.home3;
 // Selector to get a place by ID
 export const selectHomeById = (id) => (state) =>
   state.home.home.find((place) => place.id === id);
 export const selectHome2ById = (id) => (state) =>
   state.home.home2.find((place) => place.id === id);
 export const selectHome3ById = (id) => (state) =>
-  state.home.home2.find((place) => place.id === id);
+  state.home.home3.find((place) => place.id === id);
 
 // Selector to get places by category IDs
 export const selectHomesByCategoryIds = (categoryIds) => (state) => {

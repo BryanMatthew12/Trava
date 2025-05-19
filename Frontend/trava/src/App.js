@@ -8,6 +8,7 @@ import Threads from './threads/Threads';
 import Destinations from './destinations/Destinations';
 import PlanningItinerary from './planItinerary/PlanningItinerary';
 import PrePlanningItinerary from './planItinerary/PrePlanningItinerary';
+import EditItinerary from './planItinerary/editItinerary/EditItinerary';
 import Register from './authentication/Register';
 import Login from './authentication/Login';
 import Profile from './header/profile/Profile';
@@ -103,6 +104,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ThreadsPage />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="editItinerary"
+          element={
+            <ProtectedRoute>
+              <EditItinerary />
             </ProtectedRoute>
           }
         />

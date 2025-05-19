@@ -87,10 +87,10 @@ class ItineraryDestinationController extends Controller
                     'visit_order' => $destinationData['visit_order'],
                     'est_price' => $destinationData['est_price'] ?? null,
                 ]);
-                Log::info('Itinerary Destination Created: ', $destinationData);
+                // Log::info('Itinerary Destination Created: ', $destinationData);
             }
 
-            return response()->json(['message' => 'Places added to itinerary.'], 201);
+            return response()->json(['message' => 'Itinerary Destination Created'], 201);
         } catch (\Exception $e) {
             Log::error('Error in ItineraryDestinationController@store: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while processing the request.'], 500);
@@ -150,6 +150,7 @@ class ItineraryDestinationController extends Controller
 
         return response()->json([
             'itinerary_id' => $itinerary->itinerary_id,
+            'destination_id' => $itinerary->destinations->pluck('destination_id')->first(),
             'destination_name' => $itinerary->destinations->pluck('destination_name')->first(),
             'start_date' => $itinerary->start_date,
             'end_date' => $itinerary->end_date,
@@ -183,10 +184,62 @@ class ItineraryDestinationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateItineraryDestinationRequest $request, ItineraryDestination $itineraryDestination)
+    public function update(UpdateItineraryDestinationRequest $request, $itinerary_id)
     {
-        //
+        Log::info('Update method called', $request->all());
+
+        $validated = $request->validated();
+
+        try {
+            // You can ignore $itinerary_id from param or validate it matches the request
+            // Assuming the request does NOT include itinerary_id field, so use param:
+            $itineraryId = $itinerary_id;
+
+            // Get destination_id from request (if you want to keep it) or find from itinerary
+            $destinationId = $request->input('destination_id') ?? 
+                            Itinerary::findOrFail($itineraryId)->destinations()->first()->destination_id;
+
+            if (!$destinationId) {
+                return response()->json(['error' => 'Destination not found for this itinerary.'], 400);
+            }
+
+            // Get unique day_ids from the payload
+            $dayIds = collect($validated['destinations'])->pluck('day_id')->unique();
+
+            // Delete all existing itinerary destinations for this itinerary and these days
+            ItineraryDestination::where('itinerary_id', $itineraryId)
+                ->where('destination_id', $destinationId)
+                ->whereIn('day_id', $dayIds)
+                ->delete();
+
+            // Create new records
+            foreach ($validated['destinations'] as $data) {
+                $place = Places::findOrFail($data['place_id']);
+
+                ItineraryDestination::create([
+                    'itinerary_id' => $itineraryId,
+                    'place_id' => $place->place_id,
+                    'day_id' => $data['day_id'],
+                    'destination_id' => $destinationId,
+                    'place_name' => $place->place_name,
+                    'place_rating' => $place->place_rating,
+                    'place_image' => $place->place_image,
+                    'place_description' => $place->place_description,
+                    'visit_order' => $data['visit_order'],
+                    'est_price' => $data['est_price'] ?? null,
+                ]);
+            }
+
+            Log::info('Update completed');
+            return response()->json(['message' => 'Itinerary destinations updated successfully.'], 201);
+        } catch (\Exception $e) {
+            Log::error('Error in ItineraryDestinationController@update: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to update destinations.'], 500);
+        }
     }
+
+
+
 
     /**
      * Remove the specified resource from storage.

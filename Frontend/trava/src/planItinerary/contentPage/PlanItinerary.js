@@ -9,6 +9,7 @@ import { useSearchParams } from 'react-router-dom';
 import { fetchDayId } from '../../api/dayId/fetchDayId'; // Import fetchDayId
 import { useNavigate } from 'react-router-dom';
 import { postItinerary } from '../../api/itinerary/postItinerary';
+import { deleteItinerary } from '../../api/itinerary/deleteItinerary'; // Import deleteItinerary
 import { fetchCoord } from '../../api/mapCoord/fetchCoord'; // Import fetchCoord
 
 const PlanItinerary = (onPlaceChange) => {
@@ -48,9 +49,6 @@ const PlanItinerary = (onPlaceChange) => {
   const [visibleDays, setVisibleDays] = useState(
     Array.from({ length: tripDuration }, () => true) // Default: all days visible
   );
-
-  // State to store selected places for each day
-  const [selectedPlaces, setSelectedPlaces] = useState([]);
 
   // Fetch places based on destinationId when component mounts
   useEffect(() => {
@@ -152,6 +150,19 @@ const PlanItinerary = (onPlaceChange) => {
       )
     );
   };
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteItinerary(itineraryId, navigate);
+      if (response) {
+        return
+      } else {
+        console.error('Failed to delete itinerary:', response.message);
+      }
+    } catch (error) {
+      console.error('Error deleting itinerary:', error.message);
+    }
+  }
 
   const handleSaveItinerary = async () => {
     try {
@@ -318,6 +329,15 @@ const PlanItinerary = (onPlaceChange) => {
           onClick={handleSaveItinerary} // Call handleSaveItinerary on click
         >
           Save
+        </button>
+      </div>
+
+      <div className="p-6">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={handleDelete} // Call handleSaveItinerary on click
+        >
+          Delete
         </button>
       </div>
 

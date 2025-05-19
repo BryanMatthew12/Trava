@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import PlanItinerary from './contentPage/PlanItinerary';
 import DestinationInfo from './contentPage/DestinationInfo';
 import ItineraryDetails from './contentPage/ItineraryDetails';
+import EditItinerary from './editItinerary/EditItinerary';
 import { selectHome3ById, selectHome2ById, selectHomeById } from '../slices/home/homeSlice';
 import { selectPlacesById } from '../slices/places/placeSlice';
 import { useSelector } from 'react-redux';
@@ -50,6 +51,7 @@ const PlanningItinerary = () => {
     home: DestinationInfo,
     recommended: DestinationInfo,
     hiddenGem: DestinationInfo,
+    edit : EditItinerary,
   };
 
   const ContentComponent = sourceComponents[source] || (() => <div>Invalid source</div>);
