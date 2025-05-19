@@ -43,7 +43,7 @@ const UserTrip = () => {
       </div>
       {itineraries.length > 0 ? (
         <div className="space-y-4 overflow-y-auto" style={{ maxHeight: '200px' }}>
-          {itineraries.map((itinerary) => (
+          {[...itineraries].reverse().map((itinerary) => (
             <div
               key={itinerary.id}
               className="p-4 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"
