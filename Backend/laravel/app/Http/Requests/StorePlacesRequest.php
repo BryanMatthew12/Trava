@@ -3,13 +3,14 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class StorePlacesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize(): bool 
     {
         return true;
     }
@@ -21,11 +22,13 @@ class StorePlacesRequest extends FormRequest
      */
     public function rules(): array
     {
+        Log ::info('StorePlacesRequest validation triggered');
+
         return [
             'destination_id' => 'required|exists:destinations,destination_id',
             'place_name' => 'required|string|max:255', // dari google API
             'place_description' => 'nullable|string', // dari google API, bisa diedit
-            'location' => 'nullable|string', // dari google API
+            'location_id' => 'nullable|string', // dari google API
             'place_rating' => 'nullable|numeric|min:0|max:5', // dari google API
             'place_picture' => 'nullable|string', // dari google API, bisa diedit
             'place_est_price' => 'nullable|numeric|min:0', // dari google API 
