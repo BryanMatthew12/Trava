@@ -7,6 +7,9 @@ use App\Http\Requests\UpdateThreadsRequest;
 use App\Http\Controllers\Controller;
 use App\Services\ThreadsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Threads;
+use App\Models\User;
 
 class ThreadsController extends Controller
 {
@@ -120,5 +123,63 @@ class ThreadsController extends Controller
         }
 
         return response()->json(['message' => 'Thread deleted successfully!']);
+    }
+
+    /**
+     * Increment views only once per user.
+     */
+    public function incrementViews(Request $request, $id)
+    {
+        $user = $request->user();
+        $thread = Threads::find($id);
+
+        if (!$thread) {
+            return response()->json(['message' => 'Thread not found!'], 404);
+        }
+
+        // Cek apakah user sudah pernah view thread ini
+        if (!$thread->viewsUsers()->where('thread_user_views.user_id', $user->user_id)->exists()) {
+            $thread->viewsUsers()->attach($user->user_id);
+            $thread->views += 1;
+            $thread->save();
+        }
+
+        return response()->json([
+            'message' => 'Thread view counted!',
+            'data' => $thread,
+        ]);
+    }
+
+    /**
+     * Toggle like for a thread (like/unlike).
+     */
+    public function toggleLike(Request $request, $id)
+    {
+        $user = $request->user();
+        $thread = Threads::find($id);
+
+        if (!$thread) {
+            return response()->json(['message' => 'Thread not found!'], 404);
+        }
+
+        if ($thread->likesUsers()->where('thread_user_likes.user_id', $user->user_id)->exists()) {
+            // Sudah like, maka unlike
+            $thread->likesUsers()->detach($user->user_id);
+            $thread->likes = max(0, $thread->likes - 1);
+            $thread->save();
+            $liked = false;
+        } else {
+            // Belum like, maka like
+            $thread->likesUsers()->attach($user->user_id);
+            $thread->likes += 1;
+            $thread->save();
+            $liked = true;
+        }
+
+        return response()->json([
+            'message' => $liked ? 'Thread liked!' : 'Thread unliked!',
+            'data' => $thread,
+            'liked' => $liked,
+        ]);
     }
 }
