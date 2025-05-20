@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePlacesRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Location;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class PlacesController extends Controller
 {
@@ -16,45 +17,7 @@ class PlacesController extends Controller
      */
     public function index()
     {
-        // Get query parameters
-        $destinationId = request()->query('destination_id');
-        $placeId = request()->query('place_id');
-        $sortBy = request()->query('sort_by', 'descending'); // Default to descending
-        $page = request()->query('page', 1); // Default to page 1 if not provided or empty
-        $perPage = 5; // Number of items per page
-
-        // Ensure page is a valid number
-        $page = is_numeric($page) && $page > 0 ? (int)$page : 1;
-
-        // Determine the sorting direction
-        $sortDirection = $sortBy === 'ascending' ? 'asc' : 'desc';
-
-        // Calculate the offset based on the page
-        $offset = ($page - 1) * $perPage;
-
-        if ($placeId) {
-            // Filter places by place_id and sort, apply pagination
-            $places = Places::where('place_id', $placeId)
-                ->orderBy('place_rating', $sortDirection)
-                ->skip($offset)
-                ->take($perPage)
-                ->get();
-        } elseif ($destinationId) {
-            // Filter places by destination_id and sort, apply pagination
-            $places = Places::where('destination_id', $destinationId)
-                ->orderBy('place_rating', $sortDirection)
-                ->skip($offset)
-                ->take($perPage)
-                ->get();
-        } else {
-            // Return all places sorted by rating, apply pagination
-            $places = Places::orderBy('place_rating', $sortDirection)
-                ->skip($offset)
-                ->take($perPage)
-                ->get();
-        }
-
-        return response()->json($places);
+        
     }
 
     /**
@@ -179,6 +142,8 @@ class PlacesController extends Controller
         ], 201);
     }
 
+    
+
     /**
      * Display the specified resource.
      */
@@ -255,7 +220,95 @@ class PlacesController extends Controller
         //         'place_picture' => $place->place_picture,
         //         'place_rating' => $place->place_rating,
         //         'views' => $place->views,
-        //     ];
+        //     };
         // }));
+    }
+
+    public function getAllPlaces()
+    {
+        // Get query parameters
+        $destinationId = request()->query('destination_id');
+        $placeId = request()->query('place_id');
+        $name = request()->query('name'); // Tambah query param name
+        $sortBy = request()->query('sort_by', 'descending'); // Default to descending
+        $page = request()->query('page', 1); // Default to page 1 if not provided or empty
+        $perPage = 5; // Number of items per page
+
+        // Ensure page is a valid number
+        $page = is_numeric($page) && $page > 0 ? (int)$page : 1;
+
+        // Determine the sorting direction
+        $sortDirection = $sortBy === 'ascending' ? 'asc' : 'desc';
+
+        // Calculate the offset based on the page
+        $offset = ($page - 1) * $perPage;
+
+        // Jika ada query name, cari berdasarkan nama (LIKE)
+        if ($name) {
+            $places = Places::where('place_name', 'LIKE', '%' . $name . '%')
+                // ->orderBy('place_rating', $sortDirection)
+                ->skip($offset)
+                ->take($perPage)
+                ->get();
+        } elseif ($placeId) {
+            // Filter places by place_id and sort, apply pagination
+            $places = Places::where('place_id', $placeId)
+                ->orderBy('place_rating', $sortDirection)
+                ->skip($offset)
+                ->take($perPage)
+                ->get();
+        } elseif ($destinationId) {
+            // Filter places by destination_id and sort, apply pagination
+            $places = Places::where('destination_id', $destinationId)
+                ->orderBy('place_rating', $sortDirection)
+                ->skip($offset)
+                ->take($perPage)
+                ->get();
+        } else {
+            // Return all places sorted by rating, apply pagination
+            $places = Places::orderBy('place_rating', $sortDirection)
+                ->skip($offset)
+                ->take($perPage)
+                ->get();
+        }
+
+        return response()->json($places);
+    }
+
+    public function updatePlace(Request $request, $place_id)
+    {
+        Log::info('editPlace method entered');
+
+        $place = Places::findOrFail($place_id);
+
+        // Validasi data yang boleh diupdate
+        $validated = $request->validate([
+            'destination_id'    => 'sometimes|exists:destinations,destination_id',
+            'place_name'        => 'sometimes|string|max:255',
+            'place_description' => 'nullable|string',
+            'location_id'       => 'nullable',
+            'place_rating'      => 'nullable|numeric|min:0|max:5',
+            'place_picture'     => 'nullable|string',
+            'place_est_price'   => 'nullable|numeric|min:0',
+            'operational'       => 'nullable',
+            'views'             => 'nullable|integer|min:0',
+            'category_ids'      => 'sometimes|array',
+            'category_ids.*'    => 'exists:categories,category_id',
+        ]);
+
+        // Update kolom place
+        $place->update($validated);
+
+        // Update relasi kategori jika ada
+        if (isset($validated['category_ids'])) {
+            $place->categories()->sync($validated['category_ids']);
+        }
+
+        Log::info('Place updated:', $place->toArray());
+
+        return response()->json([
+            'message' => 'Place updated successfully',
+            'place'   => $place->load('categories')
+        ]);
     }
 }
