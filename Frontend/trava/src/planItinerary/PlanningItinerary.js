@@ -52,10 +52,14 @@ const PlanningItinerary = () => {
     recommended: DestinationInfo,
     hiddenGem: DestinationInfo,
     edit : EditItinerary,
+    search: DestinationInfo,
   };
 
   const ContentComponent = sourceComponents[source] || (() => <div>Invalid source</div>);
+  const placeFromState = location.state?.place;
+
   const contentData = (() => {
+    if (placeFromState) return placeFromState;
     if (source === 'home') {
       return home;
     } else if (source === 'recommended') {

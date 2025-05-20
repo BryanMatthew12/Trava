@@ -68,6 +68,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/places/{name}', [PlacesController::class, 'getAllPlaces']); // get all places
             Route::post('/store-places', [PlacesController::class, 'storePlace']); // store new places
             Route::patch('/places/{id}', [PlacesController::class, 'updatePlace']); // update places
+            Route::post('/places/{id}/views', [PlacesController::class, 'incrementViews']); // post views
             // Route::post('/store-place', function() {
             //     Log::info('Store Place route hit');
             //     return response()->json(['message' => 'Route works']);
