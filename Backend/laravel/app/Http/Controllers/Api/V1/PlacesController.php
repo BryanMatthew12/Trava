@@ -311,4 +311,25 @@ class PlacesController extends Controller
             'place'   => $place->load('categories')
         ]);
     }
+    public function incrementViews(Request $request, $id)
+    {
+        $user = $request->user();
+        $place = Places::find($id);
+
+        if (!$place) {
+            return response()->json(['message' => 'Place not found!'], 404);
+        }
+
+        // Cek apakah user sudah pernah view place ini
+        if (!$place->viewsUsers()->where('place_user_views.user_id', $user->user_id)->exists()) {
+            $place->viewsUsers()->attach($user->user_id);
+            $place->views += 1;
+            $place->save();
+        }
+
+        return response()->json([
+            'message' => 'Place view counted!',
+            'data' => $place,
+        ]);
+    }
 }
