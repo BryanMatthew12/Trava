@@ -94,6 +94,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/threads', [ThreadsController::class, 'index']); // get threads by itinerary_id
             Route::post('threads/{id}/view', [ThreadsController::class, 'incrementViews']);
             Route::post('threads/{id}/like', [ThreadsController::class, 'toggleLike']);
+            Route::get('threads/search', [ThreadsController::class, 'searchThreads']);
+            Route::delete('threads/{id}', [ThreadsController::class, 'deleteThreads']);
             
             // Route for Google Maps geocoding
             Route::get('/locations/{placeName}', [LocationController::class, 'fetchPlaceDetails']); // Fetch places details

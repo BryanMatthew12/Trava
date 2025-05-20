@@ -182,4 +182,74 @@ class ThreadsController extends Controller
             'liked' => $liked,
         ]);
     }
+
+    /**
+     * Search threads by query.
+     */
+    public function searchThreads(Request $request)
+    {
+        $title = $request->query('title');
+        $userId = $request->query('user_id');
+        $threadId = $request->query('thread_id');
+        $name = $request->query('name'); // Ganti dari itinerary_name ke name
+        $sortBy = $request->query('sort_by', 'descending');
+        $page = $request->query('page', 1);
+        $perPage = 12;
+
+        $page = is_numeric($page) && $page > 0 ? (int)$page : 1;
+        $sortDirection = $sortBy === 'ascending' ? 'asc' : 'desc';
+        $offset = ($page - 1) * $perPage;
+
+        $query = Threads::query()->with('itinerary');
+
+        if ($title) {
+            $query->where('title', 'LIKE', '%' . $title . '%');
+        }
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
+        if ($threadId) {
+            $query->where('id', $threadId);
+        }
+        // Ganti filter itinerary_name ke name
+        if ($name) {
+            $query->whereHas('itinerary', function ($q) use ($name) {
+                $q->where('itinerary_name', 'LIKE', '%' . $name . '%');
+            });
+        }
+
+        $query->orderBy('created_at', $sortDirection);
+
+        $threads = $query
+            ->skip($offset)
+            ->take($perPage)
+            ->get();
+
+        $total = $query->count();
+        $lastPage = ceil($total / $perPage);
+
+        return response()->json([
+            'message' => 'Threads search result!',
+            'data' => $threads,
+            'current_page' => $page,
+            'last_page' => $lastPage,
+            'total' => $total,
+        ]);
+    }
+
+    /**
+     * Delete a thread by ID.
+     */
+    public function deleteThreads($id)
+    {
+        $thread = Threads::find($id);
+
+        if (!$thread) {
+            return response()->json(['message' => 'Thread not found!'], 404);
+        }
+
+        $thread->delete();
+
+        return response()->json(['message' => 'Thread deleted successfully!']);
+    }
 }
