@@ -48,4 +48,8 @@ class Places extends Model
     {
         return $this->belongsTo(Location::class, 'location_id', 'location_id');
     }
+    public function viewsUsers()
+    {
+        return $this->belongsToMany(User::class, 'place_user_views', 'place_id', 'user_id');
+    }
 }

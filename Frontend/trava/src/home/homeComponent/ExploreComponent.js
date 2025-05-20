@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { selectUserId } from "../../slices/auth/authSlice";
 import { fetchUserPreferences } from "../../api/home/fetchUserPreference";
 import { Link } from "react-router-dom";
+import SearchData from "./SearchData";
 import RowData from "./RowData";
 import RowDataRecommended from "./RowDataRecommended";
 import RowDataHiddenGem from "./RowDataHiddenGem";
@@ -27,8 +28,8 @@ const ExploreComponent = () => {
 
   return (
     <div className="w-full max-w-4xl px-4">
+      <SearchData />
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Explore</h2>
-
       {/* Popular Destinations */}
       <div className="mb-6">
         <div className="flex justify-between">

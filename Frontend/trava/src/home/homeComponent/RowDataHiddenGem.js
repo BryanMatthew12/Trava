@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchHiddenGems } from "../../api/home/homeHidden"; // Import fetchHiddenGems
 import { setHome3, selectHiddenGems } from "../../slices/home/homeSlice";
+import { viewPlace } from "../../api/places/viewPlace";
 
 const RowDataHiddenGem = () => {
   const navigate = useNavigate();
@@ -27,7 +28,12 @@ const RowDataHiddenGem = () => {
     fetchData(); // Fetch data saat komponen dimuat
   }, [dispatch]);
 
-  const handleItemClick = (home) => {
+  const handleItemClick = async (home) => {
+    try {
+      await viewPlace(home.id); // home.id = place_id dari slice
+    } catch (e) {
+      console.error(e);
+    }
     navigate(`/PlanningItinerary?source=hiddenGem&params=${home.id}`);
   };
 

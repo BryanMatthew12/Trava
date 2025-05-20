@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setHome, selectHome } from "../../slices/home/homeSlice";
+import { viewPlace } from "../../api/places/viewPlace";
 import { BASE_URL } from "../../config";
 import Cookies from "js-cookie"; // Import js-cookie to access cookies
 
@@ -35,7 +36,12 @@ const RowData = () => {
   }, [dispatch]);
 
   // Handle navigation to a detailed page
-  const handleItemClick = (home) => {
+  const handleItemClick = async (home) => {
+    try {
+      await viewPlace(home.id); // home.id = place_id
+    } catch (e) {
+      console.error(e);
+    }
     navigate(`/PlanningItinerary?source=home&params=${home.id}`);
   };
 
@@ -49,7 +55,7 @@ const RowData = () => {
       {homes.map((home, index) => (
         <div
           key={index}
-          onClick={() => handleItemClick(home)}
+          onClick={async () => await handleItemClick(home)}
           className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
         >
           <img
