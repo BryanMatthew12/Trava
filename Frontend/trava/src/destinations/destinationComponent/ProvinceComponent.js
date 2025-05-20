@@ -68,7 +68,7 @@ const ExploreComponent = ({ dispatch }) => {
       {selectedProvinceId && (
         <>
           <TrendingRow provinceId={selectedProvinceId} provinceName={selectedProvinceLabel} />
-          <GemComponent province={selectedProvinceId} />
+          {/* <GemComponent province={selectedProvinceId} /> */}
         </>
       )}
     </div>
