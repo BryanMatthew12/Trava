@@ -161,6 +161,10 @@ class PlacesController extends Controller
             'views'             => $validated['views'] ?? 0,
         ]);
 
+        if (!$place->exists) {
+            Log::error('Place was not saved to the database!');
+        }
+
         Log::info('Place created:', $place->toArray());
 
 
@@ -180,7 +184,7 @@ class PlacesController extends Controller
      */
     public function show($id)
     {
-        $place = Places::with('category')->findOrFail($id);
+        $place = Places::with('categories')->findOrFail($id);
         return response()->json($place);
     }
 
