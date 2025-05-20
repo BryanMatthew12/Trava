@@ -30,6 +30,9 @@ const Header = () => {
             <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/Profile')}>
               Profile
             </li>
+            <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/Admin')}>
+              Admin
+            </li>
           </ul>
         </nav>
 

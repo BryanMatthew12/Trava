@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { selectUserId } from "../../slices/auth/authSlice";
 import { setHome2 } from "../../slices/home/homeSlice";
 import { useDispatch } from "react-redux";
+import { viewPlace } from "../../api/places/viewPlace";
 
 const RowDataRecommended = ({ home2 }) => {
   const navigate = useNavigate();
@@ -33,7 +34,12 @@ const RowDataRecommended = ({ home2 }) => {
   }, [id]);
 
   // Handle navigation to a detailed page
-  const handleItemClick = (home) => {
+  const handleItemClick = async (home) => {
+    try {
+      await viewPlace(home.place_id); // gunakan place_id untuk API
+    } catch (e) {
+      console.error(e);
+    }
     navigate(`/PlanningItinerary?source=recommended&params=${home.place_id}`);
   };
 
@@ -50,7 +56,7 @@ const RowDataRecommended = ({ home2 }) => {
       {recommendedHomes.map((home) => (
         <div
           key={home.id}
-          onClick={() => handleItemClick(home)}
+          onClick={async () => await handleItemClick(home)}
           className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
         >
           <img

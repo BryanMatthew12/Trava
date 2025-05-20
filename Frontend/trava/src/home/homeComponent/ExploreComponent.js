@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectUserId } from "../../slices/auth/authSlice";
+import { fetchUserPreferences } from "../../api/home/fetchUserPreference";
 import { Link } from "react-router-dom";
+import SearchData from "./SearchData";
 import RowData from "./RowData";
 import RowDataRecommended from "./RowDataRecommended";
 import RowDataHiddenGem from "./RowDataHiddenGem";
@@ -10,34 +12,24 @@ import { BASE_URL } from "../../config";
 const ExploreComponent = () => {
   const userId = useSelector(selectUserId); // Get the logged-in user's ID
   const [categoryIds, setCategoryIds] = useState([]); // State to store category IDs
-
   useEffect(() => {
-    const fetchUserPreferences = async () => {
-      try {
-        
-        const response = await fetch(`${BASE_URL}/v1/user-preferences/${userId}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch user preferences: ${response.status}`);
-        }
-        const data = await response.json();
-        setCategoryIds(data.category_ids); // Set the category IDs from the response
-      } catch (error) {
-        console.error("Error fetching user preferences:", error);
-      }
-    };
-
-    if (userId) {
-      fetchUserPreferences(); // Fetch preferences only if userId is available
+  const fetchPreferences = async () => {
+    try {
+      const response = await fetchUserPreferences(userId);
+      // response.data sudah berisi hasilnya
+      setCategoryIds(response.data.category_ids); // atau sesuaikan dengan struktur data
+    } catch (error) {
+      console.error("Error fetching user preferences:", error);
     }
-  }, [userId]);
+  };
+  fetchPreferences();
+}, [userId]);
 
-  useEffect(() => {
-  }, [userId]);
 
   return (
     <div className="w-full max-w-4xl px-4">
+      <SearchData />
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Explore</h2>
-
       {/* Popular Destinations */}
       <div className="mb-6">
         <div className="flex justify-between">
