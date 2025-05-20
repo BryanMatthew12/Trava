@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { postItinerary } from '../../api/itinerary/postItinerary';
 import { deleteItinerary } from '../../api/itinerary/deleteItinerary'; // Import deleteItinerary
 import { fetchCoord } from '../../api/mapCoord/fetchCoord'; // Import fetchCoord
+import { patchDescription } from '../../api/itinerary/patchDescription';
 
 const PlanItinerary = (onPlaceChange) => {
   const location = useLocation();
@@ -27,6 +28,7 @@ const PlanItinerary = (onPlaceChange) => {
   const [destinations, setDestinations] = useState([]); // State to store destinations
   const [selectPlace, setSelectPlace] = useState(); // State to store selected places
   const [activePlaceId, setActivePlaceId] = useState(null); // State to track active place ID
+  const [description, setDescription] = useState(location.state?.desc || ''); // State to store description
   
   const {
     start,
@@ -166,10 +168,14 @@ const PlanItinerary = (onPlaceChange) => {
 
   const handleSaveItinerary = async () => {
     try {
+      // PATCH description dulu
+      await patchDescription(itineraryId, description);
+
+      // Lalu POST destinations
       const response = await postItinerary(itineraryId, destinationId, destinations, navigate);
 
       if (response) {
-        return
+        return;
       } else {
         console.error('Failed to save itinerary:', response.message);
       }
@@ -204,6 +210,8 @@ const PlanItinerary = (onPlaceChange) => {
           <textarea
             className="w-full h-24 border border-gray-300 rounded-lg p-2"
             placeholder="Write or paste anything here: how to get around, tips and tricks"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           ></textarea>
         </div>
       </div>
