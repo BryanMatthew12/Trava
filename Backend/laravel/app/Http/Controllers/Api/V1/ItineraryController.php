@@ -111,7 +111,7 @@ class ItineraryController extends Controller
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'budget' => $validated['budget'],
-            'itinerary_description' => $validated['itinerary_description'],
+            'itinerary_description' => $validated['itinerary_description'] ?? null,
         ]);
 
         // Create Day records associated with this itinerary
@@ -147,9 +147,29 @@ class ItineraryController extends Controller
     /**
      * Update the specified resource in storage.    
      */
-    public function update(UpdateItineraryRequest $request, Itinerary $itinerary)
+    public function update(UpdateItineraryRequest $request, $itinerary_id)
     {
-        //
+        $validated = $request->validated();
+
+        // Temukan itinerary berdasarkan ID
+        $itinerary = \App\Models\Itinerary::findOrFail($itinerary_id);
+
+        // Update description jika ada di request
+        if (array_key_exists('itinerary_description', $validated)) {
+            $itinerary->itinerary_description = $validated['itinerary_description'];
+        }
+
+        // Update budget jika ada di request
+        if (array_key_exists('budget', $validated)) {
+            $itinerary->budget = $validated['budget'];
+        }
+
+        $itinerary->save();
+
+        return response()->json([
+            'message' => 'Itinerary updated successfully.',
+            'itinerary' => $itinerary,
+        ], 200);
     }
 
     /**

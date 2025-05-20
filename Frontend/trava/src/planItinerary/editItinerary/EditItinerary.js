@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getItineraryDetails } from '../../api/itinerary/getItineraryDetails';
@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { fetchDayId } from '../../api/dayId/fetchDayId'; // Import if not already
 import { deleteItinerary } from '../../api/itinerary/deleteItinerary.js'; // Import if not already
 import { selectUserId } from '../../slices/auth/authSlice';
+import { patchDescription } from '../../api/itinerary/patchDescription';
+import { FiEdit2 } from 'react-icons/fi'; // install react-icons jika belum
 
 const EditItinerary = (onPlaceChange) => {
   const [searchParams] = useSearchParams();
@@ -25,6 +27,12 @@ const EditItinerary = (onPlaceChange) => {
   const [dayId, setDayId] = useState([]); // Store all day ids
   const [visibleDays, setVisibleDays] = useState([]); // Track visibility of each day
   const authUserId = useSelector(selectUserId);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [description, setDescription] = useState('');
+  const [isEditingDesc, setIsEditingDesc] = useState(false);
+  const [descDraft, setDescDraft] = useState(description);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     const fetchItineraryDetails = async () => {
@@ -62,6 +70,35 @@ const EditItinerary = (onPlaceChange) => {
     };
     if (itineraryId) fetchDayData();
   }, [itineraryId]);
+
+  useEffect(() => {
+    if (itineraryData?.itinerary_description !== undefined) {
+      setDescription(itineraryData.itinerary_description || '');
+    }
+  }, [itineraryData]);
+
+  // Sync descDraft jika description berubah dari luar
+  useEffect(() => {
+    setDescDraft(description);
+  }, [description]);
+
+  // Detect click outside textarea
+  useEffect(() => {
+    if (!isEditingDesc) return;
+    function handleClickOutside(e) {
+      if (textareaRef.current && !textareaRef.current.contains(e.target)) {
+        setIsEditingDesc(false);
+        if (descDraft !== description) {
+          patchDescription(itineraryId, descDraft)
+            .then(() => alert('Description updated!'))
+            .catch(() => alert('Failed to update description'));
+          setDescription(descDraft);
+        }
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isEditingDesc, descDraft, description, itineraryId, setDescription]);
 
   // Set the active place by placeId and optionally set the selected place name
   const handleActivePlace = (placeId, placeName) => {
@@ -127,23 +164,6 @@ const EditItinerary = (onPlaceChange) => {
     );
   };
 
-  const handleDelete = async () => {
-      try {
-        const response = await deleteItinerary(itineraryId, navigate);
-        if (response) {
-          return
-        } else {
-          console.error('Failed to delete itinerary:', response.message);
-        }
-      } catch (error) {
-        console.error('Error deleting itinerary:', error.message);
-      }
-    }
-
-  const handleNextPage = async () => {
-    setCurrPage((prevPage) => prevPage + 1);
-  };
-
   const handleEdit = async () => {
     if (!itineraryData || !destinations) return;
 
@@ -162,6 +182,19 @@ const EditItinerary = (onPlaceChange) => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const response = await deleteItinerary(itineraryId, navigate);
+      if (response) {
+        return;
+      } else {
+        console.error('Failed to delete itinerary:', response.message);
+      }
+    } catch (error) {
+      console.error('Error deleting itinerary:', error.message);
+    }
+  };
+
   // Toggle day visibility
   const toggleDayVisibility = (index) => {
     setVisibleDays((prev) =>
@@ -174,6 +207,10 @@ const EditItinerary = (onPlaceChange) => {
     (id) => destinations.some((destination) => destination.day_id === id)
   );
 
+  const handleNextPage = () => {
+    setCurrPage((prev) => prev + 1);
+  };
+
   return (
     <div className="p-6">
       {itineraryData ? (
@@ -185,9 +222,30 @@ const EditItinerary = (onPlaceChange) => {
           <p className="text-gray-600 mb-2">
             <strong>End Date:</strong> {new Date(itineraryData.end_date).toLocaleDateString()}
           </p>
-          <p className="text-gray-600 mb-4">
-            <strong>Description:</strong> {itineraryData.itinerary_description}
-          </p>
+          <div className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Description</h2>
+          <div className="bg-white shadow-md rounded-lg p-4 relative">
+            <textarea
+              ref={textareaRef}
+              className="w-full h-24 border border-gray-300 rounded-lg p-2 pr-10"
+              placeholder="Write or paste anything here: how to get around, tips and tricks"
+              value={descDraft}
+              readOnly={!isEditingDesc}
+              style={{ background: isEditingDesc ? 'white' : '#f3f4f6', cursor: isEditingDesc ? 'text' : 'default' }}
+              onChange={e => setDescDraft(e.target.value)}
+            />
+            {!isEditingDesc && (
+              <button
+                className="absolute top-2 right-2 text-gray-400 hover:text-blue-500"
+                onClick={() => setIsEditingDesc(true)}
+                type="button"
+                tabIndex={-1}
+              >
+                <FiEdit2 size={20} />
+              </button>
+            )}
+          </div>
+        </div>
 
           {dayId.map((id, index) => {
             const places = destinations.filter((d) => d.day_id === id);
@@ -214,9 +272,9 @@ const EditItinerary = (onPlaceChange) => {
                         .map((place) => (
                           <div
                           onClick={() => {
-  handleActivePlace(place.place_id, place.place_name);
-  console.log('Selected Place:', place);
-}}
+                          handleActivePlace(place.place_id, place.place_name);
+                          console.log('Selected Place:', place);
+                        }}
 
                             key={place.place_id + '-' + place.visit_order}
                             className={`mb-4 p-4 border border-gray-300 rounded-lg flex items-center cursor-pointer transition-transform duration-200 ${
@@ -290,18 +348,72 @@ const EditItinerary = (onPlaceChange) => {
             <>
               <button
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-                onClick={handleEdit}
+                onClick={() => setShowSaveModal(true)}
                 disabled={!isAllDaysFilled}
               >
                 Save Changes
               </button>
               <button
                 className="mt-4 bg-red-500 text-white px-4 py-2 rounded ml-4"
-                onClick={handleDelete}
+                onClick={() => setShowDeleteModal(true)}
               >
                 Delete Itinerary
               </button>
             </>
+          )}
+
+          {/* Save Confirmation Modal */}
+          {showSaveModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+                <h2 className="text-lg font-semibold mb-4">Confirm Save</h2>
+                <p>Are you sure you want to save changes to this itinerary?</p>
+                <div className="flex justify-end mt-6">
+                  <button
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
+                    onClick={() => setShowSaveModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    onClick={async () => {
+                      setShowSaveModal(false);
+                      await handleEdit();
+                    }}
+                  >
+                    Yes, Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Delete Confirmation Modal */}
+          {showDeleteModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+                <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+                <p>Are you sure you want to delete this itinerary? This action cannot be undone.</p>
+                <div className="flex justify-end mt-6">
+                  <button
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
+                    onClick={() => setShowDeleteModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={async () => {
+                      setShowDeleteModal(false);
+                      await handleDelete();
+                    }}
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </>
       ) : (

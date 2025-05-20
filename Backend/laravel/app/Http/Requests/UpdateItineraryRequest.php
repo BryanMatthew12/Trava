@@ -22,7 +22,9 @@ class UpdateItineraryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-        ];
+        'itinerary_description' => ['nullable', 'string'],
+        'budget' => ['nullable', 'numeric'],
+        // tambahkan field lain jika perlu
+    ];
     }
 }

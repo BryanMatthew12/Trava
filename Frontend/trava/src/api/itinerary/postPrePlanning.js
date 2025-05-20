@@ -1,5 +1,5 @@
 import axios from "axios";
-import Cookies from "js-cookie"; // Import js-cookie to access cookies
+import Cookies from "js-cookie";
 import { BASE_URL } from "../../config";
 
 export const postPrePlanning = async (
@@ -7,7 +7,6 @@ export const postPrePlanning = async (
   start,
   end,
   budget,
-  desc,
   destination,
   destinationId,
   navigate
@@ -15,16 +14,17 @@ export const postPrePlanning = async (
   try {
     const token = Cookies.get("token");
 
+    const payload = {
+      itinerary_name: title,
+      start_date: start,
+      end_date: end,
+      budget: budget,
+      destination_id: destinationId,
+    };
+
     const response = await axios.post(
       `${BASE_URL}/v1/itineraries`,
-      {
-        itinerary_name: title,
-        start_date: start,
-        end_date: end,
-        budget: budget,
-        itinerary_description: desc,
-        destination_id: destinationId,
-      },
+      payload,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -34,14 +34,12 @@ export const postPrePlanning = async (
     );
 
     const itineraryId = response.data.id;
-    // Pass the data as an object using the `state` parameter
     navigate(`/PlanningItinerary?source=header&params=${itineraryId}`, {
       state: {
         itineraryId,
         start,
         end,
         budget,
-        desc,
         destination,
         destinationId,
       },
