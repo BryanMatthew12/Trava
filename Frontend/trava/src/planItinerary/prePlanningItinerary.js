@@ -32,7 +32,7 @@ const PrePlanningItinerary = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [budget, setBudget] = useState(null);
-  const [description, setDescription] = useState('');
+  // const [description, setDescription] = useState('');
   const [destination, setDestination] = useState('');
   const [destinationId, setDestinationId] = useState('');
   const [title, setTitle] = useState('');
@@ -49,7 +49,7 @@ const PrePlanningItinerary = () => {
   };
 
   const handleContinue = async () => {
-    if (!destination || !startDate || !endDate || !budget || !description || !title) {
+    if (!destination || !startDate || !endDate || !budget  || !title) {
       alert('Please fill in all fields before continuing.');
       return;
     }
@@ -63,7 +63,7 @@ const PrePlanningItinerary = () => {
         formattedStartDate,
         formattedEndDate,
         budget,
-        description,
+        // description,
         destination,
         destinationId,
         navigate
@@ -104,7 +104,7 @@ const PrePlanningItinerary = () => {
         />
       </div>
 
-      <div className="mb-6 w-full max-w-md">
+      {/* <div className="mb-6 w-full max-w-md">
         <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
         <input
           type="text"
@@ -113,7 +113,7 @@ const PrePlanningItinerary = () => {
           onChange={(e) => setDescription(e.target.value)}
           className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </div>
+      </div> */}
 
       <div className="mb-6 w-full max-w-md">
         <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
