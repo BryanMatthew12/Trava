@@ -243,74 +243,63 @@ class PlacesController extends Controller
         // Calculate the offset based on the page
         $offset = ($page - 1) * $perPage;
 
-        // Jika ada query name, cari berdasarkan nama (LIKE)
+        $query = Places::query();
         if ($name) {
-            $places = Places::where('place_name', 'LIKE', '%' . $name . '%')
-                // ->orderBy('place_rating', $sortDirection)
-                ->skip($offset)
-                ->take($perPage)
-                ->get();
-        } elseif ($placeId) {
-            // Filter places by place_id and sort, apply pagination
-            $places = Places::where('place_id', $placeId)
-                ->orderBy('place_rating', $sortDirection)
-                ->skip($offset)
-                ->take($perPage)
-                ->get();
-        } elseif ($destinationId) {
-            // Filter places by destination_id and sort, apply pagination
-            $places = Places::where('destination_id', $destinationId)
-                ->orderBy('place_rating', $sortDirection)
-                ->skip($offset)
-                ->take($perPage)
-                ->get();
-        } else {
-            // Return all places sorted by rating, apply pagination
-            $places = Places::orderBy('place_rating', $sortDirection)
-                ->skip($offset)
-                ->take($perPage)
-                ->get();
-        }
+                $query->where('place_name', 'LIKE', '%' . $name . '%');
+            } elseif ($placeId) {
+                $query->where('place_id', $placeId);
+            } elseif ($destinationId) {
+                $query->where('destination_id', $destinationId);
+            }
 
+        $places = $query->orderBy('place_rating', $sortDirection)
+                        ->skip($offset)
+                        ->take($perPage)
+                        ->get();
+
+        $places->transform(function ($place) {
+            if ($place->place_picture) {
+                // You can adjust MIME type if you store it elsewhere
+                $place->place_picture_url = 'data:image/jpeg;base64,' . base64_encode($place->place_picture);
+            } else {
+                $place->place_picture_url = null;
+            }
+
+            // Optional: remove raw binary to save bandwidth
+            unset($place->place_picture);
+
+            return $place;
+        });
+        
         return response()->json($places);
     }
 
-    public function updatePlace(Request $request, $place_id)
-    {
-        Log::info('editPlace method entered');
 
+    public function updatePlace(UpdatePlacesRequest $request, $place_id)
+    {
         $place = Places::findOrFail($place_id);
 
-        // Validasi data yang boleh diupdate
-        $validated = $request->validate([
-            'destination_id'    => 'sometimes|exists:destinations,destination_id',
-            'place_name'        => 'sometimes|string|max:255',
-            'place_description' => 'nullable|string',
-            'location_id'       => 'nullable',
-            'place_rating'      => 'nullable|numeric|min:0|max:5',
-            'place_picture'     => 'nullable|string',
-            'place_est_price'   => 'nullable|numeric|min:0',
-            'operational'       => 'nullable',
-            'views'             => 'nullable|integer|min:0',
-            'category_ids'      => 'sometimes|array',
-            'category_ids.*'    => 'exists:categories,category_id',
-        ]);
+        $validated = $request->validate();
 
-        // Update kolom place
-        $place->update($validated);
+        if ($request->hasFile('place_picture')) {
+            $imageBinary = file_get_contents($request->file('place_picture')->getRealPath());
+            $place->place_picture = $imageBinary;
+        }
 
-        // Update relasi kategori jika ada
+        $place->fill($validated)->save();
+
         if (isset($validated['category_ids'])) {
             $place->categories()->sync($validated['category_ids']);
         }
 
-        Log::info('Place updated:', $place->toArray());
+        // Log::info('Place updated:', $place->toArray());
 
         return response()->json([
             'message' => 'Place updated successfully',
             'place'   => $place->load('categories')
         ]);
     }
+    
     public function incrementViews(Request $request, $id)
     {
         $user = $request->user();

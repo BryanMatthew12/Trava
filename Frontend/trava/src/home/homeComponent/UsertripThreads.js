@@ -4,7 +4,7 @@ import UserThread from "./UserThread";
 
 const UsertripThreads = () => {
   return (
-    <div className="flex flex-col md:flex-row gap-6 max-w-6xl w-[85%] justify-center items-start p-4">
+    <div className="flex flex-col md:flex-row gap-6 max-w-5xl w-[70%] justify-center items-start p-4">
 
      <UserTrip/>
     <UserThread/>

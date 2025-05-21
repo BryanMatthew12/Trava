@@ -15,7 +15,7 @@ class CreatePlacesTable extends Migration
             $table->text('place_description')->nullable(); 
             $table->unsignedBigInteger('location_id')->nullable();
             $table->decimal('place_rating', 3, 2);
-            $table->string('place_picture');
+            $table->binary('place_picture')->nullable();
             $table->decimal('place_est_price', 10, 2);
             $table->json('operational')->nullable(); 
             $table->integer('views')->default(0);
