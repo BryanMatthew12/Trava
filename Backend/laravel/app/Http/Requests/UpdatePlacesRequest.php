@@ -27,7 +27,7 @@ class UpdatePlacesRequest extends FormRequest
             'place_description' => 'nullable|string',
             'location_id'       => 'nullable',
             'place_rating'      => 'nullable|numeric|min:0|max:5',
-            'place_picture'     => 'nullable|file|image|mimes:jpeg,png,jpg|max:2048',
+            'place_picture' => 'nullable|string',
             'place_est_price'   => 'nullable|numeric|min:0',
             'operational'       => 'nullable',
             'views'             => 'nullable|integer|min:0',
