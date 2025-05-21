@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { updatePlace } from "../api/admin/updatePlace";
 import AsyncSelect from "react-select/async";
 import { editPlaceByName } from "../api/admin/editPlaceByName";
+
 import { selectDestinations } from "../slices/destination/destinationSlice";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -50,6 +51,7 @@ const EditPlacesById = () => {
 
   const [defaultPlaceOptions, setDefaultPlaceOptions] = useState([]);
   const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   // Fetch all places for defaultOptions
   useEffect(() => {
@@ -252,8 +254,17 @@ const EditPlacesById = () => {
         onImageCropped={blob => {
           console.log("Blob hasil crop:", blob);
           setImageFile(blob);
+          const url = URL.createObjectURL(blob);
+          setPreviewUrl(url);
         }}
       />
+      {previewUrl && (
+        <img
+          src={previewUrl}
+          alt="Preview"
+          style={{ maxWidth: 200, marginTop: 8, borderRadius: 8 }}
+        />
+      )}
       <input name="place_est_price" value={formData.place_est_price} placeholder="Estimated Price" type="number" onChange={handleChange} required className="w-full p-2 border rounded" />
 
       <div>
