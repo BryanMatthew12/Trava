@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->decimal('budget', 10, 2);
-            $table->text('itinerary_description');
+            $table->text('itinerary_description')->nullable();
             
             $table->timestamps();
 
