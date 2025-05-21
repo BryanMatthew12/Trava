@@ -65,15 +65,34 @@ const ImageUploadCrop = ({ onImageCropped }) => {
     setCrop(centerCrop(crop, width, height));
   };
 
+  function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
   const handleCropDone = async () => {
-    if (imgRef.current && crop?.width && crop?.height) {
-      const pixelCrop = convertToPixelCrop(crop, imgRef.current.width, imgRef.current.height);
-      const croppedBlob = await getCroppedBlob(imgRef.current, pixelCrop);
-      onImageCropped(croppedBlob);
-      setShowCrop(false);
-      setImgSrc("");
-    }
-  };
+  if (imgRef.current && crop?.width && crop?.height) {
+    const pixelCrop = convertToPixelCrop(crop, imgRef.current.width, imgRef.current.height);
+    const croppedBlob = await getCroppedBlob(imgRef.current, pixelCrop);
+
+    // Convert to base64
+    const base64String = await blobToBase64(croppedBlob);
+    console.log("Base64 string:", base64String);
+
+    // You can pass base64String to parent if needed
+    // onImageCropped(base64String);
+
+    // Or keep passing the Blob if you want to upload as file
+    onImageCropped(base64String);
+
+    setShowCrop(false);
+    setImgSrc("");
+  }
+};
 
   return (
     <div>

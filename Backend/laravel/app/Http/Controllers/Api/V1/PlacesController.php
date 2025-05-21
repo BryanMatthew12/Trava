@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class PlacesController extends Controller
 {
@@ -270,36 +271,38 @@ class PlacesController extends Controller
 
             return $place;
         });
-        
+            
         return response()->json($places);
     }
 
 
     public function updatePlace(UpdatePlacesRequest $request, $place_id)
-    {
-        $place = Places::findOrFail($place_id);
+{
+    $place = Places::findOrFail($place_id);
 
-        $validated = $request->validated();
+    $validated = $request->validated();
 
-        // Simpan file ke storage dan simpan path-nya ke database
-        if ($request->hasFile('place_picture')) {
-            $file = $request->file('place_picture');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/places', $filename);
-            $place->place_picture = 'places/' . $filename; // hanya path
-        }
-
-        $place->fill($validated)->save();
-
-        if (isset($validated['category_ids'])) {
-            $place->categories()->sync($validated['category_ids']);
-        }
-
-        return response()->json([
-            'message' => 'Place updated successfully',
-            'place'   => $place->load('categories')
-        ]);
+    // Handle blob file if uploaded
+    if ($request->hasFile('place_picture')) {
+        $file = $request->file('place_picture');
+        $place->place_picture = file_get_contents($file->getRealPath());
     }
+
+    // Fill other fields (excluding place_picture to avoid overwriting it if not present)
+    $place->place_picture = $validated['place_picture'] ?? null;
+    $place->save();
+
+    if (isset($validated['category_ids'])) {
+        $place->categories()->sync($validated['category_ids']);
+    }
+
+    return response()->json([
+        'message' => 'Place updated successfully',
+        'place'   => $place->load('categories')
+    ]);
+}
+
+
     
     public function incrementViews(Request $request, $id)
     {
