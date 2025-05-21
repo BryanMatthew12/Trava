@@ -302,7 +302,7 @@ class PlacesController extends Controller
     ]);
 }
 
-
+    // AAAA
     
     public function incrementViews(Request $request, $id)
     {
