@@ -1,19 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { likeThread } from '../../../api/thread/likeThread';
+import { getThreadById } from '../../../api/thread/getThreadById';
 import { useSearchParams } from 'react-router-dom';
 
 const ThreadContent = ({ itinerary, thread, onLike }) => {
-  const [liked, setLiked] = useState(thread.liked || false);
-  const [likes, setLikes] = useState(thread.likes);
-
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(0);
   const [searchParams] = useSearchParams();
-  const id = searchParams.get('threads_id'); // Get 'params' from URL
+  const id = searchParams.get('threads_id');
+
+  // Ambil data thread (termasuk status like user) saat mount & setiap id berubah
+  useEffect(() => {
+    const fetchThread = async () => {
+      try {
+        const data = await getThreadById(id);
+        const threadData = Array.isArray(data?.data) ? data.data[0] : data?.data;
+        setLiked(!!threadData?.liked);
+        setLikes(threadData?.likes ?? 0);
+      } catch (error) {
+        setLiked(false);
+        setLikes(0);
+      }
+    };
+    if (id) fetchThread();
+  }, [id]);
+
   const handleLike = async () => {
-    const result = await likeThread(id);
-    if (result && typeof result.liked === 'boolean') {
-      setLiked(result.liked);
-      setLikes(result.data.likes);
-    }
+    await likeThread(id);
+    const data = await getThreadById(id);
+    const threadData = Array.isArray(data?.data) ? data.data[0] : data?.data;
+    setLiked(!!threadData?.liked);
+    setLikes(threadData?.likes ?? 0);
   };
 
   return (
