@@ -22,7 +22,17 @@ class UpdatePlacesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+             'destination_id'    => 'sometimes|exists:destinations,destination_id',
+            'place_name'        => 'sometimes|string|max:255',
+            'place_description' => 'nullable|string',
+            'location_id'       => 'nullable',
+            'place_rating'      => 'nullable|numeric|min:0|max:5',
+            'place_picture'     => 'nullable|file|image|mimes:jpeg,png,jpg|max:2048',
+            'place_est_price'   => 'nullable|numeric|min:0',
+            'operational'       => 'nullable',
+            'views'             => 'nullable|integer|min:0',
+            'category_ids'      => 'sometimes|array',
+            'category_ids.*'    => 'exists:categories,category_id',
         ];
     }
 }
