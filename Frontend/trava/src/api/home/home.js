@@ -15,6 +15,8 @@ export const fetchHomes = async (userId) => {
     });
     if (response.data) {
       return response.data;
+      console.log('response.data', response.data);
+      
     } else {
       throw new Error('Error: No data received from the API');
     }
