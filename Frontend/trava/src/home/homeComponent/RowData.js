@@ -13,6 +13,9 @@ const RowData = () => {
 
   useEffect(() => {
     const fetchHomes = async () => {
+      // const data = await response.json();
+      // console.log(data);
+      
       try {
         const token = Cookies.get("token"); // Get the token from cookies
 
@@ -51,15 +54,23 @@ const RowData = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {homes.map((home, index) => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {homes.map((home, index) => {
+      console.log("place_picture:", home.place_picture); // Log the place_picture here
+        // console.log("home object:", home); // Add this line
+
+      return (
         <div
           key={index}
           onClick={async () => await handleItemClick(home)}
           className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
         >
           <img
-            src={home.place_picture}
+            src={
+              home.place_picture
+                ? home.place_picture
+                : "https://via.placeholder.com/300x200?text=No+Image"
+            }
             alt={home.name}
             className="w-full h-48 object-cover rounded-lg"
           />
@@ -71,9 +82,10 @@ const RowData = () => {
           </p>
           <p className="text-sm text-gray-500">Rating: {home.rating} ★</p>
         </div>
-      ))}
-    </div>
-  );
+      );
+    })}
+  </div>
+);
 };
 
 export default RowData;
