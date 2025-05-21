@@ -270,7 +270,7 @@ class PlacesController extends Controller
 
             return $place;
         });
-        
+            
         return response()->json($places);
     }
 
@@ -279,7 +279,7 @@ class PlacesController extends Controller
     {
         $place = Places::findOrFail($place_id);
 
-        $validated = $request->validate();
+        $validated = $request->validated();
 
         if ($request->hasFile('place_picture')) {
             $imageBinary = file_get_contents($request->file('place_picture')->getRealPath());
