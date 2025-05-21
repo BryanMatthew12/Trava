@@ -105,7 +105,7 @@ class ItineraryController extends Controller
         Log::info('Days: ' . $days);
 
         // Create the itinerary (without saving days count in the database)
-        $itinerary = Itinerary::create([
+        $itinerary = Itinerary::create([    
             'user_id' => auth()->user()->user_id,
             'itinerary_name' => $validated['itinerary_name'],
             'start_date' => $validated['start_date'],
