@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectPlaces } from "../../slices/places/placeSlice";
 import { useNavigate } from "react-router-dom";
+import { viewPlace } from "../../api/places/viewPlace"; // Tambahkan import ini
 
 const RowDataTrending = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -31,7 +32,13 @@ const RowDataTrending = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleItemClick = (place) => {
+  const handleItemClick = async (place) => {
+    try {
+      await viewPlace(place.id); // Tambah view sebelum navigasi
+    } catch (error) {
+      // Optional: handle error, misal tetap lanjut navigasi walau gagal
+      console.error(error);
+    }
     navigate(`/PlanningItinerary?source=destination&params=${place.id}`);
   };
 

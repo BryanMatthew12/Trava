@@ -55,10 +55,20 @@ class ThreadsController extends Controller
         }
 
         $threads = $threadsQuery->paginate(12);
+        $user = $request->user();
+
+        // Tambahkan status liked untuk setiap thread
+        $threadsData = collect($threads->items())->map(function ($thread) use ($user) {
+            $thread->liked = false;
+            if ($user) {
+                $thread->liked = $thread->likesUsers()->where('thread_user_likes.user_id', $user->user_id)->exists();
+            }
+            return $thread;
+        });
 
         return response()->json([
             'message' => 'Threads retrieved successfully!',
-            'data' => $threads->items(),
+            'data' => $threadsData,
             'current_page' => $threads->currentPage(),
             'last_page' => $threads->lastPage(),
         ]);

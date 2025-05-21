@@ -2,22 +2,20 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { BASE_URL } from "../../config";
 
-export const updatePlace = async (id, body, placeId) => {
+export const updatePlace = async (id, body, placeId, headers = {}) => {
   try {
     const token = Cookies.get("token");
-
     const response = await axios.patch(
-      `${BASE_URL}/v1/places/${placeId}`, // Your actual endpoint
-      body, // Send the full body
+      `${BASE_URL}/v1/places/${placeId}`,
+      body,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          ...headers,
         },
       }
     );
-
-    return response.data; // Return actual response data
+    return response.data;
   } catch (error) {
     console.error(
       "Error updating place:",

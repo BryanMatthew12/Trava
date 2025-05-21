@@ -110,7 +110,7 @@ export default function EditPlaces() {
         />
       <input name="place_name" placeholder="Place Name" onChange={handleChange} required className="w-full p-2 border rounded" />
       <textarea name="place_description" placeholder="Description" onChange={handleChange} required className="w-full p-2 border rounded" />
-      <input name="place_picture" placeholder="Image URL" onChange={handleChange} required className="w-full p-2 border rounded" />
+      <input name="place_picture" placeholder="Image URL" onChange={handleChange} className="w-full p-2 border rounded" />
       <input name="place_est_price" placeholder="Estimated Price" type="number" onChange={handleChange} required className="w-full p-2 border rounded" />
 
       <div>
