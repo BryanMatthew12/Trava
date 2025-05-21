@@ -6,7 +6,6 @@ import { useParams } from "react-router-dom";
 import { updatePlace } from "../api/admin/updatePlace";
 import AsyncSelect from "react-select/async";
 import { editPlaceByName } from "../api/admin/editPlaceByName";
-
 import { selectDestinations } from "../slices/destination/destinationSlice";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -289,13 +288,6 @@ const EditPlacesById = () => {
           imageFileRef.current = null;
         }}
       />
-      {previewUrl && (
-        <img
-          src={previewUrl}
-          alt="Preview"
-          style={{ maxWidth: 200, marginTop: 8, borderRadius: 8 }}
-        />
-      )}
       <input name="place_est_price" value={formData.place_est_price} placeholder="Estimated Price" type="number" onChange={handleChange} required className="w-full p-2 border rounded" />
 
       <div>
