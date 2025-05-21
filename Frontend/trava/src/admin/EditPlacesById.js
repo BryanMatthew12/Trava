@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useRef } from "react";
 import Select from "react-select";
 import { useParams } from "react-router-dom";
 import { updatePlace } from "../api/admin/updatePlace";
@@ -49,7 +50,8 @@ const EditPlacesById = () => {
   });
 
   const [defaultPlaceOptions, setDefaultPlaceOptions] = useState([]);
-  const [imageFile, setImageFile] = useState(null);
+  const imageFileRef = useRef(null);
+
 
   // Fetch all places for defaultOptions
   useEffect(() => {
@@ -163,51 +165,79 @@ const EditPlacesById = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Format operational hours
-    const formattedOperational = {};
-    for (const day of daysOfWeek) {
-      const dayData = formData.operational[day];
-      if (dayData?.start && dayData?.end) {
-        formattedOperational[day] = `${dayData.start}-${dayData.end}`;
+  // Format operational hours
+  const formattedOperational = {};
+  for (const day of daysOfWeek) {
+    const dayData = formData.operational[day];
+    if (dayData?.start && dayData?.end) {
+      formattedOperational[day] = `${dayData.start}-${dayData.end}`;
+    }
+  }
+
+  const finalData = {
+    ...formData,
+    place_rating: parseFloat(formData.place_rating),
+    place_est_price: parseInt(formData.place_est_price),
+    operational: JSON.stringify(formattedOperational),
+  };
+  await updatePlace(formData.place_id, finalData, placeId2, { "Content-Type": "application/json" });
+
+  let payload;
+  let headers = {};
+
+  // Handle image file from imageFileRef
+  if (imageFileRef.current instanceof Blob) {
+    // Create a File from the Blob to ensure it has a name/type
+    const file = new File([imageFileRef.current], "image.jpg", {
+      type: imageFileRef.current.type || "image/jpeg",
+    });
+
+    console.log("✅ Valid file:");
+    console.log("File name:", file.name);
+    console.log("File type:", file.type);
+    console.log("File size:", file.size);
+
+    payload = new FormData();
+    Object.entries(finalData).forEach(([key, value]) => {
+      if (key === "category_ids") {
+        value.forEach((v) => payload.append("category_ids[]", v));
+      } else {
+        payload.append(key, value);
+      }
+    });
+
+    payload.append("place_picture", file);
+    headers = {}; // Let browser set Content-Type to multipart/form-data
+  } else {
+    // No image file, send JSON normally
+    payload = finalData;
+    headers["Content-Type"] = "application/json";
+  }
+
+  try {
+    // Debug payload
+    if (payload instanceof FormData) {
+      for (let pair of payload.entries()) {
+        console.log(pair[0] + ":", pair[1]);
+        if (pair[1] instanceof File) {
+          // console.log("File name:", pair[1].name);
+          // console.log("File type:", pair[1].type);
+          // console.log("File size:", pair[1].size);
+        }
       }
     }
+    await updatePlace(formData.place_id, payload, placeId2, headers);
+    // Show success or redirect here if needed
+  } catch (err) {
+    console.error("Update failed:", err);
+    // Show error message here if needed
+  }
 
-    const finalData = {
-      ...formData,
-      place_rating: parseFloat(formData.place_rating),
-      place_est_price: parseInt(formData.place_est_price),
-      operational: JSON.stringify(formattedOperational),
-    };
+  console.log("Form data submitted:", finalData);
+};
 
-    let payload;
-    let headers = {};
-
-    if (imageFile) {
-      console.log("Blob yang akan diupload:", imageFile);
-      payload = new FormData();
-      Object.entries(finalData).forEach(([key, value]) => {
-        if (key === "category_ids") {
-          value.forEach((v) => payload.append("category_ids[]", v));
-        } else {
-          payload.append(key, value);
-        }
-      });
-      payload.append("place_picture", imageFile); // blob hasil crop
-      headers["Content-Type"] = "multipart/form-data";
-    } else {
-      payload = finalData;
-      headers["Content-Type"] = "application/json";
-    }
-
-    try {
-      await updatePlace(formData.place_id, payload, placeId2, headers);
-      // Optionally show success toast or redirect
-    } catch (err) {
-      // Optionally show error message to the user
-    }
-  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto p-4 bg-white rounded shadow">
@@ -249,9 +279,13 @@ const EditPlacesById = () => {
       <input name="place_name" value={formData.place_name} placeholder="Place Name" onChange={handleChange} required className="w-full p-2 border rounded" />
       <textarea name="place_description" value={formData.place_description} placeholder="Description" onChange={handleChange} required className="w-full p-2 border rounded" />
       <ImageUploadCrop
-        onImageCropped={blob => {
-          console.log("Blob hasil crop:", blob);
-          setImageFile(blob);
+        onImageCropped={base64 => {
+          setFormData({ ...formData, place_picture: base64 });
+          // console.log("Received cropped blob:", blob);
+          // console.log("Type of blob:", typeof blob);
+          // console.log("Blob instanceof Blob:", blob instanceof Blob);
+          // setImageFile(blob);
+          imageFileRef.current = null;
         }}
       />
       <input name="place_est_price" value={formData.place_est_price} placeholder="Estimated Price" type="number" onChange={handleChange} required className="w-full p-2 border rounded" />
