@@ -281,9 +281,12 @@ class PlacesController extends Controller
 
         $validated = $request->validated();
 
+        // Simpan file ke storage dan simpan path-nya ke database
         if ($request->hasFile('place_picture')) {
-            $imageBinary = file_get_contents($request->file('place_picture')->getRealPath());
-            $place->place_picture = $imageBinary;
+            $file = $request->file('place_picture');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/places', $filename);
+            $place->place_picture = 'places/' . $filename; // hanya path
         }
 
         $place->fill($validated)->save();
@@ -291,8 +294,6 @@ class PlacesController extends Controller
         if (isset($validated['category_ids'])) {
             $place->categories()->sync($validated['category_ids']);
         }
-
-        // Log::info('Place updated:', $place->toArray());
 
         return response()->json([
             'message' => 'Place updated successfully',
