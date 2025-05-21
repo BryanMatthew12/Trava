@@ -9,6 +9,7 @@ import { selectDestinations } from "../slices/destination/destinationSlice";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { BASE_URL } from "../config";
+import ImageUploadCrop from "../api/admin/ImageUploadCrop"; // Pastikan path benar
 
 
 const daysOfWeek = [
@@ -48,6 +49,7 @@ const EditPlacesById = () => {
   });
 
   const [defaultPlaceOptions, setDefaultPlaceOptions] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
 
   // Fetch all places for defaultOptions
   useEffect(() => {
@@ -163,7 +165,7 @@ const EditPlacesById = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Format operational hours like "08:00-17:00"
+    // Format operational hours
     const formattedOperational = {};
     for (const day of daysOfWeek) {
       const dayData = formData.operational[day];
@@ -179,8 +181,28 @@ const EditPlacesById = () => {
       operational: JSON.stringify(formattedOperational),
     };
 
+    let payload;
+    let headers = {};
+
+    if (imageFile) {
+      console.log("Blob yang akan diupload:", imageFile);
+      payload = new FormData();
+      Object.entries(finalData).forEach(([key, value]) => {
+        if (key === "category_ids") {
+          value.forEach((v) => payload.append("category_ids[]", v));
+        } else {
+          payload.append(key, value);
+        }
+      });
+      payload.append("place_picture", imageFile); // blob hasil crop
+      headers["Content-Type"] = "multipart/form-data";
+    } else {
+      payload = finalData;
+      headers["Content-Type"] = "application/json";
+    }
+
     try {
-      await updatePlace(formData.place_id, finalData, placeId2);
+      await updatePlace(formData.place_id, payload, placeId2, headers);
       // Optionally show success toast or redirect
     } catch (err) {
       // Optionally show error message to the user
@@ -226,7 +248,12 @@ const EditPlacesById = () => {
       />
       <input name="place_name" value={formData.place_name} placeholder="Place Name" onChange={handleChange} required className="w-full p-2 border rounded" />
       <textarea name="place_description" value={formData.place_description} placeholder="Description" onChange={handleChange} required className="w-full p-2 border rounded" />
-      <input name="place_picture" value={formData.place_picture} placeholder="Image URL" onChange={handleChange} required className="w-full p-2 border rounded" />
+      <ImageUploadCrop
+        onImageCropped={blob => {
+          console.log("Blob hasil crop:", blob);
+          setImageFile(blob);
+        }}
+      />
       <input name="place_est_price" value={formData.place_est_price} placeholder="Estimated Price" type="number" onChange={handleChange} required className="w-full p-2 border rounded" />
 
       <div>

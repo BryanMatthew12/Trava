@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { selectPlaces } from "../../slices/places/placeSlice";
 import { useSelector } from "react-redux";
+import { viewPlace } from "../../api/places/viewPlace";
 
 
 const RowDataProvince = ({}) => {
@@ -20,7 +21,13 @@ const RowDataProvince = ({}) => {
   }, []);
 
 
-  const handleItemClick = (place) => {
+  const handleItemClick = async (place) => {
+    try {
+      await viewPlace(place.id); // Tambah view sebelum navigasi
+    } catch (error) {
+      // Optional: handle error, misal tetap lanjut navigasi walau gagal
+      console.error(error);
+    }
     navigate(`/PlanningItinerary?source=destination&params=${place.id}`);
   };
   
