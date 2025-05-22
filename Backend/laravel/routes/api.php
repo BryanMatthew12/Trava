@@ -65,7 +65,7 @@ Route::middleware(['auth:api'])->group(function () {
             // Route to get all places
             Route::get('/places/{id}', [PlacesController::class, 'show']);
             Route::get('/places', [PlacesController::class, 'getAllPlaces']); // get all places
-            Route::get('/places/{name}', [PlacesController::class, 'getAllPlaces']); // get all places
+            // Route::get('/places/{name}', [PlacesController::class, 'getAllPlaces']); // get all places
             Route::post('/store-places', [PlacesController::class, 'storePlace']); // store new places
             Route::patch('/places/{id}', [PlacesController::class, 'updatePlace']); // update places
             Route::post('/places/{id}/views', [PlacesController::class, 'incrementViews']); // post views
