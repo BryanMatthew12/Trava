@@ -1,21 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout, selectName, selectUserId } from '../../slices/auth/authSlice';
+import { logout, selectName, selectUserId, setUserPicture } from '../../slices/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { updateProfile } from '../../api/login/updateProfile';
+import { FaUserCircle } from 'react-icons/fa'; // Tambahkan ini
 
 const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const userId = useSelector(selectUserId); // Pastikan ada selector userId
+  const userId = useSelector(selectUserId);
   const userName = useSelector(selectName);
   const userPicture = useSelector(state => state.auth.user_picture);
 
   const [username, setUsername] = useState(userName || '');
-  const [image, setImage] = useState(userPicture || 'https://via.placeholder.com/150');
+  const [image, setImage] = useState(userPicture || '');
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setImage(userPicture || '');
+  }, [userPicture]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -25,8 +30,36 @@ const Profile = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImageFile(file);
-      setImage(URL.createObjectURL(file)); // Preview
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxSize = 300;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxSize) {
+              height *= maxSize / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width *= maxSize / height;
+              height = maxSize;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/png');
+          setImage(dataUrl);
+          setImageFile(dataUrl);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -35,13 +68,20 @@ const Profile = () => {
       alert("Username tidak boleh kosong!");
       return;
     }
+    if (imageFile && typeof imageFile !== "string") {
+      alert("Tunggu gambar selesai diproses sebelum menyimpan!");
+      return;
+    }
     setLoading(true);
     try {
-      await updateProfile(userId, { username, imageFile });
+      const result = await updateProfile(userId, { username, imageFile });
+      if (result.user && result.user.user_picture) {
+        setImage(result.user.user_picture);
+        setImageFile(null);
+        dispatch(setUserPicture(result.user.user_picture)); // <-- Tambahkan ini!
+      }
       alert('Profile updated!');
-      // Optionally: refresh redux state/profile data here
     } catch (err) {
-      console.error('Error updating profile:', err);
       alert('Failed to update profile');
     }
     setLoading(false);
@@ -51,11 +91,15 @@ const Profile = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm flex flex-col items-center">
         <div className="relative mb-4">
-          <img
-            src={image}
-            alt="Profile"
-            className="w-28 h-28 rounded-full object-cover border-2 border-gray-300"
-          />
+          {image ? (
+            <img
+              src={image}
+              alt="Profile"
+              className="w-28 h-28 rounded-full object-cover border-2 border-gray-300"
+            />
+          ) : (
+            <FaUserCircle className="w-28 h-28 text-gray-300" />
+          )}
           <label className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 cursor-pointer">
             <input
               type="file"
@@ -75,7 +119,7 @@ const Profile = () => {
         />
         <button
           onClick={handleSave}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full mb-2"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full mb-2"
           disabled={loading}
         >
           {loading ? "Saving..." : "Save"}
