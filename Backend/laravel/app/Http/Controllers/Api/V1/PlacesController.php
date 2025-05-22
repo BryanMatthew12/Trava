@@ -10,6 +10,7 @@ use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
 
 class PlacesController extends Controller
 {
@@ -69,48 +70,40 @@ class PlacesController extends Controller
     public function storePlace(StorePlacesRequest $request)
     {
         
-        Log::info('storePlace method entered');
+        // Log::info('storePlace method entered');
 
         $validated = $request->validated();
-        Log::info('Validated data:', $validated);
+        // Log::info('Validated data:', $validated);
 
         // Try to resolve or create the location
+        $locationName = $validated['location_name'] ?? null; // Make sure your request includes this
         $locationId = null;
 
-        if (!empty($validated['location_id'])) {
-            $existingLocation = Location::find($validated['location_id']);
+        if ($locationName) {
+            // Call Google Geocoding API
+            $apiKey = config('services.google.key');
+            $response = Http::get('https://maps.googleapis.com/maps/api/geocode/json', [
+                'address' => $locationName,
+                'key' => $apiKey,
+            ]);
+            $data = $response->json();
 
-            if ($existingLocation) {
-                $locationId = $existingLocation->location_id;
-            } else {
-                // OPTIONAL: fetch details from Google Places API using location_id
-                // and create a new location if needed.
-                // This is just a placeholder:
-                $googleData = $this->fetchLocationFromGoogleAPI($validated['location_id']); // You’d define this method
+            if ($data['status'] === 'OK') {
+                $geo = $data['results'][0]['geometry']['location'];
+                $address = $data['results'][0]['formatted_address'];
 
-                $newLocation = Location::create([
-                    'location_id' => $validated['location_id'],
-                    'latitude'    => $googleData['latitude'],
-                    'longitude'   => $googleData['longitude'],
-                    'address'     => $googleData['address'],
-                    // Add other fields as needed
-                ]);
-
-                $locationId = $newLocation->location_id;
+                // 2. Save location to DB if not exists
+                $location = Location::firstOrCreate(
+                    ['location_name' => $locationName],
+                    [
+                        'latitude' => $geo['lat'],
+                        'longitude' => $geo['lng'],
+                        'address' => $address,
+                    ]
+                );
+                $locationId = $location->location_id;
             }
         }
-
-        // $operational = $validated['operational'] ?? null;
-        
-        // if (is_array($operational)) {
-        //     $operational = json_encode($operational);
-        // } elseif (is_string($operational)) {
-        //     json_decode($operational);
-        //     if (json_last_error() !== JSON_ERROR_NONE) {
-        //         $operational = null;
-        //     }
-        // }
-
 
         // Create the Place
         $place = Places::create([

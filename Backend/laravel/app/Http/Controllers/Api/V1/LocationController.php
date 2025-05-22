@@ -20,7 +20,7 @@ class LocationController extends Controller
 
         $name = $request->input('location_name');
 
-        Log::info('Location Name: ' . $name);
+        Log::info('Location Name: ' . $name);  
 
 
         // Call Google Geocoding API
@@ -80,11 +80,6 @@ class LocationController extends Controller
             $areaLevel2 = $this->getAdministrativeAreaLevel2($lat, $lng);
             $place['administrative_area_level_2'] = $areaLevel2;
         }
-
-        // Tambahkan description: ambil dari editorial_summary.overview jika ada, jika tidak pakai formatted_address
-        $place['description'] = isset($place['editorial_summary']['overview'])
-            ? $place['editorial_summary']['overview']
-            : ($place['formatted_address'] ?? '');
 
         return response()->json($place);
     }
