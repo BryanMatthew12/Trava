@@ -36,7 +36,7 @@ export default function EditPlaces() {
     destination_id: "",
     place_name: "",
     place_description: "",
-    location_id: "2",
+    location_name: "",
     place_rating: "0.0",
     place_picture: "",
     place_est_price: 0,
@@ -52,7 +52,10 @@ export default function EditPlaces() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "category_ids") {
+    if (name === "place_name") {
+      // Update both place_name and location_name
+      setFormData({ ...formData, place_name: value, location_name: value });
+    } else if (name === "category_ids") {
       const categories = value.split(",").map((id) => parseInt(id.trim()));
       setFormData({ ...formData, category_ids: categories });
     } else if (daysOfWeek.includes(name.split("-")[0])) {
@@ -108,6 +111,8 @@ export default function EditPlaces() {
     setSearchError("");
     try {
       const data = await getPlaceGoogle(searchName);
+        console.log("Google Place API payload:", data); // <-- Log the fetched payload here
+
 
       // Parse operational hours from weekday_text
       let operational = {};
@@ -121,6 +126,7 @@ export default function EditPlaces() {
         ...prev,
         place_name: data.name || "",
         place_description: data.description || "",
+        location_name: data.formatted_address || "",
         place_picture:
           data.photos && data.photos.length > 0
             ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${data.photos[0].photo_reference}&key=${GOOGLE_MAPS_API_KEY}`
