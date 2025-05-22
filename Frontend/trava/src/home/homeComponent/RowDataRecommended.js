@@ -18,6 +18,7 @@ const RowDataRecommended = ({ home2 }) => {
       try {
         const response = await fetchHomes(id); // Fetch data using the API function
         if (response) {
+          console.log("Recommended places:", response);
           setRecommendedHomes(response); // Set the fetched data
           dispatch(setHome2(response));
         }
