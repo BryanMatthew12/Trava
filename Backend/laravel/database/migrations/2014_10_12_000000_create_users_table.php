@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('role_id')->default(2); // Default to 'user' role
             $table->string('email');
             $table->string('password');
+            $table->longText('user_picture')->nullable();
             $table->timestamps();
 
             $table->foreign('role_id')->references('role_id')->on('roles')->onDelete('cascade');

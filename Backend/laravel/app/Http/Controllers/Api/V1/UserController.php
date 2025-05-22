@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Arr;
 
 class UserController extends Controller
 {
@@ -52,9 +53,24 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $User)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        $validated = $request->validated();
+
+        // Handle blob file if uploaded
+        if ($request->hasFile('user_picture')) {
+            $file = $request->file('user_picture');
+            $user->user_picture = file_get_contents($file->getRealPath());
+        }
+
+        // Fill other fields (excluding user_picture to avoid overwriting it if not present)
+        $user->fill(Arr::except($validated, ['user_picture']));
+        $user->save();
+
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user'   => $user
+        ]);
     }
 
     /**

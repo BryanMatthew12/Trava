@@ -22,7 +22,8 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'username' => 'required|string|max:255',
+            'user_picture' => 'nullable|file|image|mimes:jpeg,png,jpg|max:2048', // max 2MB
         ];
     }
 }
