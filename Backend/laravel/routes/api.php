@@ -101,6 +101,9 @@ Route::middleware(['auth:api'])->group(function () {
             // Route for Google Maps geocoding
             Route::get('/locations/{placeName}', [LocationController::class, 'fetchPlaceDetails']); // Fetch places details
             Route::post('/locations', [LocationController::class, 'store']);
+
+            //Route to user controller
+            Route::put('/users/{id}', [UserController::class, 'update']); // update user
         });
 
         // Routes accessible only by 'admin' role
