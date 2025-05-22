@@ -24,10 +24,6 @@ const categories = [
   { id: 5, name: "Religious" },
 ];
 
-const ratingOptions = Array.from({ length: 11 }, (_, i) =>
-  (i * 0.5).toFixed(1)
-);
-
 export default function EditPlaces() {
   const destinations = useSelector(selectDestinations);
 
@@ -91,6 +87,7 @@ export default function EditPlaces() {
 
     const finalData = {
       ...formData,
+      place_picture: "",
       place_rating: parseFloat(formData.place_rating),
       place_est_price: parseInt(formData.place_est_price),
       operational: JSON.stringify(formattedOperational),
@@ -123,7 +120,7 @@ export default function EditPlaces() {
       setFormData((prev) => ({
         ...prev,
         place_name: data.name || "",
-        place_description: data.formatted_address || "",
+        place_description: data.description || "",
         place_picture:
           data.photos && data.photos.length > 0
             ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${data.photos[0].photo_reference}&key=${GOOGLE_MAPS_API_KEY}`
@@ -167,6 +164,17 @@ export default function EditPlaces() {
     return operational;
   }
 
+  // Buat ratingOptions kelipatan 0.5
+  let ratingOptions = Array.from({ length: 11 }, (_, i) => (i * 0.5).toFixed(1));
+
+  // Jika formData.place_rating ada dan belum ada di ratingOptions, tambahkan
+  if (
+    formData.place_rating &&
+    !ratingOptions.includes(formData.place_rating)
+  ) {
+    ratingOptions = [...ratingOptions, formData.place_rating].sort((a, b) => parseFloat(a) - parseFloat(b));
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -181,6 +189,23 @@ export default function EditPlaces() {
         }
         placeholder="Select a destination"
       />
+      <div className="flex gap-2 items-center">
+        <input
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          placeholder="Search place name (local API)"
+          className="w-full p-2 border rounded"
+        />
+        <button
+          type="button"
+          onClick={handleLocalSearch}
+          className="px-3 py-2 bg-blue-500 text-white rounded"
+          disabled={searchLoading || !searchName}
+        >
+          {searchLoading ? "Searching..." : "Search"}
+        </button>
+      </div>
+      {searchError && <div className="text-red-500">{searchError}</div>}
       <input
         name="place_name"
         value={formData.place_name}
@@ -188,19 +213,21 @@ export default function EditPlaces() {
         required
         className="w-full p-2 border rounded"
       />
-      <textarea
+      {/* <textarea
         name="place_description"
         value={formData.place_description}
         onChange={handleChange}
         required
         className="w-full p-2 border rounded"
-      />
-      <input
+      /> */}
+      {/* <input
         name="place_picture"
         value={formData.place_picture}
         onChange={handleChange}
         className="w-full p-2 border rounded"
-      />
+      /> */}
+      {/* HAPUS INI: */}
+      {/* 
       <input
         name="place_rating"
         value={formData.place_rating}
@@ -208,6 +235,24 @@ export default function EditPlaces() {
         required
         className="w-full p-2 border rounded"
       />
+      */}
+
+      {/* GUNAKAN INI SAJA: */}
+      <div>
+        <label className="block mb-1 font-medium">Rating</label>
+        <input
+          name="place_rating"
+          type="number"
+          step="0.01"
+          min="0"
+          max="5"
+          value={formData.place_rating}
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+          placeholder="Input rating (0 - 5)"
+        />
+      </div>
       <input
         name="place_est_price"
         placeholder="Estimated Price"
@@ -217,7 +262,7 @@ export default function EditPlaces() {
         className="w-full p-2 border rounded"
       />
 
-      <div>
+      {/* <div>
         <label className="block mb-1 font-medium">Rating</label>
         <select
           name="place_rating"
@@ -230,7 +275,7 @@ export default function EditPlaces() {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       <Select
         options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
@@ -265,24 +310,6 @@ export default function EditPlaces() {
           </div>
         ))}
       </fieldset>
-
-      <div className="flex gap-2 items-center">
-        <input
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-          placeholder="Search place name (local API)"
-          className="w-full p-2 border rounded"
-        />
-        <button
-          type="button"
-          onClick={handleLocalSearch}
-          className="px-3 py-2 bg-blue-500 text-white rounded"
-          disabled={searchLoading || !searchName}
-        >
-          {searchLoading ? "Searching..." : "Search"}
-        </button>
-      </div>
-      {searchError && <div className="text-red-500">{searchError}</div>}
 
       <button
         type="submit"

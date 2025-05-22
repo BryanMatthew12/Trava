@@ -7,8 +7,8 @@ const Admin = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white">
       <EditPlaces />
-      {/* <EditPlacesById /> */}
-      {/* <ControlThreads /> */}
+      <EditPlacesById />
+      <ControlThreads />
     </div>
   );
 };

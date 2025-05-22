@@ -81,6 +81,11 @@ class LocationController extends Controller
             $place['administrative_area_level_2'] = $areaLevel2;
         }
 
+        // Tambahkan description: ambil dari editorial_summary.overview jika ada, jika tidak pakai formatted_address
+        $place['description'] = isset($place['editorial_summary']['overview'])
+            ? $place['editorial_summary']['overview']
+            : ($place['formatted_address'] ?? '');
+
         return response()->json($place);
     }
 
