@@ -24,7 +24,8 @@ class UserFactory extends Factory
             'username' => $this->faker->username(),
             'email' => $this->faker->email(),
             'password' => $this->faker->password(),
-            'role_id' => $role ? $role->role_id : null, // fallback to null if no roles exist
+            'role_id' => $role ? $role->role_id : null, 
+            'user_picture' => $this->faker->imageUrl(),
         ];
     }
 
