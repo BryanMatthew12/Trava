@@ -61,13 +61,12 @@ class UserController extends Controller
         // Find the user by ID
         $user = User::findOrFail($id);
 
-        // Handle blob file if uploaded
-        if ($request->hasFile('user_picture')) {
-            $file = $request->file('user_picture');
-            $user->user_picture = file_get_contents($file->getRealPath());
+        // Simpan langsung base64 string jika ada
+        if (isset($validated['user_picture'])) {
+            $user->user_picture = $validated['user_picture'];
         }
 
-        // Fill other fields (excluding user_picture to avoid overwriting it if not present)
+        // Update field lain (kecuali user_picture)
         $user->fill(Arr::except($validated, ['user_picture']));
         $user->save();
 
