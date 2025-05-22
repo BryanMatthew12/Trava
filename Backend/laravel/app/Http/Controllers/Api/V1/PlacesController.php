@@ -252,16 +252,10 @@ class PlacesController extends Controller
                         ->get();
 
         $places->transform(function ($place) {
-            if ($place->place_picture) {
-                // You can adjust MIME type if you store it elsewhere
-                $place->place_picture = 'data:image/jpeg;base64,' . base64_encode($place->place_picture);
-            } else {
-                $place->place_picture = null;
-            }
-
+            // Just return as is
             return $place;
         });
-            
+
         return response()->json($places);
     }
 
