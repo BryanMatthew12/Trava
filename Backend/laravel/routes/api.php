@@ -113,7 +113,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Routes accessible only by 'user' role
         Route::middleware(['role:2'])->group(function () {
-            Route::apiResource('users', UserController::class);
+            // Route::apiResource('users', UserController::class);
         });
 
         

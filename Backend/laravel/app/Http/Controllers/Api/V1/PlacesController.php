@@ -255,7 +255,7 @@ class PlacesController extends Controller
             // Just return as is
             return $place;
         });
-            
+
         return response()->json($places);
     }
 
