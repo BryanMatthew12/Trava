@@ -270,30 +270,30 @@ class PlacesController extends Controller
 
 
     public function updatePlace(UpdatePlacesRequest $request, $place_id)
-{
-    $place = Places::findOrFail($place_id);
+    {
+        $place = Places::findOrFail($place_id);
 
-    $validated = $request->validated();
+        $validated = $request->validated();
 
-    // Handle blob file if uploaded
-    if ($request->hasFile('place_picture')) {
-        $file = $request->file('place_picture');
-        $place->place_picture = file_get_contents($file->getRealPath());
+        // Handle blob file if uploaded
+        if ($request->hasFile('place_picture')) {
+            $file = $request->file('place_picture');
+            $place->place_picture = file_get_contents($file->getRealPath());
+        }
+
+        // Fill other fields (excluding place_picture to avoid overwriting it if not present)
+        $place->place_picture = $validated['place_picture'] ?? null;
+        $place->save();
+
+        if (isset($validated['category_ids'])) {
+            $place->categories()->sync($validated['category_ids']);
+        }
+
+        return response()->json([
+            'message' => 'Place updated successfully',
+            'place'   => $place->load('categories')
+        ]);
     }
-
-    // Fill other fields (excluding place_picture to avoid overwriting it if not present)
-    $place->place_picture = $validated['place_picture'] ?? null;
-    $place->save();
-
-    if (isset($validated['category_ids'])) {
-        $place->categories()->sync($validated['category_ids']);
-    }
-
-    return response()->json([
-        'message' => 'Place updated successfully',
-        'place'   => $place->load('categories')
-    ]);
-}
 
     // AAAA
     
