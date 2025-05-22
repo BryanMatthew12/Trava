@@ -40,7 +40,7 @@ class GooglePlacesService
     {
         $response = Http::get('https://maps.googleapis.com/maps/api/place/details/json', [
             'place_id' => $placeId,
-            'fields' => 'place_id,name,formatted_address,geometry,opening_hours,rating,price_level,photos',
+            'fields' => 'place_id,name,formatted_address,geometry,opening_hours,rating,price_level,photos','editorial_summary',
             'key' => $this->apiKey,
         ]);
 
