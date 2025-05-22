@@ -6,8 +6,9 @@ const authSlice = createSlice({
   initialState: {
     token: Cookies.get('token') || null,
     name: null,
-    user_id: Cookies.get('user_id') || null, // Retrieve user_id from cookies
+    user_id: Cookies.get('user_id') || null,
     role_id: null,
+    user_picture: null, // Tambahkan ini
   },
   reducers: {
     setToken: (state, action) => {
@@ -19,28 +20,33 @@ const authSlice = createSlice({
     },
     setUserId: (state, action) => {
       state.user_id = action.payload;
-      Cookies.set('user_id', action.payload, { expires: 1 / 24 }); // Persist user_id in cookies
+      Cookies.set('user_id', action.payload, { expires: 1 / 24 });
     },
     setRoleId: (state, action) => {
       state.role_id = action.payload;
+    },
+    setUserPicture: (state, action) => { // Tambahkan ini
+      state.user_picture = action.payload;
     },
     logout: (state) => {
       state.token = null;
       state.name = null;
       state.user_id = null;
       state.role_id = null;
+      state.user_picture = null; // Reset juga
       Cookies.remove('token');
-      Cookies.remove('user_id'); // Remove user_id from cookies
+      Cookies.remove('user_id');
     },
   },
 });
 
-export const { setToken, setName, setUserId, setRoleId, logout } = authSlice.actions;
+export const { setToken, setName, setUserId, setRoleId, setUserPicture, logout } = authSlice.actions;
 
 // Selectors
 export const selectToken = (state) => state.auth.token;
 export const selectName = (state) => state.auth.name;
 export const selectUserId = (state) => state.auth.user_id;
 export const selectRoleId = (state) => state.auth.role_id;
+export const selectUserPicture = (state) => state.auth.user_picture; // Tambahkan ini
 
 export default authSlice.reducer;
