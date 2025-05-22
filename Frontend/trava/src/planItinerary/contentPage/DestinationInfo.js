@@ -1,15 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { fetchCoord } from "../../api/mapCoord/fetchCoord";
 
-const DestinationInfo = ({
-  place,
-  categoryMapping,
-  onPlaceChange,
-}) => {
-
+const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
   const test = "citra 5";
 
   useEffect(() => {
+    console.log("place", place);
     const getCoordinates = async () => {
       try {
         const destinations = await fetchCoord(test);
@@ -31,16 +27,17 @@ const DestinationInfo = ({
     <div>
       <h1 className="text-2xl font-bold mb-4">{place.name}</h1>
       <img
-              src={
-                place.place_picture
-                  ? place.place_picture.startsWith("data:image")
-                    ? atob(place.place_picture.split(",")[1])
-                    : place.place_picture
-                  : "https://via.placeholder.com/300x200?text=No+Image"
-              }
-              alt={place.name}
-              className="w-full h-48 object-cover rounded-lg mb-4"
-            />
+        src={
+          place.place_picture
+            ? place.place_picture.startsWith("data:image")
+              ? place.place_picture // use as-is if it's a data URI
+              : place.place_picture // use as-is if it's a URL
+            : "https://via.placeholder.com/300x200?text=No+Image"
+        }
+        alt={place.name}
+        className="w-full h-48 object-cover rounded-lg"
+      />
+
       <p className="text-gray-600 mb-2">
         <strong>Description:</strong> {place.description}
       </p>
