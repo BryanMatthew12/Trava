@@ -254,13 +254,10 @@ class PlacesController extends Controller
         $places->transform(function ($place) {
             if ($place->place_picture) {
                 // You can adjust MIME type if you store it elsewhere
-                $place->place_picture_url = 'data:image/jpeg;base64,' . base64_encode($place->place_picture);
+                $place->place_picture = 'data:image/jpeg;base64,' . base64_encode($place->place_picture);
             } else {
-                $place->place_picture_url = null;
+                $place->place_picture = null;
             }
-
-            // Optional: remove raw binary to save bandwidth
-            unset($place->place_picture);
 
             return $place;
         });
