@@ -31,16 +31,16 @@ const DestinationInfo = ({
     <div>
       <h1 className="text-2xl font-bold mb-4">{place.name}</h1>
       <img
-        src={place.place_picture}
-        alt={place.name}
-        className="w-full h-64 object-cover rounded-lg mb-4"
-      />
-      {/* <p className="text-gray-600 mb-2">
-        <strong>Category:</strong>{' '}
-        {Array.isArray(place.category)
-          ? place.category.map((id) => categoryMapping[id]).join(', ')
-          : categoryMapping[place.category]}
-      </p> */}
+              src={
+                place.place_picture
+                  ? place.place_picture.startsWith("data:image")
+                    ? atob(place.place_picture.split(",")[1])
+                    : place.place_picture
+                  : "https://via.placeholder.com/300x200?text=No+Image"
+              }
+              alt={place.name}
+              className="w-full h-48 object-cover rounded-lg mb-4"
+            />
       <p className="text-gray-600 mb-2">
         <strong>Description:</strong> {place.description}
       </p>

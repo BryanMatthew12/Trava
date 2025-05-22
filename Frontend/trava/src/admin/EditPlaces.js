@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { selectDestinations } from "../slices/destination/destinationSlice";
 import Select from "react-select";
 import { editPlace } from "../api/admin/editPlace";
+import GOOGLE_MAPS_API_KEY from "../api/googleKey/googleKey";
+import { getPlaceGoogle } from "../api/admin/getPlaceGoogle";
 
 const daysOfWeek = [
   "Monday",
@@ -15,19 +17,17 @@ const daysOfWeek = [
 ];
 
 const categories = [
-    { id: 1, name: 'Adventure'},
-    { id: 2, name: 'Culinary' },
-    { id: 3, name: 'Shopping'},
-    { id: 4, name: 'Culture'},
-    { id: 5, name: 'Religious'},
-  ];
-
-const ratingOptions = Array.from({ length: 11 }, (_, i) => (i * 0.5).toFixed(1));
+  { id: 1, name: "Adventure" },
+  { id: 2, name: "Culinary" },
+  { id: 3, name: "Shopping" },
+  { id: 4, name: "Culture" },
+  { id: 5, name: "Religious" },
+];
 
 export default function EditPlaces() {
   const destinations = useSelector(selectDestinations);
 
-   const mappedDestinations = destinations.map((destination) => ({
+  const mappedDestinations = destinations.map((destination) => ({
     value: destination.id,
     label: destination.name,
   }));
@@ -44,6 +44,10 @@ export default function EditPlaces() {
     views: 0,
     category_ids: [],
   });
+
+  const [searchName, setSearchName] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,58 +73,209 @@ export default function EditPlaces() {
     }
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Format operational hours like "08:00-17:00"
-  const formattedOperational = {};
-  for (const day of daysOfWeek) {
-    const dayData = formData.operational[day];
-    if (dayData?.start && dayData?.end) {
-      formattedOperational[day] = `${dayData.start}-${dayData.end}`;
+    // Format operational hours like "08:00-17:00"
+    const formattedOperational = {};
+    for (const day of daysOfWeek) {
+      const dayData = formData.operational[day];
+      if (dayData?.start && dayData?.end) {
+        formattedOperational[day] = `${dayData.start}-${dayData.end}`;
+      }
     }
-  }
 
-  const finalData = {
-    ...formData,
-    place_rating: parseFloat(formData.place_rating),
-    place_est_price: parseInt(formData.place_est_price),
-    operational: JSON.stringify(formattedOperational),
+    const finalData = {
+      ...formData,
+      place_picture: "",
+      place_rating: parseFloat(formData.place_rating),
+      place_est_price: parseInt(formData.place_est_price),
+      operational: JSON.stringify(formattedOperational),
+    };
+
+    try {
+      const result = await editPlace(finalData); // Await the result
+      console.log("Success:", result);
+      // Optionally reset form or show success toast
+    } catch (err) {
+      console.error("Error submitting form:", err.message);
+      // Optionally show error message to the user
+    }
   };
 
-  try {
-    const result = await editPlace(finalData); // Await the result
-    console.log("Success:", result);
-    // Optionally reset form or show success toast
-  } catch (err) {
-    console.error("Error submitting form:", err.message);
-    // Optionally show error message to the user
-  }
-};
+  const handleLocalSearch = async () => {
+    setSearchLoading(true);
+    setSearchError("");
+    try {
+      const data = await getPlaceGoogle(searchName);
 
+      // Parse operational hours from weekday_text
+      let operational = {};
+      if (data.opening_hours && data.opening_hours.weekday_text) {
+        operational = parseWeekdayTextToOperational(
+          data.opening_hours.weekday_text
+        );
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        place_name: data.name || "",
+        place_description: data.description || "",
+        place_picture:
+          data.photos && data.photos.length > 0
+            ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${data.photos[0].photo_reference}&key=${GOOGLE_MAPS_API_KEY}`
+            : "",
+        place_rating: data.rating ? data.rating.toString() : "0.0",
+        operational, // <-- autofill operational hours!
+      }));
+    } catch (err) {
+      setSearchError("Failed to fetch place data.");
+    }
+    setSearchLoading(false);
+  };
+
+  function parseWeekdayTextToOperational(weekdayTextArr) {
+    // Example: "Tuesday: 6:00 AM – 4:30 PM"
+    const operational = {};
+    weekdayTextArr.forEach((line) => {
+      const [day, times] = line.split(": ");
+      if (!times || times.toLowerCase().includes("closed")) {
+        operational[day] = { start: "", end: "" };
+      } else {
+        // Example times: "6:00 AM – 4:30 PM"
+        const [startRaw, endRaw] = times.split("–").map((s) => s.trim());
+        // Convert to 24-hour "HH:mm" format
+        const to24 = (t) => {
+          if (!t) return "";
+          const [time, period] = t.split(/(AM|PM|am|pm)/i);
+          let [h, m] = time.trim().split(":").map(Number);
+          if (/pm/i.test(period) && h !== 12) h += 12;
+          if (/am/i.test(period) && h === 12) h = 0;
+          return `${h.toString().padStart(2, "0")}:${m
+            .toString()
+            .padStart(2, "0")}`;
+        };
+        operational[day] = {
+          start: to24(startRaw),
+          end: to24(endRaw),
+        };
+      }
+    });
+    return operational;
+  }
+
+  // Buat ratingOptions kelipatan 0.5
+  let ratingOptions = Array.from({ length: 11 }, (_, i) => (i * 0.5).toFixed(1));
+
+  // Jika formData.place_rating ada dan belum ada di ratingOptions, tambahkan
+  if (
+    formData.place_rating &&
+    !ratingOptions.includes(formData.place_rating)
+  ) {
+    ratingOptions = [...ratingOptions, formData.place_rating].sort((a, b) => parseFloat(a) - parseFloat(b));
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto p-4 bg-white rounded shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 max-w-xl mx-auto p-4 bg-white rounded shadow"
+    >
       <h2 className="text-xl font-bold">Add New Place</h2>
 
       <Select
         options={mappedDestinations}
-        onChange={(option) => setFormData({ ...formData, destination_id: option.value })}
+        onChange={(option) =>
+          setFormData({ ...formData, destination_id: option.value })
+        }
         placeholder="Select a destination"
+      />
+      <div className="flex gap-2 items-center">
+        <input
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          placeholder="Search place name (local API)"
+          className="w-full p-2 border rounded"
         />
-      <input name="place_name" placeholder="Place Name" onChange={handleChange} required className="w-full p-2 border rounded" />
-      <textarea name="place_description" placeholder="Description" onChange={handleChange} required className="w-full p-2 border rounded" />
-      <input name="place_picture" placeholder="Image URL" onChange={handleChange} className="w-full p-2 border rounded" />
-      <input name="place_est_price" placeholder="Estimated Price" type="number" onChange={handleChange} required className="w-full p-2 border rounded" />
+        <button
+          type="button"
+          onClick={handleLocalSearch}
+          className="px-3 py-2 bg-blue-500 text-white rounded"
+          disabled={searchLoading || !searchName}
+        >
+          {searchLoading ? "Searching..." : "Search"}
+        </button>
+      </div>
+      {searchError && <div className="text-red-500">{searchError}</div>}
+      <input
+        name="place_name"
+        value={formData.place_name}
+        onChange={handleChange}
+        required
+        className="w-full p-2 border rounded"
+      />
+      {/* <textarea
+        name="place_description"
+        value={formData.place_description}
+        onChange={handleChange}
+        required
+        className="w-full p-2 border rounded"
+      /> */}
+      {/* <input
+        name="place_picture"
+        value={formData.place_picture}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      /> */}
+      {/* HAPUS INI: */}
+      {/* 
+      <input
+        name="place_rating"
+        value={formData.place_rating}
+        onChange={handleChange}
+        required
+        className="w-full p-2 border rounded"
+      />
+      */}
 
+      {/* GUNAKAN INI SAJA: */}
       <div>
         <label className="block mb-1 font-medium">Rating</label>
-        <select name="place_rating" onChange={handleChange} className="w-full p-2 border rounded">
+        <input
+          name="place_rating"
+          type="number"
+          step="0.01"
+          min="0"
+          max="5"
+          value={formData.place_rating}
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+          placeholder="Input rating (0 - 5)"
+        />
+      </div>
+      <input
+        name="place_est_price"
+        placeholder="Estimated Price"
+        type="number"
+        onChange={handleChange}
+        required
+        className="w-full p-2 border rounded"
+      />
+
+      {/* <div>
+        <label className="block mb-1 font-medium">Rating</label>
+        <select
+          name="place_rating"
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        >
           {ratingOptions.map((r) => (
-            <option key={r} value={r}>{r}</option>
+            <option key={r} value={r}>
+              {r}
+            </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       <Select
         options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
@@ -130,7 +285,7 @@ export default function EditPlaces() {
           setFormData({ ...formData, category_ids: selectedValues });
         }}
         placeholder="Select categories"
-        />
+      />
 
       <fieldset className="border p-3 rounded">
         <legend className="font-semibold">Operational Hours</legend>
@@ -140,6 +295,7 @@ export default function EditPlaces() {
             <input
               type="time"
               name={`${day}-start`}
+              value={formData.operational[day]?.start || ""}
               onChange={handleChange}
               className="border p-1 rounded"
             />
@@ -147,6 +303,7 @@ export default function EditPlaces() {
             <input
               type="time"
               name={`${day}-end`}
+              value={formData.operational[day]?.end || ""}
               onChange={handleChange}
               className="border p-1 rounded"
             />
@@ -154,7 +311,10 @@ export default function EditPlaces() {
         ))}
       </fieldset>
 
-      <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      <button
+        type="submit"
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
         Submit
       </button>
     </form>
