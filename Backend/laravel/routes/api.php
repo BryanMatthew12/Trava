@@ -103,8 +103,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/locations', [LocationController::class, 'store']);
 
             //Route to user controller
-            Route::put('/users/{id}', [UserController::class, 'update']); // update user
-        });
+            Route::patch('/users/{id}', [UserController::class, 'update']); // update user
+        });     
 
         // Routes accessible only by 'admin' role
         Route::middleware(['role:1'])->group(function () {
@@ -113,7 +113,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Routes accessible only by 'user' role
         Route::middleware(['role:2'])->group(function () {
-            Route::apiResource('users', UserController::class);
+            // Route::apiResource('users', UserController::class);
         });
 
         
