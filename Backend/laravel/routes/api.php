@@ -104,7 +104,8 @@ Route::middleware(['auth:api'])->group(function () {
 
             //Route to user controller
             Route::patch('/users/{id}', [UserController::class, 'update']); // update user
-        });
+            Route::get('/users/{id}', [UserController::class, 'show']); // get user by id
+        });     
 
         // Routes accessible only by 'admin' role
         Route::middleware(['role:1'])->group(function () {
