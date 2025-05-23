@@ -37,9 +37,20 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $User)
+    public function show($id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        // Prepare the picture as a data URL if it exists
+        $user_picture_url = null;
+        if ($user->user_picture) {
+            $user_picture_url = 'data:image/jpeg;base64,' . base64_encode($user->user_picture);
+        }
+
+        return response()->json([
+            'username' => $user->username,
+            'user_picture' => $user_picture_url,
+        ]);
     }
 
     /**
