@@ -44,7 +44,16 @@ class UserController extends Controller
         // Prepare the picture as a data URL if it exists
         $user_picture_url = null;
         if ($user->user_picture) {
-            $user_picture_url = 'data:image/jpeg;base64,' . base64_encode($user->user_picture);
+            $picture = $user->user_picture;
+            // Jika sudah ada prefix, pakai saja
+            if (str_starts_with($picture, 'data:image')) {
+                $user_picture_url = $picture;
+            } else {
+                // Jika belum ada, tambahkan prefix sesuai tipe (misal png)
+                $user_picture_url = 'data:image/png;base64,' . $picture;
+            }
+        } else {
+            $user_picture_url = null;
         }
 
         return response()->json([
