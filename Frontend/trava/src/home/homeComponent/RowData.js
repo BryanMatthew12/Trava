@@ -6,6 +6,11 @@ import { viewPlace } from "../../api/places/viewPlace";
 import { BASE_URL } from "../../config";
 import Cookies from "js-cookie"; // Import js-cookie to access cookies
 
+function getImageSrc(place_picture) {
+  if (!place_picture) return "https://via.placeholder.com/300x200?text=No+Image";
+  return place_picture;
+}
+
 const RowData = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -58,9 +63,6 @@ const RowData = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {homes.map((home, index) => {
-        console.log("place_picture:", home.place_picture); // Log the place_picture here
-        // console.log("home object:", home); // Add this line
-
         return (
           <div
             key={index}
@@ -68,13 +70,7 @@ const RowData = () => {
             className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
           >
             <img
-              src={
-                home.place_picture
-                  ? home.place_picture.startsWith("data:image")
-                    ? atob(home.place_picture.split(",")[1])
-                    : home.place_picture
-                  : "https://via.placeholder.com/300x200?text=No+Image"
-              }
+              src={getImageSrc(home.place_picture)}
               alt={home.name}
               className="w-full h-48 object-cover rounded-lg"
             />

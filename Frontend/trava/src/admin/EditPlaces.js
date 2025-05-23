@@ -111,8 +111,7 @@ export default function EditPlaces() {
     setSearchError("");
     try {
       const data = await getPlaceGoogle(searchName);
-        console.log("Google Place API payload:", data); // <-- Log the fetched payload here
-
+      console.log("Google Place API payload:", data); // <-- Log the fetched payload here
 
       // Parse operational hours from weekday_text
       let operational = {};
@@ -171,14 +170,15 @@ export default function EditPlaces() {
   }
 
   // Buat ratingOptions kelipatan 0.5
-  let ratingOptions = Array.from({ length: 11 }, (_, i) => (i * 0.5).toFixed(1));
+  let ratingOptions = Array.from({ length: 11 }, (_, i) =>
+    (i * 0.5).toFixed(1)
+  );
 
   // Jika formData.place_rating ada dan belum ada di ratingOptions, tambahkan
-  if (
-    formData.place_rating &&
-    !ratingOptions.includes(formData.place_rating)
-  ) {
-    ratingOptions = [...ratingOptions, formData.place_rating].sort((a, b) => parseFloat(a) - parseFloat(b));
+  if (formData.place_rating && !ratingOptions.includes(formData.place_rating)) {
+    ratingOptions = [...ratingOptions, formData.place_rating].sort(
+      (a, b) => parseFloat(a) - parseFloat(b)
+    );
   }
 
   return (
@@ -217,6 +217,12 @@ export default function EditPlaces() {
         value={formData.place_name}
         onChange={handleChange}
         required
+        className="w-full p-2 border rounded"
+      />
+      <input
+        name="place_adress"
+        value={formData.location_name}
+        onChange={handleChange}
         className="w-full p-2 border rounded"
       />
       {/* <textarea
