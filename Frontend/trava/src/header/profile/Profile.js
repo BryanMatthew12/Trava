@@ -4,7 +4,7 @@ import { logout, selectName, selectUserId, setUserPicture } from '../../slices/a
 import { useNavigate } from 'react-router-dom';
 import { updateProfile } from '../../api/login/updateProfile';
 import { getProfile } from '../../api/login/getProfile';
-import { FaUserCircle, FaPen } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -18,7 +18,6 @@ const Profile = () => {
   const [image, setImage] = useState(userPicture || '');
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [editing, setEditing] = useState(false);
 
   function getImageSrc(place_picture) {
     if (!place_picture) return "https://via.placeholder.com/300x200?text=No+Image";
@@ -87,10 +86,6 @@ const Profile = () => {
       alert("Username tidak boleh kosong!");
       return;
     }
-    if (imageFile && typeof imageFile !== "string") {
-      alert("Tunggu gambar selesai diproses sebelum menyimpan!");
-      return;
-    }
     setLoading(true);
     try {
       const result = await updateProfile(userId, { username, imageFile });
@@ -104,7 +99,6 @@ const Profile = () => {
       alert('Failed to update profile');
     }
     setLoading(false);
-    setEditing(false);
   };
 
   return (
@@ -140,21 +134,11 @@ const Profile = () => {
             onChange={e => setUsername(e.target.value)}
             className="border rounded px-3 py-2 w-full text-center"
             placeholder="Username"
-            disabled={!editing}
           />
-          <button
-            type="button"
-            className="ml-2 text-gray-500 hover:text-blue-600"
-            onClick={() => setEditing(!editing)}
-            title="Edit username"
-          >
-            <FaPen />
-          </button>
         </div>
         <button
           onClick={handleSave}
           className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full mb-2"
-          disabled={loading || !editing}
         >
           {loading ? "Saving..." : "Save"}
         </button>
