@@ -86,6 +86,11 @@ class UserController extends Controller
             $user->user_picture = $validated['user_picture'];
         }
 
+        // if ($request->hasFile('user_picture')) {
+        //     $file = $request->file('user_picture');
+        //     $user->user_picture = file_get_contents($file->getRealPath());
+        // }
+        
         // Update field lain (kecuali user_picture)
         $user->fill(Arr::except($validated, ['user_picture']));
         $user->save();
