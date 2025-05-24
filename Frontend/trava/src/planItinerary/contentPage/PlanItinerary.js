@@ -12,6 +12,8 @@ import { postItinerary } from '../../api/itinerary/postItinerary';
 import { deleteItinerary } from '../../api/itinerary/deleteItinerary'; // Import deleteItinerary
 import { fetchCoord } from '../../api/mapCoord/fetchCoord'; // Import fetchCoord
 import { patchDescription } from '../../api/itinerary/patchDescription';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const PlanItinerary = (onPlaceChange) => {
   const location = useLocation();
@@ -192,6 +194,86 @@ const PlanItinerary = (onPlaceChange) => {
     setCurrentBudget(newBudget); // Perbarui state `currentBudget`
   };
 
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    let y = 10;
+
+    // Header
+    doc.setFontSize(16);
+    doc.text('Itinerary Report', 10, y);
+    y += 10;
+
+    // Itinerary Info
+    doc.setFontSize(12);
+    doc.text(`Destination: ${destination || 'Unknown'}`, 10, y);
+    y += 7;
+    doc.text(`Date: ${start || 'N/A'} to ${end || 'N/A'}`, 10, y);
+    y += 7;
+    doc.text(`Budget: Rp. ${currentBudget || '0.00'}`, 10, y);
+    y += 7;
+
+    // Description
+    if (description) {
+      doc.setFontSize(12);
+      doc.text('Description:', 10, y);
+      y += 6;
+      const splitDescription = doc.splitTextToSize(description, 180);
+      doc.text(splitDescription, 10, y);
+      y += splitDescription.length * 6 + 4;
+    }
+
+    // Group destinations by day_id and map to sequential days
+    const grouped = destinations.reduce((acc, destination) => {
+      if (!acc[destination.day_id]) acc[destination.day_id] = [];
+      acc[destination.day_id].push(destination);
+      return acc;
+    }, {});
+
+    const sortedDayIds = Object.keys(grouped).sort((a, b) => a - b);
+    const dayMapping = sortedDayIds.reduce((map, dayId, index) => {
+      map[dayId] = `Day ${index + 1}`;
+      return map;
+    }, {});
+
+    sortedDayIds.forEach((dayId) => {
+      const dayPlaces = grouped[dayId];
+      const dayLabel = dayMapping[dayId];
+
+      doc.setFontSize(14);
+      doc.text(dayLabel, 10, y);
+      y += 8;
+
+      dayPlaces.forEach((destination, index) => {
+        const place = places.find((place) => place.id === destination.place_id);
+
+        if (y > 270) {
+          doc.addPage();
+          y = 10;
+        }
+
+        doc.setFontSize(12);
+        doc.text(`- ${place?.name || 'Unknown Place'}`, 12, y);
+        y += 6;
+
+        if (place?.price) {
+          doc.text(`  Price: Rp. ${place.price}`, 15, y);
+          y += 6;
+        }
+
+        if (place?.rating) {
+          doc.text(`  Rating: ${place.rating} / 5`, 15, y);
+          y += 6;
+        }
+
+        const splitDescription = doc.splitTextToSize(place?.description || 'No description available', 180);
+        doc.text(splitDescription, 15, y);
+        y += splitDescription.length * 6 + 4;
+      });
+    });
+
+    doc.save(`Itinerary_${destination || 'Unknown'}.pdf`);
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Header Section */}
@@ -266,10 +348,32 @@ const PlanItinerary = (onPlaceChange) => {
                             setActivePlaceId(destination.place_id); // Set the active place ID
                           }}
                         >
+                          {/* Place Image */}
+                          <img
+                            src={
+                              place?.place_picture
+                                ? place.place_picture
+                                : 'https://via.placeholder.com/100x100?text=No+Image'
+                            }
+                            alt={place?.name || 'Unknown Place'}
+                            className="w-16 h-16 object-cover rounded-lg mr-4"
+                          />
+
+                          {/* Place Details */}
                           <div className="flex-grow">
                             <h4 className="font-semibold">{place?.name || 'Unknown Place'}</h4>
-                            <p className="text-gray-500">{place?.description || 'No description available'}</p>
+                            <p className="text-gray-500 text-sm">
+                              {place?.description || 'No description available'}
+                            </p>
+                            <p className="text-gray-700 text-sm">
+                              <strong>Price:</strong> Rp. {place?.price || 'N/A'}
+                            </p>
+                            <p className="text-gray-700 text-sm">
+                              <strong>Rating:</strong> {place?.rating || 'N/A'} / 5
+                            </p>
                           </div>
+
+                          {/* Delete Button */}
                           <button
                             className="text-red-500 hover:text-red-700 ml-4"
                             onClick={(e) => {
@@ -346,6 +450,15 @@ const PlanItinerary = (onPlaceChange) => {
           onClick={handleDelete} // Call handleSaveItinerary on click
         >
           Delete
+        </button>
+      </div>
+
+      <div className="p-6">
+        <button
+          onClick={exportPDF}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Export Itinerary to PDF
         </button>
       </div>
 

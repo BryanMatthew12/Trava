@@ -41,6 +41,7 @@ const EditItinerary = (onPlaceChange) => {
           const data = await getItineraryDetails(itineraryId);
           console.log(data);
           const { places, ...restWithoutPlaces } = data;
+          console.log('Fetched itinerary data:', restWithoutPlaces);
           setItineraryData(restWithoutPlaces);
           setDestinations(data.places);
           console.log('Fetched itinerary data:', data.places);
@@ -297,9 +298,9 @@ const EditItinerary = (onPlaceChange) => {
                               <p className="text-gray-600">
                                 <strong>Estimated Price:</strong> {place.place_est_price ? `Rp. ${place.place_est_price}` : 'N/A'}
                               </p>
-                              <p className="text-gray-600">
+                              {/* <p className="text-gray-600">
                                 <strong>Visit Order:</strong> {place.visit_order}
-                              </p>
+                              </p> */}
                             </div>
                             <button
                               className="text-red-500 hover:text-red-700 ml-4"
