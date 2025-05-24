@@ -22,7 +22,7 @@ class UpdatePlacesRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'destination_id'    => 'sometimes|exists:destinations,destination_id',
+            'destination_id'    => 'sometimes|exists:destinations,destination_id',
             'place_name'        => 'sometimes|string|max:255',
             'place_description' => 'nullable|string',
             'location_id'       => 'nullable',
