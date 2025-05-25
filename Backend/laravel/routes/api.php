@@ -52,6 +52,7 @@ Route::middleware(['auth:api'])->group(function () {
             
             // Route to search destinations names
             Route::get('destinations/search', [DestinationController::class, 'search']);
+            Route::patch('destinations/{id}', [DestinationController::class, 'update']); // update destination
 
             // Routes to check preference
             Route::get('user-preferences/{userId}', [UserPreferenceController::class, 'getByUserId']);

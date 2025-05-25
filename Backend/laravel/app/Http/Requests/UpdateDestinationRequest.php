@@ -22,7 +22,9 @@ class UpdateDestinationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'destination_name' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'place_picture'     => 'nullable|string',
         ];
     }
 }

@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Destination;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,8 +14,41 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-    //    $this->call([UserSeeder::class]);
-    //    $this->call([DestinationSeeder::class,]);
+        $names = [
+            'Jakarta Pusat', 
+            'Jakarta Selatan',
+            'Jakarta Barat',
+            'Jakarta Timur',
+            'Jakarta Utara',
+            'Serang',
+            'Anyer',
+            'Tanjung Lesung',
+            'Ujung Kulon',
+            'Bandung',
+            'Bogor & Puncak',
+            'Sukabumi',
+            'Pangandaran',
+            'Garut',
+            'Semarang',
+            'Solo',
+            'Magelang',
+            'Karimunjawa',
+            'Dieng Plateau',
+            'Yogyakarta',
+            'Gunung Kidul',
+            'Kulon Progo',
+            'Surabaya',
+            'Malang & Batu',
+            'Bromo-Tengger-Semeru',
+            'Banyuwangi',
+        ];
+
+        foreach ($names as $name) {
+            Destination::factory()->create([
+                'destination_name' => $name,
+            ]);
+        } 
+
         $this->call([
             UserSeeder::class,
             DestinationSeeder::class,
