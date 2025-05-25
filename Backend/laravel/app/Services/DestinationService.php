@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Destination;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class DestinationService
 {
@@ -56,15 +57,27 @@ class DestinationService
     /**
      * Update an existing destination.
      */
-    public function update(array $data, $id)
+    public function update($request, $id)
     {
         $destination = Destination::find($id);
-
         if (!$destination) {
             return null;
         }
 
-        $destination->update($data);
+        $data = $request->validated();
+
+        // Handle file upload for destination_picture
+        if (request()->hasFile('destination_picture')) {
+            $file = request()->file('destination_picture');
+            $destination->destination_picture = file_get_contents($file->getRealPath());
+        } elseif (isset($data['destination_picture'])) {
+            // If sent as base64 or string
+            $destination->destination_picture = $data['destination_picture'];
+        }
+
+        // Update other fields except destination_picture
+        $destination->fill(Arr::except($data, ['destination_picture']));
+        $destination->save();
 
         return $destination;
     }
