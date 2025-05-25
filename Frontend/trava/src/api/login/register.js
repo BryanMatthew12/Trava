@@ -2,7 +2,7 @@ import { setToken, setName, setUserId, setRoleId } from "../../slices/auth/authS
 import { BASE_URL } from "../../config";
 import axios from "axios";
 
-export const register = async (name, email, password, confirmPassword, dispatch, navigate) => {
+export const register = async (name, email, password, confirmPassword, dispatch) => {
   try {
     const response = await axios.post(`${BASE_URL}/auth/register`, {
       username: name,
@@ -21,9 +21,9 @@ export const register = async (name, email, password, confirmPassword, dispatch,
       throw new Error("Registration failed: Token not found");
     }
   } catch (error) {
-    console.error("Register error:", error.response?.data?.message || error.message);
-    throw new Error(error.response?.data?.message || "Registration failed");
+    console.error("Register error:", error.response?.data?.message);
+    throw new Error(error.response?.data?.message);
+
   } finally {
-    navigate("/preference");
   }
 };

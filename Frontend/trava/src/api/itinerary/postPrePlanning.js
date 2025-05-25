@@ -8,8 +8,7 @@ export const postPrePlanning = async (
   end,
   budget,
   destination,
-  destinationId,
-  navigate
+  destinationId
 ) => {
   try {
     const token = Cookies.get("token");
@@ -33,17 +32,7 @@ export const postPrePlanning = async (
       }
     );
 
-    const itineraryId = response.data.id;
-    navigate(`/PlanningItinerary?source=header&params=${itineraryId}`, {
-      state: {
-        itineraryId,
-        start,
-        end,
-        budget,
-        destination,
-        destinationId,
-      },
-    });
+    return response.data.id; // Return the itinerary ID
   } catch (error) {
     console.error(
       "Error posting itinerary:",

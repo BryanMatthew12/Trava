@@ -2,13 +2,13 @@ import React, { useEffect, useRef } from "react";
 import { fetchCoord } from "../../api/mapCoord/fetchCoord";
 
 const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
-  const test = "citra 5";
+
 
   useEffect(() => {
     console.log("place", place);
     const getCoordinates = async () => {
       try {
-        const destinations = await fetchCoord(test);
+        const destinations = await fetchCoord(place.name);
         const coordinates = destinations?.data;
 
         if (coordinates) {
