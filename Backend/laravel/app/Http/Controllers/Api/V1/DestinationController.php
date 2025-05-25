@@ -60,8 +60,7 @@ class DestinationController extends Controller
      */
     public function update(UpdateDestinationRequest $request, $id)
     {
-        $data = $request->validated();
-        $destination = $this->destinationService->update($data, $id);
+        $destination = $this->destinationService->update($request, $id);
 
         if (!$destination) {
             return response()->json(['message' => 'Destination not found'], 404);

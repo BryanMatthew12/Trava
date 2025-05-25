@@ -11,9 +11,17 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use App\Services\PlacesService;
 
 class PlacesController extends Controller
 {
+    protected $placesService;
+
+    public function __construct(PlacesService $placesService)
+    {
+        $this->placesService = $placesService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -251,14 +259,16 @@ class PlacesController extends Controller
                 $query->where('destination_id', $destinationId);
             }
 
-        $places = $query->orderBy('place_rating', $sortDirection)
-                        ->skip($offset)
-                        ->take($perPage)
-                        ->get();
+        $places = $query->with('location')
+                ->orderBy('place_rating', $sortDirection)
+                ->skip($offset)
+                ->take($perPage)
+                ->get();
 
         $places->transform(function ($place) {
-            // Just return as is
-            return $place;
+            $placeArray = $place->toArray();
+            $placeArray['location_name'] = $place->location->location_name ?? null;
+            return $placeArray;
         });
 
         return response()->json($places);
@@ -267,31 +277,11 @@ class PlacesController extends Controller
 
     public function updatePlace(UpdatePlacesRequest $request, $place_id)
     {
-        $place = Places::findOrFail($place_id);
-
-        $validated = $request->validated();
-
-        // Handle blob file if uploade
-        if ($request->hasFile('place_picture')) {
-            $file = $request->file('place_picture');
-            $place->place_picture = file_get_contents($file->getRealPath());
-        } elseif (isset($validated['place_picture'])) {
-            // If not a file upload, but a string (e.g., base64 or URL)
-            $place->place_picture = $validated['place_picture'];
-        }
-        // If neither, do not change the picture
-
-        // Fill other fields (excluding place_picture to avoid overwriting it if not present)
-        $place->fill(Arr::except($validated, ['place_picture']));
-        $place->save();
-
-        if (isset($validated['category_ids'])) {
-            $place->categories()->sync($validated['category_ids']);
-        }
+        $place = $this->placesService->updatePlace($request, $place_id);
 
         return response()->json([
             'message' => 'Place updated successfully',
-            'place'   => $place->load('categories')
+            'place'   => $place
         ]);
     }
 

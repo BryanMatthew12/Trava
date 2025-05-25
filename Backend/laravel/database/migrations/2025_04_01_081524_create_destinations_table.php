@@ -12,8 +12,7 @@ class CreateDestinationsTable extends Migration
             $table->id('destination_id');
             $table->string('destination_name'); // Example: Jakarta, Bali, Yogyakarta
             $table->text('description')->nullable(); // General description
-            $table->string('destination_picture')->nullable(); // Store image URL or path
-            $table->string('destination_location'); // Address or GPS coordinates
+            $table->longText('destination_picture')->nullable(); // Store image URL or path
             $table->timestamps();
         });
     }
