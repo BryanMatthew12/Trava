@@ -12,44 +12,49 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState({ email: "", password: "", confirmPassword: "" });
+  const [apiError, setApiError] = useState(""); // State for API error messages
 
   const handleRegister = async (e) => {
-    e.preventDefault();
-    setError({ email: "", password: "", confirmPassword: "" });
-  
+  e.preventDefault();
+  setError({ email: "", password: "", confirmPassword: "" });
+  setApiError(""); // Clear previous API error
 
-    if (!email) {
-      setError((prev) => ({ ...prev, email: "Please enter your email address" }));
-      return;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError((prev) => ({ ...prev, email: "Please enter a valid email address" }));
-      return;
-    }
-  
-    if (!password) {
-      setError((prev) => ({ ...prev, password: "Please enter a password" }));
-      return;
-    }
-  
-    if (password !== confirmPassword) {
-      setError((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
-      return;
-    }
-  
-    // Call the register API function
-    try {
-      await register(name, email, password, confirmPassword, dispatch, navigate);
-    } catch (error) {
-      console.error("Registration failed:", error.message);
-    } finally {
+  if (!email) {
+    setError((prev) => ({ ...prev, email: "Please enter your email address" }));
+    return;
+  } else if (!/\S+@\S+\.\S+/.test(email)) {
+    setError((prev) => ({ ...prev, email: "Please enter a valid email address" }));
+    return;
+  }
+
+  if (!password) {
+    setError((prev) => ({ ...prev, password: "Please enter a password" }));
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setError((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
+    return;
+  }
+
+  try {
+    const result = await register(name, email, password, confirmPassword, dispatch);
+    if (result && result.token) {
       navigate("/preference");
     }
-  };
+  } catch (error) {
+    console.error("Registration failed:", error.message);
+    setApiError(error.message || "Registration failed. Please try again.");
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         <h1 className="text-xl font-bold text-center mb-6">Sign up to Trava</h1>
+
+        {apiError && <p className="text-red-500 text-center mb-4">{apiError}</p>} {/* Display API error */}
 
         <form onSubmit={handleRegister}>
           <div className="mb-4">

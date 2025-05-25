@@ -11,7 +11,7 @@ import {
 } from "../slices/home/homeSlice";
 import { selectPlacesById } from "../slices/places/placeSlice";
 import { useSelector } from "react-redux";
-import { GoogleMap, LoadScript } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import GOOGLE_MAPS_API_KEY from "../api/googleKey/googleKey";
 import { exportToThreads } from "../api/itinerary/exportToThreads"; // Import fungsi exportToThreads
 
@@ -26,6 +26,7 @@ const categoryMapping = {
 const PlanningItinerary = () => {
   const [latitude, setLatitude] = useState(0);
   const [langitude, setLangitude] = useState(0);
+  const [markers, setMarkers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false); // State untuk status upload
   const containerStyle = {
@@ -79,9 +80,21 @@ const PlanningItinerary = () => {
   // State to store the destination name received from DestinationInfo
   const [destinationName, setDestinationName] = useState("");
 
+   const addMarker = (location) => {
+    setMarkers((prevMarkers) => [...prevMarkers, location]);
+  };
+
+  const handleMapClick = (e) => {
+    const newMarker = {
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    };
+    addMarker(newMarker);
+  };
+
   // Callback function to receive the destination name
   const handleCoordinates = (lat, lng) => {
-    console.log("Received coordinates:", lat, lng);
+    addMarker({ lat, lng }); // Add marker to the map
     setLangitude(lng);
     setLatitude(lat);
   };
@@ -133,7 +146,8 @@ const PlanningItinerary = () => {
           <ContentComponent
             place={contentData}
             categoryMapping={categoryMapping}
-            onPlaceChange={handleCoordinates} // Pass the callback function
+            onPlaceChange={handleCoordinates}
+            handleMapClick={handleMapClick}
           />
         </div>
       </div>
@@ -146,6 +160,13 @@ const PlanningItinerary = () => {
             center={center}
             zoom={15}
           >
+            {markers.map((marker, index) => (
+          <Marker
+            key={index}
+            position={marker}
+            // onClick={() => removeMarker(index)}
+          />
+        ))}
             <p>{destinationName}</p>
           </GoogleMap>
         </LoadScript>

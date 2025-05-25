@@ -5,6 +5,7 @@ import { faHiking, faUtensils, faShoppingCart, faLandmark, faPrayingHands } from
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
+import Success from '../modal/successModal/Success';
 
 const CategorySelector = () => {
   const categories = [
@@ -17,6 +18,7 @@ const CategorySelector = () => {
 
   const [selectedCategories, setSelectedCategories] = useState([]);
   const navigate = useNavigate();
+  const [showSuccess, setShowSuccess] = useState(false);
   const token = useSelector((state) => state.auth.token);
 
   const handleCategoryChange = (categoryId) => {
@@ -49,17 +51,23 @@ const CategorySelector = () => {
           },
         }
       );
-      alert(response.data.message);
-      navigate("/Home");
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        navigate('/home');
+      }, 2000);
     } catch (error) {
       console.error('Error saving categories:', error);
       alert('Failed to save categories. Please try again.');
-    }finally {
-      navigate("/Home");}
+    }
   };
 
   return (
     <div style={{ padding: '20px', textAlign: 'center' }}>
+      {showSuccess && (
+      <Success
+        message="Categories saved successfully!"
+        />)}
       <h2 className='font-bold text-md'>Select Your Categories</h2>
       <div
         style={{
