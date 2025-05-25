@@ -143,7 +143,12 @@ class PlacesController extends Controller
      */
     public function show($id)
     {
-        $place = Places::with('categories')->findOrFail($id);
+        $place = Places::with('categories', 'location')->findOrFail($id);
+
+        $response = $place->toArray();
+
+        $response['location_name'] = $place->location->location_name ?? null;
+
         return response()->json($place);
     }
 
