@@ -9,10 +9,12 @@ import { postPrePlanning } from '../api/itinerary/postPrePlanning';
 import Select from 'react-select';
 import { fetchDestinations } from '../api/destination/destination'; // ambil dari API-mu
 import { setDestinations, selectDestinations } from '../slices/destination/destinationSlice';
+import Loading from '../modal/loading/Loading';
 
 const PrePlanningItinerary = () => {
   const dispatch = useDispatch();
   const destinations = useSelector(selectDestinations);
+  const [loading, setLoading] = useState(false);
 
   // Fetch destinasi dari API jika kosong, lalu simpan ke Redux
   useEffect(() => {
@@ -49,13 +51,13 @@ const PrePlanningItinerary = () => {
   };
 
   const handleContinue = async () => {
-    if (!destination || !startDate || !endDate || !budget  || !title) {
-      alert('Please fill in all fields before continuing.');
+    if (!destination || !startDate || !endDate || !budget || !title) {
+      alert("Please fill in all fields before continuing.");
       return;
     }
 
-    const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
-    const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
+    const formattedStartDate = new Date(startDate).toISOString().split("T")[0];
+    const formattedEndDate = new Date(endDate).toISOString().split("T")[0];
 
     try {
       const itineraryId = await postPrePlanning(
@@ -63,18 +65,34 @@ const PrePlanningItinerary = () => {
         formattedStartDate,
         formattedEndDate,
         budget,
-        // description,
         destination,
-        destinationId,
-        navigate
+        destinationId
       );
+
+      if (itineraryId) {
+        setLoading(true);
+        setTimeout(() => {
+          setLoading(false);
+          navigate(`/PlanningItinerary?source=header&params=${itineraryId}`, {
+            state: {
+              itineraryId,
+              start: formattedStartDate,
+              end: formattedEndDate,
+              budget,
+              destination,
+              destinationId,
+            },
+          });
+        }, 1000); // Navigate after 2 seconds
+      }
     } catch (error) {
-      alert('There was an error submitting your itinerary. Please try again.');
+      alert("There was an error submitting your itinerary. Please try again.");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-white pt-10">
+      {loading && <Loading />}
       <h1 className="text-2xl font-bold mb-6">Plan Your Trip</h1>
       
       {/* Destination Input */}

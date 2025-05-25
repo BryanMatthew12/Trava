@@ -25,16 +25,26 @@ const Profile = () => {
   }
 
   // GET profile setiap refresh/mount
-  useEffect(() => {
-    if (userId) {
-      getProfile(userId).then(profile => {
-        setUsername(profile.username || '');
-        setImage(profile.user_picture || '');
-        dispatch(setUserPicture(profile.user_picture || ''));
-      });
+ useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      if (userId) {
+        const profile = await getProfile(userId, navigate);
+        if (profile) {
+          setUsername(profile.username || "");
+          setImage(profile.user_picture || "");
+          dispatch(setUserPicture(profile.user_picture || ""));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      // navigate('/login') is already handled in getProfile
     }
-    // eslint-disable-next-line
-  }, [userId]);
+  };
+
+  fetchProfile();
+}, [userId, navigate, dispatch]);
+
 
   useEffect(() => {
     setImage(userPicture || '');
