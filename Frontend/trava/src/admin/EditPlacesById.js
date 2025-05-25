@@ -35,6 +35,9 @@ const EditPlacesById = () => {
     value: destination.id,
     label: destination.name,
   }));
+  // const [placeName, setPlaceName] = useState("");
+  // const [placeDescription, setPlaceDescription] = useState("");
+  // const [placeRating, setPlaceRating] = useState("0.0");
 
   const [formData, setFormData] = useState({
     destination_id: "",
@@ -122,8 +125,18 @@ const EditPlacesById = () => {
   };
 
   function mapPlaceDetailToForm(place) {
+    const parsedOperational = typeof place.operational === "string"
+      ? JSON.parse(place.operational)
+      : (place.operational || {});
+
+    const formattedOperational = {};
+    for (const [day, hours] of Object.entries(parsedOperational)) {
+      const [start, end] = hours.split("-");
+      formattedOperational[day] = { start, end };
+    }
+
     return {
-      place_id: place.place_id || "", // <-- tambahkan ini!
+      place_id: place.place_id || "",
       destination_id: place.destination_id || "",
       place_name: place.place_name || "",
       place_description: place.place_description || "",
@@ -131,9 +144,7 @@ const EditPlacesById = () => {
       place_rating: place.place_rating ? parseFloat(place.place_rating).toFixed(1) : "0.0",
       place_picture: place.place_picture || "",
       place_est_price: place.place_est_price ? parseInt(place.place_est_price) : 0,
-      operational: typeof place.operational === "string"
-        ? JSON.parse(place.operational)
-        : (place.operational || {}),
+      operational: formattedOperational, // Autofill operational hours
       views: place.views || 0,
       category_ids: place.categories
         ? place.categories.map((cat) => cat.category_id)
@@ -142,30 +153,36 @@ const EditPlacesById = () => {
   }
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+  const { name, value } = e.target;
+  console.log("name:", name);
+  console.log("value:", value);
 
-    if (name === "category_ids") {
-      const categories = value.split(",").map((id) => parseInt(id.trim()));
-      setFormData({ ...formData, category_ids: categories });
-    } else if (daysOfWeek.includes(name.split("-")[0])) {
-      const [day, type] = name.split("-");
-      setFormData({
-        ...formData,
-        operational: {
-          ...formData.operational,
-          [day]: {
-            ...formData.operational[day],
-            [type]: value,
-          },
+  if (name === "category_ids") {
+    const categories = value.split(",").map((id) => parseInt(id.trim()));
+    setFormData({ ...formData, category_ids: categories });
+  } else if (daysOfWeek.includes(name.split("-")[0])) {
+    // Handle operational hours
+    const [day, type] = name.split("-");
+    setFormData({
+      ...formData,
+      operational: {
+        ...formData.operational,
+        [day]: {
+          ...formData.operational[day],
+          [type]: value,
         },
-      });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
+      },
+    });
+  } else {
+    // Handle other fields like place_name, place_description, and place_rating
+    setFormData({ ...formData, [name]: value });
+    console.log("Updated formData:", { ...formData, [name]: value });
+  }
+};
 
   const handleSubmit = async (e) => {
   e.preventDefault();
+  console.log("Form submitted:", formData);
 
   // Format operational hours
   const formattedOperational = {};
@@ -182,6 +199,8 @@ const EditPlacesById = () => {
     place_est_price: parseInt(formData.place_est_price),
     operational: JSON.stringify(formattedOperational),
   };
+
+  console.log("Final data to be sent:", finalData);
   await updatePlace(formData.place_id, finalData, placeId2, { "Content-Type": "application/json" });
 
   let payload;
@@ -214,25 +233,6 @@ const EditPlacesById = () => {
     // No image file, send JSON normally
     payload = finalData;
     headers["Content-Type"] = "application/json";
-  }
-
-  try {
-    // Debug payload
-    if (payload instanceof FormData) {
-      for (let pair of payload.entries()) {
-        console.log(pair[0] + ":", pair[1]);
-        if (pair[1] instanceof File) {
-          // console.log("File name:", pair[1].name);
-          // console.log("File type:", pair[1].type);
-          // console.log("File size:", pair[1].size);
-        }
-      }
-    }
-    await updatePlace(formData.place_id, payload, placeId2, headers);
-    // Show success or redirect here if needed
-  } catch (err) {
-    console.error("Update failed:", err);
-    // Show error message here if needed
   }
 
   console.log("Form data submitted:", finalData);
@@ -276,8 +276,14 @@ const EditPlacesById = () => {
         }}
         placeholder="Search and select a place by name"
       />
+
+      {/* place name */}
       <input name="place_name" value={formData.place_name} placeholder="Place Name" onChange={handleChange} required className="w-full p-2 border rounded" />
+      
+      {/* place description */}
       <textarea name="place_description" value={formData.place_description} placeholder="Description" onChange={handleChange} required className="w-full p-2 border rounded" />
+      
+      {/* place image */}
       <ImageUploadCrop
         onImageCropped={base64 => {
           setFormData({ ...formData, place_picture: base64 });
@@ -288,8 +294,11 @@ const EditPlacesById = () => {
           imageFileRef.current = null;
         }}
       />
+
+      {/* place est price */}
       <input name="place_est_price" value={formData.place_est_price} placeholder="Estimated Price" type="number" onChange={handleChange} required className="w-full p-2 border rounded" />
 
+      {/* place rating */}
       <div>
         <label className="block mb-1 font-medium">Rating</label>
         <input
@@ -305,6 +314,7 @@ const EditPlacesById = () => {
         />
       </div>
 
+      {/* category place */}
       <Select
         options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
         isMulti
@@ -316,6 +326,7 @@ const EditPlacesById = () => {
         placeholder="Select categories"
       />
 
+      {/* place operational hours */}
       <fieldset className="border p-3 rounded">
         <legend className="font-semibold">Operational Hours</legend>
         {daysOfWeek.map((day) => (

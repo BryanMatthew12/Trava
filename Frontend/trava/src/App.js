@@ -24,15 +24,15 @@ import Admin from './admin/Admin';
 
 const Layout = () => {
   const location = useLocation();
-  const isPlanningItinerary = location.pathname.startsWith('/PlanningItinerary');
+  const isPlanningItinerary = location.pathname.toLowerCase().startsWith('/planningitinerary');
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isPlanningItinerary && <Header />}
+      {!isPlanningItinerary && <Header />} {/* Hide Header if on /PlanningItinerary */}
       <main className="flex-grow">
         <Outlet />
       </main>
-      <Footer />
+      {!isPlanningItinerary && <Footer />} {/* Hide Footer if on /PlanningItinerary */}
     </div>
   );
 };
@@ -62,9 +62,10 @@ const App = () => {
         <Route
           path="login"
           element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
+            // <PublicRoute>
+            //   <Login />
+            // </PublicRoute>
+            <Login/>  
           }
         />
         

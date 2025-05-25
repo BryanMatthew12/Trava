@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '../api/login/login';
+import { logout } from '../slices/auth/authSlice';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,11 @@ const Login = () => {
   const [error, setError] = useState({ email: '', password: '' });
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(logout()); // Clear any previous session on mount
+  })
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();

@@ -71,7 +71,10 @@ export default function EditPlaces() {
           },
         },
       });
-    } else {
+    } else if(name == 'place_description'){
+      console.log('place_description', value);
+      setFormData({ ...formData, place_description : value });
+    }else {
       setFormData({ ...formData, [name]: value });
     }
   };
@@ -220,11 +223,19 @@ export default function EditPlaces() {
         className="w-full p-2 border rounded"
       />
       <input
-        name="place_adress"
+        name="place_address"
+        placeholder="Address"
         value={formData.location_name}
         onChange={handleChange}
         className="w-full p-2 border rounded"
       />
+      {/* <input
+        name="place_description"
+        placeholder="Description"
+        value={formData.place_description}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      /> */}
       {/* <textarea
         name="place_description"
         value={formData.place_description}
