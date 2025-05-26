@@ -5,6 +5,7 @@ import { getUserItineraries } from '../../api/itinerary/showItinerary';
 import { showPlanItinerary } from '../../api/itinerary/showPlanItinerary';
 import { setItineraries, selectItineraries } from '../../slices/itinerary/showItinerarySlice';
 import { useNavigate } from 'react-router-dom';
+import { FaRegCalendarAlt } from "react-icons/fa"; // Tambahkan import ini
 
 const UserTrip = () => {
   const navigate = useNavigate();
@@ -30,6 +31,13 @@ const UserTrip = () => {
     navigate(`/PlanningItinerary?source=edit&params=${itinerary.id}`);
   }
 
+  function formatDate(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const options = { weekday: 'short', day: '2-digit', month: 'short' };
+    return date.toLocaleDateString('en-US', options);
+  }
+
   return (
     <div className="flex-1 w-full bg-gray-100 border border-gray-300 rounded-lg p-6 shadow-md">
       <div className="flex justify-between items-center mb-4">
@@ -45,15 +53,15 @@ const UserTrip = () => {
         <div className="space-y-4 overflow-y-auto" style={{ maxHeight: '200px' }}>
           {[...itineraries].reverse().map((itinerary) => (
             <div
-              key={itinerary.id}
+              key={itinerary.itinerary_id} // Ganti id jadi itinerary_id
               className="p-4 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"
-              onClick={() =>
-                handleClick(itinerary) // Panggil fungsi handleClick saat item diklik
-              }
+              onClick={() => handleClick(itinerary)}
             >
-              <h3 className="font-semibold">{itinerary.destination_name} Trip</h3>
-              <p className="text-sm text-gray-600">
-                {itinerary.start_date} - {itinerary.end_date}
+              <h3 className="font-semibold">{itinerary.itinerary_name}</h3>
+              <h3 className="font-md">{itinerary.destination_name} Trip</h3>
+              <p className="text-sm text-gray-600 flex items-center gap-1">
+                <FaRegCalendarAlt className="inline-block mr-1" />
+                {formatDate(itinerary.start_date)} - {formatDate(itinerary.end_date)}
               </p>
               <p className="text-sm text-gray-600">{itinerary.itinerary_description}</p>
             </div>

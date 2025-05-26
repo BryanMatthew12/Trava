@@ -1,9 +1,15 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { viewThread } from "../../api/thread/viewThread";
+import { FaUserCircle } from "react-icons/fa"; // Tambahkan import ini
 
 const ThreadsGrid = ({ guides, loading }) => {
   const navigate = useNavigate();
+
+  function getImageSrc(user_picture) {
+    if (!user_picture) return null; // Kembalikan null jika tidak ada gambar
+    return user_picture;
+  }
 
   const handleThreadClick = async (guide) => {
     try {
@@ -26,7 +32,7 @@ const ThreadsGrid = ({ guides, loading }) => {
       {guides.map((guide) => (
         <div
           key={guide.thread_id}
-          className="border rounded-lg overflow-hidden shadow-md cursor-pointer"
+          className="border rounded-lg overflow-hidden shadow-md cursor-pointer flex flex-col h-full"
           onClick={() => handleThreadClick(guide)}
         >
           <img
@@ -34,15 +40,32 @@ const ThreadsGrid = ({ guides, loading }) => {
             alt={guide.itinerary.itinerary_name}
             className="w-full h-40 object-cover"
           />
-          <div className="p-4">
-            <h3 className="text-lg font-bold mb-1">
+          <div className="p-4 flex flex-col h-full">
+            <h3 className="text-lg font-semibold mb-1">
               {guide.itinerary.itinerary_name}
             </h3>
-            <p className="text-sm text-gray-600 mb-2">
+            <h3 className="text-xs font-md mb-1">
+              {guide.itinerary.itinerary_description ||
+                "No description available."}
+            </h3>
+            <p className="text-sm text-gray-600">
               {guide.thread_content}
             </p>
-            <div className="flex justify-between items-center text-sm text-gray-500">
-              <div className="flex items-center space-x-2 ml-auto">
+            <div className="flex justify-between items-center text-sm text-gray-500 mt-2 pt-2 border-t border-gray-100"
+                 style={{marginTop: "auto"}}>
+              <div className="flex items-center space-x-2">
+                {getImageSrc(guide.user?.user_picture) ? (
+                  <img
+                    src={getImageSrc(guide.user?.user_picture)}
+                    alt={guide.user?.username || "User"}
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                ) : (
+                  <FaUserCircle className="w-6 h-6 text-gray-300" />
+                )}
+                <span>by {guide.user?.username || "Unknown"}</span>
+              </div>
+              <div className="flex items-center space-x-2">
                 <span>👁 {guide.views}</span>
                 <span>❤️ {guide.likes}</span>
               </div>
