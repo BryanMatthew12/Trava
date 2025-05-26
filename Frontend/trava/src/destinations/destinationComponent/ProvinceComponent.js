@@ -29,6 +29,7 @@ const ExploreComponent = ({ dispatch }) => {
     const fetchPlace = async () => {
       try {
         const places = await fetchPlaces(selectedProvinceId);
+        console.log("Fetched places5555:", places);
         dispatch(setPlaces(places));
       } catch (error) {
         console.error("Failed to fetch destinations:", error.message);

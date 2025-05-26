@@ -151,6 +151,7 @@ class ItineraryDestinationController extends Controller
         return response()->json([
             'user_id' => $itinerary->user_id,
             'itinerary_id' => $itinerary->itinerary_id,
+            'budget' => $itinerary->budget,
             'destination_id' => $itinerary->destinations->pluck('destination_id')->first(),
             'destination_name' => $itinerary->destinations->pluck('destination_name')->first(),
             'start_date' => $itinerary->start_date,
@@ -165,7 +166,7 @@ class ItineraryDestinationController extends Controller
                         'visit_order' => $dest->visit_order,
                         'place_est_price' => $dest->est_price,
                         'place_rating' => $dest->place->place_rating ?? null,
-                        'place_image' => $dest->place->place_image ?? null,
+                        'place_picture' => $dest->place->place_picture ?? null,
                         'place_description' => $dest->place->place_description ?? null,
                     ];
                 });
@@ -192,11 +193,17 @@ class ItineraryDestinationController extends Controller
         $validated = $request->validated();
 
         try {
-            // You can ignore $itinerary_id from param or validate it matches the request
-            // Assuming the request does NOT include itinerary_id field, so use param:
             $itineraryId = $itinerary_id;
 
-            // Get destination_id from request (if you want to keep it) or find from itinerary
+            // Tambahkan update budget jika ada di request
+            if ($request->has('budget')) {
+                $itinerary = Itinerary::findOrFail($itineraryId);
+                $itinerary->budget = $request->input('budget');
+                $itinerary->save();
+            }
+
+            // You can ignore $itinerary_id from param or validate it matches the request
+            // Assuming the request does NOT include itinerary_id field, so use param:
             $destinationId = $request->input('destination_id') ?? 
                             Itinerary::findOrFail($itineraryId)->destinations()->first()->destination_id;
 
@@ -204,18 +211,15 @@ class ItineraryDestinationController extends Controller
                 return response()->json(['error' => 'Destination not found for this itinerary.'], 400);
             }
 
-            // Get unique day_ids from the payload
             $dayIds = collect($validated['destinations'])->pluck('day_id')->unique();
 
-            // Delete all existing itinerary destinations for this itinerary and these days
             ItineraryDestination::where('itinerary_id', $itineraryId)
                 ->where('destination_id', $destinationId)
                 ->whereIn('day_id', $dayIds)
                 ->delete();
 
-            // Create new records
             foreach ($validated['destinations'] as $data) {
-                $place = Places::findOrFail($data['place_id']);
+                $place = \App\Models\Places::findOrFail($data['place_id']);
 
                 ItineraryDestination::create([
                     'itinerary_id' => $itineraryId,

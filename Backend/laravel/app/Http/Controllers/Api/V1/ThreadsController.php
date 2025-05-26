@@ -33,7 +33,8 @@ class ThreadsController extends Controller
             'thread_id' => $request->input('thread_id'), // Get the thread_id from the query string
         ];
 
-        $threadsQuery = $this->threadsService->getThreads($filters)->with('itinerary');
+        $threadsQuery = $this->threadsService->getThreads($filters)
+            ->with(['itinerary', 'user']);
 
         // Apply filtering by user_id if provided
         if (!empty($filters['user_id'])) {
@@ -63,6 +64,8 @@ class ThreadsController extends Controller
             if ($user) {
                 $thread->liked = $thread->likesUsers()->where('thread_user_likes.user_id', $user->user_id)->exists();
             }
+            // Tambahkan username
+            $thread->username = $thread->user ? $thread->user->name : null;
             return $thread;
         });
 

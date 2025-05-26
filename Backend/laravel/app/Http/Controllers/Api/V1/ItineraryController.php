@@ -68,6 +68,7 @@ class ItineraryController extends Controller
         $formatted = $itineraries->map(function ($itinerary) {
             return [
                 'itinerary_id' => $itinerary->itinerary_id,
+                'itinerary_name' => $itinerary->itinerary_name,
                 'destination_name' => $itinerary->destinations->pluck('destination_name')->first(), // assuming 1 destination
                 'start_date' => $itinerary->start_date,
                 'end_date' => $itinerary->end_date,
