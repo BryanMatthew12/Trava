@@ -1,30 +1,31 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getItineraryDetails } from '../../api/itinerary/getItineraryDetails';
-import { fetchPlaces } from '../../api/places/places.js';
-import { setPlaces, selectPlaces } from '../../slices/places/placeSlice';
-import Select from 'react-select';
-import { patchItinerary } from '../../api/itinerary/patchItinerary.js';
-import { useNavigate } from 'react-router-dom';
-import { fetchDayId } from '../../api/dayId/fetchDayId';
-import { deleteItinerary } from '../../api/itinerary/deleteItinerary.js';
-import { selectUserId } from '../../slices/auth/authSlice';
-import { patchDescription } from '../../api/itinerary/patchDescription';
-import { FiEdit2 } from 'react-icons/fi';
+import React, { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getItineraryDetails } from "../../api/itinerary/getItineraryDetails";
+import { fetchPlaces } from "../../api/places/places.js";
+import { setPlaces, selectPlaces } from "../../slices/places/placeSlice";
+import Select from "react-select";
+import { patchItinerary } from "../../api/itinerary/patchItinerary.js";
+import { useNavigate } from "react-router-dom";
+import { fetchDayId } from "../../api/dayId/fetchDayId";
+import { deleteItinerary } from "../../api/itinerary/deleteItinerary.js";
+import { selectUserId } from "../../slices/auth/authSlice";
+import { patchDescription } from "../../api/itinerary/patchDescription";
+import { FiEdit2 } from "react-icons/fi";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import Loading from "../../modal/loading/Loading";
 import Success from "../../modal/successModal/Success";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete";
-import ConfirmSave from '../../modal/ConfirmDelete/ConfirmSave.js';
+import ConfirmSave from "../../modal/ConfirmDelete/ConfirmSave.js";
+import { fetchCoord } from "../../api/mapCoord/fetchCoord.js";
 
 // Tambahkan fungsi formatRupiah
 function formatRupiah(angka) {
   if (!angka) return "Rp. 0";
   // Hilangkan .00 jika ada
   let clean = angka.toString();
-  if (clean.endsWith('.00')) {
+  if (clean.endsWith(".00")) {
     clean = clean.slice(0, -3);
   }
   const numberString = clean.replace(/[^,\d]/g, "");
@@ -40,12 +41,13 @@ function formatRupiah(angka) {
   return "Rp. " + rupiah;
 }
 
-const EditItinerary = (onPlaceChange) => {
+const EditItinerary = ({ test }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const itineraryId = searchParams.get('params');
+  const [fetchedPlaces, setFetchedPlaces] = useState({});
+  const itineraryId = searchParams.get("params");
   const [itineraryData, setItineraryData] = useState(null);
-  const option = useSelector(selectPlaces); 
+  const option = useSelector(selectPlaces);
   const [selectPlace, setSelectPlace] = useState();
   const [activePlaceId, setActivePlaceId] = useState(null);
   const [currPage, setCurrPage] = useState(1);
@@ -56,7 +58,7 @@ const EditItinerary = (onPlaceChange) => {
   const authUserId = useSelector(selectUserId);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [descDraft, setDescDraft] = useState(description);
   const textareaRef = useRef(null);
@@ -76,17 +78,17 @@ const EditItinerary = (onPlaceChange) => {
           setItineraryData(restWithoutPlaces);
           setDestinations(data.places);
           setBudget(data.budget ? data.budget.toString() : ""); // <-- Tambahkan baris ini
-          if(data) {
+          if (data) {
             const placesData = await fetchPlaces(data.destination_id, currPage);
             dispatch(setPlaces(placesData));
           }
         } catch (error) {
-          console.error('Error fetching itinerary details:', error.message);
+          console.error("Error fetching itinerary details:", error.message);
         }
       }
     };
     fetchItineraryDetails();
-  }, [itineraryId , currPage, dispatch]);
+  }, [itineraryId, currPage, dispatch]);
 
   useEffect(() => {
     const fetchDayData = async () => {
@@ -96,7 +98,7 @@ const EditItinerary = (onPlaceChange) => {
         setDayId(dayIds);
         setVisibleDays(Array.from({ length: dayIds.length }, () => true));
       } catch (error) {
-        console.error('Error fetching day data:', error.message);
+        console.error("Error fetching day data:", error.message);
       }
     };
     if (itineraryId) fetchDayData();
@@ -104,7 +106,7 @@ const EditItinerary = (onPlaceChange) => {
 
   useEffect(() => {
     if (itineraryData?.itinerary_description !== undefined) {
-      setDescription(itineraryData.itinerary_description || '');
+      setDescription(itineraryData.itinerary_description || "");
     }
   }, [itineraryData]);
 
@@ -119,15 +121,15 @@ const EditItinerary = (onPlaceChange) => {
         setIsEditingDesc(false);
         if (descDraft !== description) {
           patchDescription(itineraryId, descDraft)
-            .then(() => setSuccessMsg('Description updated!'))
-            .catch(() => setSuccessMsg('Failed to update description'));
+            .then(() => setSuccessMsg("Description updated!"))
+            .catch(() => setSuccessMsg("Failed to update description"));
           setDescription(descDraft);
           setTimeout(() => setSuccessMsg(""), 2000);
         }
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isEditingDesc, descDraft, description, itineraryId, setDescription]);
 
   const handleActivePlace = (placeId, placeName) => {
@@ -143,7 +145,12 @@ const EditItinerary = (onPlaceChange) => {
         .filter((d) => d.day_id === Number(dayId))
         .reduce((max, d) => Math.max(max, d.visit_order), 0);
 
-      if (prevDestinations.some(d => d.day_id === Number(dayId) && d.place_id === selectedOption.value)) {
+      if (
+        prevDestinations.some(
+          (d) =>
+            d.day_id === Number(dayId) && d.place_id === selectedOption.value
+        )
+      ) {
         return prevDestinations;
       }
 
@@ -200,13 +207,13 @@ const EditItinerary = (onPlaceChange) => {
       setLoading(true);
       await patchItinerary(updatedItinerary, navigate);
       setLoading(false);
-      setSuccessMsg('Itinerary updated successfully!');
+      setSuccessMsg("Itinerary updated successfully!");
       setTimeout(() => setSuccessMsg(""), 2000);
     } catch (error) {
       setLoading(false);
-      setSuccessMsg('Failed to update itinerary. Please try again.');
+      setSuccessMsg("Failed to update itinerary. Please try again.");
       setTimeout(() => setSuccessMsg(""), 2000);
-      console.error('Error updating itinerary:', error.message);
+      console.error("Error updating itinerary:", error.message);
     }
   };
 
@@ -220,15 +227,15 @@ const EditItinerary = (onPlaceChange) => {
         setTimeout(() => setSuccessMsg(""), 2000);
         return;
       } else {
-        setSuccessMsg('Failed to delete itinerary.');
+        setSuccessMsg("Failed to delete itinerary.");
         setTimeout(() => setSuccessMsg(""), 2000);
-        console.error('Failed to delete itinerary:', response.message);
+        console.error("Failed to delete itinerary:", response.message);
       }
     } catch (error) {
       setLoading(false);
-      setSuccessMsg('Error deleting itinerary.');
+      setSuccessMsg("Error deleting itinerary.");
       setTimeout(() => setSuccessMsg(""), 2000);
-      console.error('Error deleting itinerary:', error.message);
+      console.error("Error deleting itinerary:", error.message);
     }
   };
 
@@ -238,9 +245,11 @@ const EditItinerary = (onPlaceChange) => {
     );
   };
 
-  const isAllDaysFilled = dayId.length > 0 && dayId.every(
-    (id) => destinations.some((destination) => destination.day_id === id)
-  );
+  const isAllDaysFilled =
+    dayId.length > 0 &&
+    dayId.every((id) =>
+      destinations.some((destination) => destination.day_id === id)
+    );
 
   const handleNextPage = () => {
     setCurrPage((prev) => prev + 1);
@@ -255,10 +264,22 @@ const EditItinerary = (onPlaceChange) => {
     y += 10;
 
     doc.setFontSize(12);
-    doc.text(`Destination: ${itineraryData?.destination_name || "Unknown"}`, 10, y);
+    doc.text(
+      `Destination: ${itineraryData?.destination_name || "Unknown"}`,
+      10,
+      y
+    );
     y += 7;
     doc.text(
-      `Date: ${itineraryData?.start_date ? new Date(itineraryData.start_date).toLocaleDateString() : "N/A"} to ${itineraryData?.end_date ? new Date(itineraryData.end_date).toLocaleDateString() : "N/A"}`,
+      `Date: ${
+        itineraryData?.start_date
+          ? new Date(itineraryData.start_date).toLocaleDateString()
+          : "N/A"
+      } to ${
+        itineraryData?.end_date
+          ? new Date(itineraryData.end_date).toLocaleDateString()
+          : "N/A"
+      }`,
       10,
       y
     );
@@ -268,7 +289,10 @@ const EditItinerary = (onPlaceChange) => {
       doc.setFontSize(12);
       doc.text("Description:", 10, y);
       y += 6;
-      const splitDescription = doc.splitTextToSize(itineraryData.itinerary_description, 180);
+      const splitDescription = doc.splitTextToSize(
+        itineraryData.itinerary_description,
+        180
+      );
       doc.text(splitDescription, 10, y);
       y += splitDescription.length * 6 + 4;
     }
@@ -325,28 +349,72 @@ const EditItinerary = (onPlaceChange) => {
     // Jika ingin update ke backend, panggil patchItinerary di sini
   };
 
+  useEffect(() => {
+    const getCoordinates = async () => {
+      try {
+        const destinations = await fetchCoord(selectPlace);
+        const coordinates = destinations?.data;
+
+        if (coordinates) {
+          const { latitude, longitude } = coordinates;
+
+          // Call test function
+          if (typeof test === "function") {
+            test(latitude, longitude);
+          }
+
+          // Store in cache
+          setFetchedPlaces((prev) => ({
+            ...prev,
+            [selectPlace]: { latitude, longitude },
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch coord", error.message);
+      }
+    };
+
+    if (!selectPlace) return;
+
+    // If coordinates are already cached for this place
+    if (fetchedPlaces[selectPlace]) {
+      const { latitude, longitude } = fetchedPlaces[selectPlace];
+      if (typeof test === "function") {
+        test(latitude, longitude);
+      }
+    } else {
+      // Not cached, fetch coordinates
+      getCoordinates();
+    }
+  }, [selectPlace, test, fetchedPlaces]);
+
   return (
     <div className="p-6">
       {itineraryData ? (
         <>
-          <h2 className="text-2xl font-bold mb-4">{itineraryData.destination_name}</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            {itineraryData.destination_name}
+          </h2>
           <p className="text-gray-600 mb-2">
-            <strong>Start Date:</strong> {new Date(itineraryData.start_date).toLocaleDateString()}
+            <strong>Start Date:</strong>{" "}
+            {new Date(itineraryData.start_date).toLocaleDateString()}
           </p>
           <p className="text-gray-600 mb-2">
-            <strong>End Date:</strong> {new Date(itineraryData.end_date).toLocaleDateString()}
+            <strong>End Date:</strong>{" "}
+            {new Date(itineraryData.end_date).toLocaleDateString()}
           </p>
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Description</h2>
-              {authUserId && Number(authUserId) === Number(itineraryData.user_id) && (
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-600"
-                  onClick={exportPDF}
-                >
-                  Export to PDF
-                </button>
-              )}
+              {authUserId &&
+                Number(authUserId) === Number(itineraryData.user_id) && (
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-600"
+                    onClick={exportPDF}
+                  >
+                    Export to PDF
+                  </button>
+                )}
             </div>
             <div className="bg-white shadow-md rounded-lg p-4 relative">
               <textarea
@@ -355,8 +423,11 @@ const EditItinerary = (onPlaceChange) => {
                 placeholder="Write or paste anything here: how to get around, tips and tricks"
                 value={descDraft}
                 readOnly={!isEditingDesc}
-                style={{ background: isEditingDesc ? 'white' : '#f3f4f6', cursor: isEditingDesc ? 'text' : 'default' }}
-                onChange={e => setDescDraft(e.target.value)}
+                style={{
+                  background: isEditingDesc ? "white" : "#f3f4f6",
+                  cursor: isEditingDesc ? "text" : "default",
+                }}
+                onChange={(e) => setDescDraft(e.target.value)}
               />
               {!isEditingDesc && (
                 <button
@@ -421,57 +492,82 @@ const EditItinerary = (onPlaceChange) => {
           {dayId.map((id, index) => {
             const places = destinations.filter((d) => d.day_id === id);
             return (
-              <div key={id} className="mb-6 border border-gray-300 rounded-lg p-4">
+              <div
+                key={id}
+                className="mb-6 border border-gray-300 rounded-lg p-4"
+              >
                 <div
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => toggleDayVisibility(index)}
                 >
-                  <h3 className="text-lg font-semibold">
-                    Day {index + 1}
-                  </h3>
+                  <h3 className="text-lg font-semibold">Day {index + 1}</h3>
                   <span className="text-blue-500">
-                    {visibleDays[index] ? '▼' : '▲'}
+                    {visibleDays[index] ? "▼" : "▲"}
                   </span>
                 </div>
                 {visibleDays[index] && (
                   <div className="mt-2">
                     {places.length === 0 ? (
-                      <div className="text-gray-400 italic mb-2">No places selected for this day.</div>
+                      <div className="text-gray-400 italic mb-2">
+                        No places selected for this day.
+                      </div>
                     ) : (
                       places
                         .sort((a, b) => a.visit_order - b.visit_order)
                         .map((place) => (
                           <div
                             onClick={() => {
-                              handleActivePlace(place.place_id, place.place_name);
+                              if (activePlaceId === place.place_id) {
+                                // If the place is already active, deactivate it
+                                setActivePlaceId(null);
+                              } else {
+                                // Otherwise, activate the clicked place
+                                setActivePlaceId(place.place_id);
+                                setSelectPlace(place.place_name);
+                              }
                             }}
-                            key={place.place_id + '-' + place.visit_order}
+                            key={place.place_id + "-" + place.visit_order}
                             className={`mb-4 p-4 border border-gray-300 rounded-lg flex items-center cursor-pointer transition-transform duration-200 ${
                               activePlaceId === place.place_id
-                                ? 'bg-blue-100 scale-105'
-                                : 'hover:bg-gray-100'
+                                ? "bg-blue-100 scale-105"
+                                : "hover:bg-gray-100"
                             }`}
                           >
                             <img
-                              src={place.place_picture || 'https://via.placeholder.com/100'}
+                              src={
+                                place.place_picture ||
+                                "https://via.placeholder.com/100"
+                              }
                               alt={place.place_name}
                               className="w-20 h-20 object-cover rounded-lg mr-4"
                             />
                             <div className="flex-grow">
-                              <h4 className="font-semibold text-lg">{place.place_name}</h4>
-                              <p className="text-gray-500">{place.place_description}</p>
-                              <p className="text-gray-600">
-                                <strong>Rating:</strong> {place.place_rating || 'N/A'} / 5
+                              <h4 className="font-semibold text-lg">
+                                {place.place_name}
+                              </h4>
+                              <p className="text-gray-500">
+                                {place.place_description}
                               </p>
                               <p className="text-gray-600">
-                                <strong>Estimated Price:</strong> {place.place_price ? `Rp. ${place.place_price}` : 'N/A'}
+                                <strong>Rating:</strong>{" "}
+                                {place.place_rating || "N/A"} / 5
+                              </p>
+                              <p className="text-gray-600">
+                                <strong>Estimated Price:</strong>{" "}
+                                {place.place_est_price
+                                  ? `Rp. ${place.place_est_price}`
+                                  : "N/A"}
                               </p>
                             </div>
                             <button
                               className="text-red-500 hover:text-red-700 ml-4"
                               onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeletePlace(place.day_id, place.place_id, place.visit_order);
+                                e.stopPropagation(); // Prevent triggering the parent onClick
+                                handleDeletePlace(
+                                  place.day_id,
+                                  place.place_id,
+                                  place.visit_order
+                                );
                               }}
                             >
                               Delete
@@ -485,7 +581,9 @@ const EditItinerary = (onPlaceChange) => {
                         label: place.name,
                         description: place.description,
                       }))}
-                      onChange={(selectedOption) => handleSelectPlace(selectedOption, id)}
+                      onChange={(selectedOption) =>
+                        handleSelectPlace(selectedOption, id)
+                      }
                       placeholder="Search for a place"
                       className="text-gray-700"
                       onMenuScrollToBottom={handleNextPage}
@@ -494,13 +592,13 @@ const EditItinerary = (onPlaceChange) => {
                       styles={{
                         menu: (provided) => ({
                           ...provided,
-                          maxHeight: '200px',
-                          overflowY: 'auto',
+                          maxHeight: "200px",
+                          overflowY: "auto",
                         }),
                         menuList: (provided) => ({
                           ...provided,
-                          maxHeight: '200px',
-                          overflowY: 'auto',
+                          maxHeight: "200px",
+                          overflowY: "auto",
                         }),
                       }}
                     />
@@ -509,23 +607,24 @@ const EditItinerary = (onPlaceChange) => {
               </div>
             );
           })}
-          {authUserId && Number(authUserId) === Number(itineraryData.user_id) && (
-            <div className="flex gap-4 mt-4">
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-                onClick={() => setShowSaveModal(true)}
-                disabled={!isAllDaysFilled}
-              >
-                Save Changes
-              </button>
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded"
-                onClick={() => setShowDeleteModal(true)}
-              >
-                Delete Itinerary
-              </button>
-            </div>
-          )}
+          {authUserId &&
+            Number(authUserId) === Number(itineraryData.user_id) && (
+              <div className="flex gap-4 mt-4">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+                  onClick={() => setShowSaveModal(true)}
+                  disabled={!isAllDaysFilled}
+                >
+                  Save Changes
+                </button>
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  Delete Itinerary
+                </button>
+              </div>
+            )}
 
           {/* Save Confirmation Modal */}
           <ConfirmSave

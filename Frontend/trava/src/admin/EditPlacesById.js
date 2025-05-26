@@ -11,6 +11,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { BASE_URL } from "../config";
 import ImageUploadCrop from "../api/admin/ImageUploadCrop"; // Pastikan path benar
+import { deletePlace } from "../api/admin/deletePlace"; // Tambahkan import
 
 
 const daysOfWeek = [
@@ -154,8 +155,6 @@ const EditPlacesById = () => {
 
   const handleChange = (e) => {
   const { name, value } = e.target;
-  console.log("name:", name);
-  console.log("value:", value);
 
   if (name === "category_ids") {
     const categories = value.split(",").map((id) => parseInt(id.trim()));
@@ -176,13 +175,11 @@ const EditPlacesById = () => {
   } else {
     // Handle other fields like place_name, place_description, and place_rating
     setFormData({ ...formData, [name]: value });
-    console.log("Updated formData:", { ...formData, [name]: value });
   }
 };
 
   const handleSubmit = async (e) => {
   e.preventDefault();
-  console.log("Form submitted:", formData);
 
   // Format operational hours
   const formattedOperational = {};
@@ -200,7 +197,6 @@ const EditPlacesById = () => {
     operational: JSON.stringify(formattedOperational),
   };
 
-  console.log("Final data to be sent:", finalData);
   await updatePlace(formData.place_id, finalData, placeId2, { "Content-Type": "application/json" });
 
   let payload;
@@ -212,11 +208,6 @@ const EditPlacesById = () => {
     const file = new File([imageFileRef.current], "image.jpg", {
       type: imageFileRef.current.type || "image/jpeg",
     });
-
-    console.log("✅ Valid file:");
-    console.log("File name:", file.name);
-    console.log("File type:", file.type);
-    console.log("File size:", file.size);
 
     payload = new FormData();
     Object.entries(finalData).forEach(([key, value]) => {
@@ -234,8 +225,18 @@ const EditPlacesById = () => {
     payload = finalData;
     headers["Content-Type"] = "application/json";
   }
+};
 
-  console.log("Form data submitted:", finalData);
+const handleDelete = async () => {
+  if (!window.confirm("Are you sure you want to delete this place?")) return;
+  try {
+    await deletePlace(formData.place_id);
+    alert("Place deleted successfully!");
+    // Redirect, clear form, atau navigate sesuai kebutuhan
+    // Misal: window.location.href = "/admin/places";
+  } catch (err) {
+    alert(err.message);
+  }
 };
 
 
@@ -287,10 +288,6 @@ const EditPlacesById = () => {
       <ImageUploadCrop
         onImageCropped={base64 => {
           setFormData({ ...formData, place_picture: base64 });
-          // console.log("Received cropped blob:", blob);
-          // console.log("Type of blob:", typeof blob);
-          // console.log("Blob instanceof Blob:", blob instanceof Blob);
-          // setImageFile(blob);
           imageFileRef.current = null;
         }}
       />
@@ -353,6 +350,13 @@ const EditPlacesById = () => {
 
       <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
         Save Changes
+      </button>
+      <button
+        type="button"
+        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 ml-2"
+        onClick={handleDelete}
+      >
+        Delete
       </button>
     </form>
   );

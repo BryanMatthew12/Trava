@@ -10,9 +10,9 @@ const destinationSlice = createSlice({
       state.destinations = action.payload.map((destination) => ({
         id: destination.destination_id,
         name: destination.destination_name,
-        // description: destination.description,
+        description: destination.description,
         // content: destination.content,
-        // destination_picture: destination.destination_picture,
+        destination_picture: destination.destination_picture,
       }));
     },
     clearDestinations: (state) => {
@@ -27,5 +27,10 @@ export const selectDestinations = (state) => state.destinations.destinations;
 
 export const selectDestinationById = (id) => (state) =>
   state.destinations.destinations.find((destination) => destination.id === id);
+
+export const selectDestinationPictureById = (id) => (state) => {
+  const destination = state.destinations.destinations.find((d) => d.id === id);
+  return destination ? destination.destination_picture : null;
+};
 
 export default destinationSlice.reducer;

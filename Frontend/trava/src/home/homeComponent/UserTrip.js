@@ -17,7 +17,6 @@ const UserTrip = () => {
     const fetchData = async () => {
       try {
         const data = await getUserItineraries(userId); // Ambil data itinerary berdasarkan user_id
-        console.log(data);
         dispatch(setItineraries(data)); // Simpan data ke Redux state
       } catch (error) {
         console.error('Error fetching user itineraries:', error.message);
