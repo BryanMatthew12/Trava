@@ -5,7 +5,6 @@ const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
 
 
   useEffect(() => {
-    console.log("place", place);
     const getCoordinates = async () => {
       try {
         const destinations = await fetchCoord(place.name);

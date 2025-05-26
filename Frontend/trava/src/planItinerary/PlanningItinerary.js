@@ -108,7 +108,6 @@ const PlanningItinerary = () => {
     setIsUploading(true); // Set status upload ke true
     try {
       const response = await exportToThreads(params); // Panggil fungsi exportToThreads
-      console.log("Itinerary posted to Threads!", response);
       alert("Itinerary successfully posted to Threads!");
     } catch (error) {
       console.error("Failed to post itinerary to Threads:", error.message);
