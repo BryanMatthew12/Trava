@@ -81,7 +81,6 @@ const ImageUploadCrop = ({ onImageCropped }) => {
 
     // Convert to base64
     const base64String = await blobToBase64(croppedBlob);
-    console.log("Base64 string:", base64String);
 
     // You can pass base64String to parent if needed
     // onImageCropped(base64String);
