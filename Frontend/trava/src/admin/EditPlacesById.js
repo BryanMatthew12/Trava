@@ -11,6 +11,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { BASE_URL } from "../config";
 import ImageUploadCrop from "../api/admin/ImageUploadCrop"; // Pastikan path benar
+import { deletePlace } from "../api/admin/deletePlace"; // Tambahkan import
 
 
 const daysOfWeek = [
@@ -226,6 +227,18 @@ const EditPlacesById = () => {
   }
 };
 
+const handleDelete = async () => {
+  if (!window.confirm("Are you sure you want to delete this place?")) return;
+  try {
+    await deletePlace(formData.place_id);
+    alert("Place deleted successfully!");
+    // Redirect, clear form, atau navigate sesuai kebutuhan
+    // Misal: window.location.href = "/admin/places";
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto p-4 bg-white rounded shadow">
@@ -337,6 +350,13 @@ const EditPlacesById = () => {
 
       <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
         Save Changes
+      </button>
+      <button
+        type="button"
+        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 ml-2"
+        onClick={handleDelete}
+      >
+        Delete
       </button>
     </form>
   );
