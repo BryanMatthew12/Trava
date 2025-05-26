@@ -146,7 +146,7 @@ const PlanningItinerary = () => {
           <ContentComponent
             place={contentData}
             categoryMapping={categoryMapping}
-            onPlaceChange={handleCoordinates}
+            test={handleCoordinates}
             handleMapClick={handleMapClick}
           />
         </div>
