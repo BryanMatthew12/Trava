@@ -33,7 +33,7 @@ const PrePlanningItinerary = () => {
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [budget, setBudget] = useState(null);
+  const [budget, setBudget] = useState(""); // Simpan angka murni sebagai string
   // const [description, setDescription] = useState('');
   const [destination, setDestination] = useState('');
   const [destinationId, setDestinationId] = useState('');
@@ -90,6 +90,21 @@ const PrePlanningItinerary = () => {
     }
   };
 
+  function formatRupiah(angka) {
+    if (!angka) return "";
+    const numberString = angka.replace(/[^,\d]/g, "");
+    const split = numberString.split(",");
+    let sisa = split[0].length % 3;
+    let rupiah = split[0].substr(0, sisa);
+    const ribuan = split[0].substr(sisa).match(/\d{3}/g);
+
+    if (ribuan) {
+      rupiah += (sisa ? "." : "") + ribuan.join(".");
+    }
+    rupiah = split[1] !== undefined ? rupiah + "," + split[1] : rupiah;
+    return "Rp. " + rupiah;
+  }
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-white pt-10">
       {loading && <Loading />}
@@ -116,8 +131,12 @@ const PrePlanningItinerary = () => {
         <input
           type="text"
           placeholder="Input your budget"
-          value={budget}
-          onChange={(e) => setBudget(e.target.value)}
+          value={formatRupiah(budget)}
+          onChange={(e) => {
+            // Ambil angka murni tanpa format
+            const value = e.target.value.replace(/[^0-9]/g, "");
+            setBudget(value);
+          }}
           className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>

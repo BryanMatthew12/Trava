@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { updateProfile } from '../../api/login/updateProfile';
 import { getProfile } from '../../api/login/getProfile';
 import { FaUserCircle } from 'react-icons/fa';
+import ConfirmSave from "../../modal/ConfirmDelete/ConfirmSave"; // Tambahkan import
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const Profile = () => {
   const [image, setImage] = useState(userPicture || '');
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false); // State modal
 
   function getImageSrc(place_picture) {
     if (!place_picture) return "https://via.placeholder.com/300x200?text=No+Image";
@@ -104,11 +106,19 @@ const Profile = () => {
         setImageFile(null);
         dispatch(setUserPicture(result.user.user_picture));
       }
-      alert('Profile updated!');
     } catch (err) {
       alert('Failed to update profile');
     }
     setLoading(false);
+  };
+
+  const handleSaveClick = () => {
+    setShowConfirm(true); // Tampilkan modal saat tombol Save diklik
+  };
+
+  const handleConfirmSave = async () => {
+    setShowConfirm(false);
+    await handleSave(); // Jalankan fungsi save asli
   };
 
   return (
@@ -147,7 +157,7 @@ const Profile = () => {
           />
         </div>
         <button
-          onClick={handleSave}
+          onClick={handleSaveClick} // Ganti ke handleSaveClick
           className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full mb-2"
         >
           {loading ? "Saving..." : "Save"}
@@ -159,6 +169,13 @@ const Profile = () => {
           Log Out
         </button>
       </div>
+      {/* Modal ConfirmSave */}
+      <ConfirmSave
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleConfirmSave}
+        message="Are you sure you want to save your profile changes?"
+      />
     </div>
   );
 };

@@ -311,6 +311,22 @@ const PlanItinerary = (onPlaceChange) => {
     }
   };
 
+  // Tambahkan fungsi formatRupiah
+  function formatRupiah(angka) {
+    if (!angka) return "0";
+    const numberString = angka.toString().replace(/[^,\d]/g, "");
+    const split = numberString.split(",");
+    let sisa = split[0].length % 3;
+    let rupiah = split[0].substr(0, sisa);
+    const ribuan = split[0].substr(sisa).match(/\d{3}/g);
+
+    if (ribuan) {
+      rupiah += (sisa ? "." : "") + ribuan.join(".");
+    }
+    rupiah = split[1] !== undefined ? rupiah + "," + split[1] : rupiah;
+    return "Rp. " + rupiah;
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
       {isLoading && <Loading />}
@@ -355,7 +371,7 @@ const PlanItinerary = (onPlaceChange) => {
       <div className="p-6">
         <h2 className="text-xl font-semibold mb-4">Budgeting</h2>
         <div className="bg-white shadow-md rounded-lg p-4 flex items-center justify-between">
-          <p className="text-xl font-bold">Rp. {budget || "0.00"}</p>
+          <p className="text-xl font-bold">{formatRupiah(currentBudget)}</p>
           <button
             className="text-blue-600 hover:underline text-sm font-medium"
             onClick={openModal}
@@ -528,6 +544,39 @@ const PlanItinerary = (onPlaceChange) => {
         }}
         message="Are you sure you want to delete this itinerary? This action cannot be undone."
       />
+
+      {/* Tambahkan modal edit budget di bawah return utama */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+            <h3 className="text-lg font-semibold mb-4">Edit Budget</h3>
+            <input
+              type="text"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4"
+              placeholder="Masukkan budget"
+              value={formatRupiah(currentBudget)}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, "");
+                setCurrentBudget(value);
+              }}
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={closeModal}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

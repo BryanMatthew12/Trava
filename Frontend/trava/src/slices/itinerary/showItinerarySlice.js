@@ -11,6 +11,7 @@ const showItinerarySlice = createSlice({
       // Simpan data itinerary ke state
       state.itineraries = action.payload.map((itinerary) => ({
         id: itinerary.itinerary_id,
+        itinerary_name: itinerary.itinerary_name,
         destination_name: itinerary.destination_name,
         start_date: itinerary.start_date,
         end_date: itinerary.end_date,

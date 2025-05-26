@@ -15,6 +15,7 @@ export const patchItinerary = async (
             itinerary_id: updatedData.itinerary_id, // Use "itinerary_id" as expected by the API
             destination_id: updatedData.destination_id, // Use "destination_id" as expected by the API
             destinations: updatedData.places, // Pass the destinations array
+            budget: updatedData.budget, // Pass the budget
         },
         {
       headers: {

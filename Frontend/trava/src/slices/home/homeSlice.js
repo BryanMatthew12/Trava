@@ -15,7 +15,7 @@ const homeSlice = createSlice({
         description: home.place_description,
         category: home.category_id,
         place_picture: home.place_picture,
-        location: home.location,
+        location: home.location_name,
         price: home.place_est_price,
         rating: home.place_rating,
         views: home.views, // Pastikan views ada
@@ -28,7 +28,7 @@ const homeSlice = createSlice({
         description: home.place_description,
         category: home.category_id,
         place_picture: home.place_picture,
-        location: home.location,
+        location: home.location_name,
         price: home.place_est_price,
         rating: home.place_rating,
         views: home.views, // Pastikan views ada

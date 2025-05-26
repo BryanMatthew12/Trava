@@ -42,7 +42,7 @@ const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
         <strong>Description:</strong> {place.description}
       </p>
       <p className="text-gray-600 mb-2">
-        <strong>Location:</strong> {place.location}
+        <strong>Location:</strong> {place.location?.location_name || "Unknown"}
       </p>
       <p className="text-gray-600 mb-2">
         <strong>Estimated Price:</strong> ${parseFloat(place.price).toFixed(2)}
