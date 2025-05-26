@@ -20,7 +20,6 @@ const ItineraryDetails = () => {
             try {
               const data = await getItineraryDetails(params); // Fetch itinerary details
               setItineraryData(data); // Set the fetched data to state
-              console.log('Fetched itinerary details:', data);
             } catch (error) {
               console.error('Error fetching itinerary details:', error.message);
             }

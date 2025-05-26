@@ -14,7 +14,6 @@ export const fetchUserPreferences = async (userId) => {
       },
     });
     if (response) {
-        console.log('User preferences fetched successfully:', response.data);
         return response;
     } else {
       throw new Error('Error: No data received from the API');

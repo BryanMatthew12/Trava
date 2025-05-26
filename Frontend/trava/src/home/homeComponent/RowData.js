@@ -18,8 +18,6 @@ const RowData = () => {
 
   useEffect(() => {
     const fetchHomes = async () => {
-      // const data = await response.json();
-      // console.log(data);
 
       try {
         const token = Cookies.get("token"); // Get the token from cookies
@@ -38,7 +36,6 @@ const RowData = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Fetched homes:", data); // Log the fetched data
         dispatch(setHome(data)); // Dispatch the data to Redux
       } catch (error) {}
     };

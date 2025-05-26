@@ -17,7 +17,6 @@ const Destinations = () => {
     const fetchData = async () => {
       try {
         const destinations = await fetchDestinations();
-        console.log('Fetched destinationsxxxxx:', destinations);
         dispatch(setDestinations(destinations));
       } catch (error) {
         console.error('Failed to fetch destinations:', error.message);

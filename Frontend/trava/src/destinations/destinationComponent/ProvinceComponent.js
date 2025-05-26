@@ -23,13 +23,13 @@ const ExploreComponent = ({ dispatch, getBannerId }) => {
       setSelectedProvinceId(destinations[0].id);
       setSelectedProvinceLabel(destinations[0].name);
     }
+    getBannerId(destinations[0]?.id || null);
   }, [destinations]);
 
   useEffect(() => {
     const fetchPlace = async () => {
       try {
         const places = await fetchPlaces(selectedProvinceId);
-        console.log("Fetched places5555:", places);
         dispatch(setPlaces(places));
       } catch (error) {
         console.error("Failed to fetch destinations:", error.message);
