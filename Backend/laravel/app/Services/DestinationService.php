@@ -64,19 +64,20 @@ class DestinationService
             return null;
         }
 
-        $data = $request->validated();
+        $validated = method_exists($request, 'validated') ? $request->validated() : $request->all();
 
-        // Handle file upload for destination_picture
-        if (request()->hasFile('destination_picture')) {
-            $file = request()->file('destination_picture');
+        // Handle blob file if uploaded
+        if ($request->hasFile('destination_picture')) {
+            $file = $request->file('destination_picture');
             $destination->destination_picture = file_get_contents($file->getRealPath());
-        } elseif (isset($data['destination_picture'])) {
-            // If sent as base64 or string
-            $destination->destination_picture = $data['destination_picture'];
+        } elseif (isset($validated['destination_picture'])) {
+            // If not a file upload, but a string (e.g., base64 or URL)
+            $destination->destination_picture = $validated['destination_picture'];
         }
+        // If neither, do not change the picture
 
-        // Update other fields except destination_picture
-        $destination->fill(Arr::except($data, ['destination_picture']));
+        // Fill other fields (excluding destination_picture to avoid overwriting it if not present)
+        $destination->fill(Arr::except($validated, ['destination_picture']));
         $destination->save();
 
         return $destination;
