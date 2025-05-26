@@ -357,7 +357,6 @@ const EditItinerary = ({ test }) => {
 
         if (coordinates) {
           const { latitude, longitude } = coordinates;
-          console.log("Fetched coordinates:", latitude, longitude);
 
           // Call test function
           if (typeof test === "function") {
@@ -380,7 +379,6 @@ const EditItinerary = ({ test }) => {
     // If coordinates are already cached for this place
     if (fetchedPlaces[selectPlace]) {
       const { latitude, longitude } = fetchedPlaces[selectPlace];
-      console.log("Using cached coordinates:", latitude, longitude);
       if (typeof test === "function") {
         test(latitude, longitude);
       }

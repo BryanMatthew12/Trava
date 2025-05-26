@@ -72,7 +72,6 @@ export default function EditPlaces() {
         },
       });
     } else if(name == 'place_description'){
-      console.log('place_description', value);
       setFormData({ ...formData, place_description : value });
     }else {
       setFormData({ ...formData, [name]: value });
@@ -101,7 +100,6 @@ export default function EditPlaces() {
 
     try {
       const result = await editPlace(finalData); // Await the result
-      console.log("Success:", result);
       // Optionally reset form or show success toast
     } catch (err) {
       console.error("Error submitting form:", err.message);
@@ -114,7 +112,6 @@ export default function EditPlaces() {
     setSearchError("");
     try {
       const data = await getPlaceGoogle(searchName);
-      console.log("Google Place API payload:", data); // <-- Log the fetched payload here
 
       // Parse operational hours from weekday_text
       let operational = {};

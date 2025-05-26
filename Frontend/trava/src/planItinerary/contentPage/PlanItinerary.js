@@ -88,7 +88,6 @@ const PlanItinerary = ({test}) => {
         const dayData = await fetchDayId(itineraryId); // Fetch the day data
         const dayIds = dayData.map((day) => day.day_id); // Extract all day_id values
         setDayId(dayIds); // Set the dayId state with the extracted day_id values
-        console.log("Fetched day IDs:", dayIds);
       } catch (error) {
         console.error("Error fetching day data:", error.message);
       }
@@ -105,7 +104,6 @@ const PlanItinerary = ({test}) => {
 
         if (coordinates) {
           const { latitude, longitude } = coordinates;
-          console.log("Fetched coordinates:", latitude, longitude);
 
           // Call test function
           if (typeof test === "function") {
@@ -128,7 +126,6 @@ const PlanItinerary = ({test}) => {
     // If coordinates are already cached for this place
     if (fetchedPlaces[selectPlace]) {
       const { latitude, longitude } = fetchedPlaces[selectPlace];
-      console.log("Using cached coordinates:", latitude, longitude);
       if (typeof test === "function") {
         test(latitude, longitude);
       }
