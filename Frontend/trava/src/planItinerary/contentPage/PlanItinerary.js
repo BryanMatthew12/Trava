@@ -23,7 +23,7 @@ import Success from "../../modal/successModal/Success"; // Import Success modal
 import Loading from "../../modal/loading/Loading";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete"; // Import ConfirmDelete
 
-const PlanItinerary = (onPlaceChange) => {
+const PlanItinerary = ({test}) => {
   const location = useLocation();
   const navigate = useNavigate(); // Initialize useNavigate hook
   const [searchParams] = useSearchParams();
@@ -42,7 +42,8 @@ const PlanItinerary = (onPlaceChange) => {
   const [selectPlace, setSelectPlace] = useState(); // State to store selected places
   const [activePlaceId, setActivePlaceId] = useState(null); // State to track active place ID
   const [description, setDescription] = useState(location.state?.desc || ""); // State to store description
-  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false); // State to control ConfirmDelete modal
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [fetchedPlaces, setFetchedPlaces] = useState({});
 
   const { start, end, budget, desc, destination, destinationId } =
     location.state || {}; // Destructure the state object
@@ -96,7 +97,7 @@ const PlanItinerary = (onPlaceChange) => {
     fetchDayData();
   }, [itineraryId]);
 
-  useEffect(() => {
+    useEffect(() => {
     const getCoordinates = async () => {
       try {
         const destinations = await fetchCoord(selectPlace);
@@ -104,15 +105,38 @@ const PlanItinerary = (onPlaceChange) => {
 
         if (coordinates) {
           const { latitude, longitude } = coordinates;
-          onPlaceChange(latitude, longitude); // pass to callback
+          console.log("Fetched coordinates:", latitude, longitude);
+
+          // Call test function
+          if (typeof test === "function") {
+            test(latitude, longitude);
+          }
+
+          // Store in cache
+          setFetchedPlaces(prev => ({
+            ...prev,
+            [selectPlace]: { latitude, longitude },
+          }));
         }
       } catch (error) {
         console.error("Failed to fetch coord", error.message);
       }
     };
 
-    getCoordinates();
-  }, [selectPlace, onPlaceChange]);
+    if (!selectPlace) return;
+
+    // If coordinates are already cached for this place
+    if (fetchedPlaces[selectPlace]) {
+      const { latitude, longitude } = fetchedPlaces[selectPlace];
+      console.log("Using cached coordinates:", latitude, longitude);
+      if (typeof test === "function") {
+        test(latitude, longitude);
+      }
+    } else {
+      // Not cached, fetch coordinates
+      getCoordinates();
+    }
+  }, [selectPlace, test, fetchedPlaces]); // Include selectPlace in the dependency array
 
   // Handle loading more places when scrolling to the bottom
   const handleNextPage = async () => {
@@ -421,8 +445,14 @@ const PlanItinerary = (onPlaceChange) => {
                               : "hover:bg-gray-100"
                           } transition-transform duration-200`}
                           onClick={() => {
-                            setSelectPlace(place?.name);
-                            setActivePlaceId(destination.place_id);
+                            if (activePlaceId === destination.place_id) {
+                              // If the place is already active, deactivate it
+                              setActivePlaceId(null);
+                            } else {
+                              // Otherwise, activate the clicked place
+                              setSelectPlace(place?.name);
+                              setActivePlaceId(destination.place_id);
+                            }
                           }}
                         >
                           {/* Image */}
