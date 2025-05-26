@@ -24,7 +24,7 @@ class UpdateDestinationRequest extends FormRequest
         return [
             'destination_name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
-            'place_picture'     => 'nullable|string',
+            'destination_picture'     => 'nullable|string',
         ];
     }
 }

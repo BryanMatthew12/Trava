@@ -8,7 +8,7 @@ import { selectDestinations } from "../../slices/destination/destinationSlice";
 import { fetchPlaces } from "../../api/places/places";
 import { setPlaces } from "../../slices/places/placeSlice";
 
-const ExploreComponent = ({ dispatch }) => {
+const ExploreComponent = ({ dispatch, getBannerId }) => {
   const destinations = useSelector(selectDestinations);
   const [selectedProvinceId, setSelectedProvinceId] = useState(null);
   const [selectedProvinceLabel, setSelectedProvinceLabel] = useState("");
@@ -42,6 +42,7 @@ const ExploreComponent = ({ dispatch }) => {
   const handleProvinceChange = (selectedOption) => {
     setSelectedProvinceId(selectedOption?.value || null);
     setSelectedProvinceLabel(selectedOption?.label || "");
+    getBannerId(selectedOption?.value || null);
   };
 
   return (
