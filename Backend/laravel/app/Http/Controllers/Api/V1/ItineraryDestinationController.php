@@ -219,7 +219,7 @@ class ItineraryDestinationController extends Controller
                 ->delete();
 
             foreach ($validated['destinations'] as $data) {
-                $place = \App\Models\Places::findOrFail($data['place_id']);
+                $place = Places::findOrFail($data['place_id']);
 
                 ItineraryDestination::create([
                     'itinerary_id' => $itineraryId,

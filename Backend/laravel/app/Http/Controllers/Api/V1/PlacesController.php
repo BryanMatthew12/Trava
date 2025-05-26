@@ -279,6 +279,10 @@ class PlacesController extends Controller
     {
         $place = $this->placesService->updatePlace($request, $place_id);
 
+        if (!$place) {
+            return response()->json(['message' => 'Place not found'], 404);
+        }
+
         return response()->json([
             'message' => 'Place updated successfully',
             'place'   => $place

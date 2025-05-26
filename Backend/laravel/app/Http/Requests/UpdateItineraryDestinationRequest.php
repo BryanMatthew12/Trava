@@ -27,6 +27,7 @@ class UpdateItineraryDestinationRequest extends FormRequest
                 'destinations.*.place_id' => 'required|exists:places,place_id',
                 'destinations.*.visit_order' => 'required|integer|min:1',
                 'destinations.*.est_price' => 'nullable|numeric',
+                'itinerary.*.budget' => 'nullable|numeric',
             ];
     }
 }
