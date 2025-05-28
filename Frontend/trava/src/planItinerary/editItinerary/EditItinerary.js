@@ -19,6 +19,7 @@ import Success from "../../modal/successModal/Success";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete";
 import ConfirmSave from "../../modal/ConfirmDelete/ConfirmSave.js";
 import { fetchCoord } from "../../api/mapCoord/fetchCoord.js";
+import { editBudget } from "../../api/itinerary/editBudget";
 
 // Tambahkan fungsi formatRupiah
 function formatRupiah(angka) {
@@ -340,13 +341,16 @@ const EditItinerary = ({ test }) => {
   };
 
   // Handler untuk menyimpan budget dari modal
-  const handleSaveBudget = () => {
-    setItineraryData((prev) => ({
-      ...prev,
-      budget: budget,
-    }));
-    setIsBudgetModalOpen(false);
-    // Jika ingin update ke backend, panggil patchItinerary di sini
+  const handleSaveBudget = async () => {
+    try {
+      await editBudget(itineraryId, Number(budget)); // PATCH ke backend
+      setIsBudgetModalOpen(false);
+      setSuccessMsg("Budget updated successfully!");
+      setTimeout(() => setSuccessMsg(""), 2000);
+    } catch (error) {
+      setSuccessMsg(error.message || "Failed to update budget");
+      setTimeout(() => setSuccessMsg(""), 2000);
+    }
   };
 
   useEffect(() => {
