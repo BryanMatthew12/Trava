@@ -28,6 +28,7 @@ class UpdateItineraryDestinationRequest extends FormRequest
                 'destinations.*.visit_order' => 'required|integer|min:1',
                 'destinations.*.est_price' => 'nullable|numeric',
                 'itinerary.*.budget' => 'nullable|numeric',
+                'itinerary.*.itinerary_name' => 'nullable|string|max:255',
             ];
     }
 }
