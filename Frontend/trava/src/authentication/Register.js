@@ -19,21 +19,49 @@ const Register = () => {
   setError({ email: "", password: "", confirmPassword: "" });
   setApiError(""); // Clear previous API error
 
+  const allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
+
   if (!email) {
-    setError((prev) => ({ ...prev, email: "Please enter your email address" }));
+    setError((prev) => ({
+      ...prev,
+      email: "Please enter your email address"
+    }));
     return;
-  } else if (!/\S+@\S+\.\S+/.test(email)) {
-    setError((prev) => ({ ...prev, email: "Please enter a valid email address" }));
+  }
+
+  const emailRegex = /^\S+@(\S+\.\S+)$/;
+  const match = email.match(emailRegex);
+
+  if (!match) {
+    setError((prev) => ({
+      ...prev,
+      email: "Please enter a valid email address"
+    }));
+    return;
+  }
+
+  const domain = match[1].toLowerCase();
+  if (!allowedDomains.includes(domain)) {
+    setError((prev) => ({
+      ...prev,
+      email: `Email must end in one of the following domains: ${allowedDomains.join(', ')}`
+    }));
     return;
   }
 
   if (!password) {
-    setError((prev) => ({ ...prev, password: "Please enter a password" }));
+    setError((prev) => ({
+      ...prev,
+      password: "Please enter a password"
+    }));
     return;
   }
 
   if (password !== confirmPassword) {
-    setError((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
+    setError((prev) => ({
+      ...prev,
+      confirmPassword: "Passwords do not match"
+    }));
     return;
   }
 
@@ -47,6 +75,7 @@ const Register = () => {
     setApiError(error.message || "Registration failed. Please try again.");
   }
 };
+
 
 
   return (

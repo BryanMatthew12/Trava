@@ -23,7 +23,7 @@ import Success from "../../modal/successModal/Success"; // Import Success modal
 import Loading from "../../modal/loading/Loading";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete"; // Import ConfirmDelete
 
-const PlanItinerary = ({test}) => {
+const PlanItinerary = ({ test }) => {
   const location = useLocation();
   const navigate = useNavigate(); // Initialize useNavigate hook
   const [searchParams] = useSearchParams();
@@ -47,6 +47,7 @@ const PlanItinerary = ({test}) => {
 
   const { start, end, budget, desc, destination, destinationId } =
     location.state || {}; // Destructure the state object
+  const [visibleBudget, setVisibleBudget] = useState(budget); // State to track visibility of budget
 
   // Calculate the number of days
   const startDate = new Date(start);
@@ -96,7 +97,7 @@ const PlanItinerary = ({test}) => {
     fetchDayData();
   }, [itineraryId]);
 
-    useEffect(() => {
+  useEffect(() => {
     const getCoordinates = async () => {
       try {
         const destinations = await fetchCoord(selectPlace);
@@ -107,11 +108,12 @@ const PlanItinerary = ({test}) => {
 
           // Call test function
           if (typeof test === "function") {
+            console.log("Coordinates fetched:", latitude, longitude);
             test(latitude, longitude);
           }
 
           // Store in cache
-          setFetchedPlaces(prev => ({
+          setFetchedPlaces((prev) => ({
             ...prev,
             [selectPlace]: { latitude, longitude },
           }));
@@ -293,7 +295,9 @@ const PlanItinerary = ({test}) => {
         y += 8;
 
         dayPlaces.forEach((destination, index) => {
-          const place = places.find((place) => place.id === destination.place_id);
+          const place = places.find(
+            (place) => place.id === destination.place_id
+          );
 
           if (y > 270) {
             doc.addPage();
@@ -334,7 +338,7 @@ const PlanItinerary = ({test}) => {
 
   // Tambahkan fungsi formatRupiah
   function formatRupiah(angka) {
-    if (!angka) return "0";
+    if (!angka) return "Rp. 0";
     const numberString = angka.toString().replace(/[^,\d]/g, "");
     const split = numberString.split(",");
     let sisa = split[0].length % 3;
@@ -345,8 +349,18 @@ const PlanItinerary = ({test}) => {
       rupiah += (sisa ? "." : "") + ribuan.join(".");
     }
     rupiah = split[1] !== undefined ? rupiah + "," + split[1] : rupiah;
-    return "Rp. " + rupiah;
+    return `Rp. ${rupiah}`;
   }
+
+  const handleAddBudget = (price) => {
+    const newBudget = parseInt(visibleBudget) + parseInt(price);
+    setVisibleBudget(newBudget); // Update the visible budget state
+  };
+
+  const handleRemoveBudget = (price) => {
+    const newBudget = parseInt(visibleBudget) - parseInt(price);
+    setVisibleBudget(newBudget.toString());
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
@@ -360,7 +374,9 @@ const PlanItinerary = ({test}) => {
       >
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative z-10 text-white p-6">
-          <h1 className="text-4xl font-bold">{destination || "Trip Destination"}</h1>
+          <h1 className="text-4xl font-bold">
+            {destination || "Trip Destination"}
+          </h1>
           <p className="text-lg mt-2">
             {start} - {end}
           </p>
@@ -390,7 +406,7 @@ const PlanItinerary = ({test}) => {
 
       {/* Budget */}
       <div className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Budgeting</h2>
+        <h2 className="text-xl font-semibold mb-4">Budget</h2>
         <div className="bg-white shadow-md rounded-lg p-4 flex items-center justify-between">
           <p className="text-xl font-bold">{formatRupiah(currentBudget)}</p>
           <button
@@ -405,16 +421,23 @@ const PlanItinerary = ({test}) => {
       {/* Itinerary */}
       <div className="flex-grow px-6 overflow-y-auto">
         <div className="mb-4">
-          <h3 className="text-gray-700 font-semibold text-lg mb-2">Itinerary</h3>
+          <h3 className="text-gray-700 font-semibold text-lg mb-2">
+            Itinerary
+          </h3>
           {dayId.map((id, index) => (
-            <div key={id} className="mb-4 border border-gray-300 rounded-lg p-4 bg-white">
+            <div
+              key={id}
+              className="mb-4 border border-gray-300 rounded-lg p-4 bg-white"
+            >
               {/* Day Toggle */}
               <div
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => toggleDayVisibility(index)}
               >
                 <h3 className="text-lg font-semibold text-gray-800">
-                  {new Date(startDate.getTime() + index * 86400000).toLocaleDateString("en-US", {
+                  {new Date(
+                    startDate.getTime() + index * 86400000
+                  ).toLocaleDateString("en-US", {
                     weekday: "long",
                     month: "long",
                     day: "numeric",
@@ -431,7 +454,9 @@ const PlanItinerary = ({test}) => {
                   {destinations
                     .filter((destination) => destination.day_id === id)
                     .map((destination, idx) => {
-                      const place = places.find((place) => place.id === destination.place_id);
+                      const place = places.find(
+                        (place) => place.id === destination.place_id
+                      );
 
                       return (
                         <div
@@ -471,10 +496,12 @@ const PlanItinerary = ({test}) => {
                               {place?.description || "No description available"}
                             </p>
                             <p className="text-gray-700 text-sm">
-                              <strong>Price:</strong> Rp. {place?.price || "N/A"}
+                              <strong>Price:</strong> Rp.{" "}
+                              {place?.price || "N/A"}
                             </p>
                             <p className="text-gray-700 text-sm">
-                              <strong>Rating:</strong> {place?.rating || "N/A"} / 5
+                              <strong>Rating:</strong> {place?.rating || "N/A"}{" "}
+                              / 5
                             </p>
                           </div>
 
@@ -484,6 +511,7 @@ const PlanItinerary = ({test}) => {
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeletePlace(destination.place_id, id);
+                              handleAddBudget(place?.price);
                             }}
                           >
                             <svg
@@ -514,10 +542,12 @@ const PlanItinerary = ({test}) => {
                       options={places.map((place) => ({
                         value: place.id,
                         label: place.name,
+                        price: place.price || 0, // Include price in options
                       }))}
-                      onChange={(selectedOption) =>
-                        handleSelectPlace(selectedOption, id)
-                      }
+                      onChange={(selectedOption) => [
+                        handleSelectPlace(selectedOption, id),
+                        handleRemoveBudget(selectedOption.price),
+                      ]}
                       placeholder="Search for a place"
                       className="text-gray-700"
                       onMenuScrollToBottom={handleNextPage}
@@ -546,6 +576,18 @@ const PlanItinerary = ({test}) => {
       </div>
 
       {/* Save/Delete Buttons */}
+      <div className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Your Leftover Budget</h2>
+        <div className="bg-white shadow-md rounded-lg p-4 flex items-center justify-between">
+          <p
+            className={`text-xl font-bold ${
+              visibleBudget < 0 ? "text-red-500" : "text-green-600"
+            }`}
+          >
+            {formatRupiah(visibleBudget)}
+          </p>
+        </div>
+      </div>
       <div className="px-6 pb-6 flex gap-4 justify-end">
         <button
           className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md transition"
