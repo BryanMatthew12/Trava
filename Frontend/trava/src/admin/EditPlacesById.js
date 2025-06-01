@@ -193,7 +193,7 @@ const EditPlacesById = () => {
   const finalData = {
     ...formData,
     place_rating: parseFloat(formData.place_rating),
-    place_est_price: parseInt(formData.place_est_price),
+    place_est_price: formData.place_est_price, // sudah string angka tanpa titik/koma
     operational: JSON.stringify(formattedOperational),
   };
 
@@ -293,7 +293,19 @@ const handleDelete = async () => {
       />
 
       {/* place est price */}
-      <input name="place_est_price" value={formData.place_est_price} placeholder="Estimated Price" type="number" onChange={handleChange} required className="w-full p-2 border rounded" />
+      <input
+  name="place_est_price"
+  placeholder="Estimated Price"
+  type="text"
+  value={formatRupiah(formData.place_est_price)}
+  onChange={e => {
+    let value = e.target.value.replace(/[^0-9]/g, "");
+    if (value.startsWith("0")) value = value.replace(/^0+/, "");
+    setFormData({ ...formData, place_est_price: value });
+  }}
+  required
+  className="w-full p-2 border rounded"
+/>
 
       {/* place rating */}
       <div>
@@ -361,5 +373,24 @@ const handleDelete = async () => {
     </form>
   );
 };
+
+function formatRupiah(angka) {
+  if (!angka || angka === "0") return "";
+  let clean = angka.toString();
+  if (clean.endsWith(".00")) {
+    clean = clean.slice(0, -3);
+  }
+  const numberString = clean.replace(/[^,\d]/g, "");
+  const split = numberString.split(",");
+  let sisa = split[0].length % 3;
+  let rupiah = split[0].substr(0, sisa);
+  const ribuan = split[0].substr(sisa).match(/\d{3}/g);
+
+  if (ribuan) {
+    rupiah += (sisa ? "." : "") + ribuan.join(".");
+  }
+  rupiah = split[1] !== undefined ? rupiah + "," + split[1] : rupiah;
+  return "Rp. " + rupiah;
+}
 
 export default EditPlacesById;
