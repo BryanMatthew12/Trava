@@ -43,13 +43,7 @@ const Header = () => {
           </ul>
         </nav>
 
-        <div className="flex items-center border border-gray-300 rounded-md px-2 py-1">
-          <input
-            type="text"
-            placeholder="Search bar"
-            className="outline-none text-sm text-gray-600 placeholder-gray-400"
-          />
-        </div>
+        <div className="flex items-center"></div>
       </div>
     </header>
   );
