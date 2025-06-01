@@ -151,6 +151,7 @@ class ItineraryDestinationController extends Controller
         return response()->json([
             'user_id' => $itinerary->user_id,
             'itinerary_id' => $itinerary->itinerary_id,
+            'itinerary_name' => $itinerary->itinerary_name,
             'budget' => $itinerary->budget,
             'destination_id' => $itinerary->destinations->pluck('destination_id')->first(),
             'destination_name' => $itinerary->destinations->pluck('destination_name')->first(),
@@ -219,7 +220,7 @@ class ItineraryDestinationController extends Controller
                 ->delete();
 
             foreach ($validated['destinations'] as $data) {
-                $place = \App\Models\Places::findOrFail($data['place_id']);
+                $place = Places::findOrFail($data['place_id']);
 
                 ItineraryDestination::create([
                     'itinerary_id' => $itineraryId,

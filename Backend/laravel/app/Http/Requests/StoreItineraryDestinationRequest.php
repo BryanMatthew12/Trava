@@ -31,7 +31,6 @@ class StoreItineraryDestinationRequest extends FormRequest
             'destinations.*.place_id' => 'required|exists:places,place_id',
             'destinations.*.day_id' => 'nullable|exists:days,day_id',
             'destinations.*.visit_order' => 'required|integer',  // Add validation for visit_order
-            'destinations.*.est_price' => 'nullable',  // Add validation for est_price
         ];
     }
 
