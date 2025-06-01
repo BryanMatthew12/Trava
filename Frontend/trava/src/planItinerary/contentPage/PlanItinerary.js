@@ -226,7 +226,7 @@ const PlanItinerary = ({ test }) => {
         destinations,
         navigate
       );
-
+    
       if (response) {
         setIsLoading(false); // Reset loading state
         setShowSuccessModal(true); // Show success modal

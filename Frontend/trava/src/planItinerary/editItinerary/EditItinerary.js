@@ -43,6 +43,14 @@ function formatRupiah(angka) {
   return "Rp. " + rupiah;
 }
 
+function getTotalSpent(destinations) {
+  if (!destinations || !Array.isArray(destinations)) return 0;
+  return destinations.reduce((sum, place) => {
+    const price = place.place_est_price ? parseInt(place.place_est_price) : 0;
+    return sum + price;
+  }, 0);
+}
+
 const EditItinerary = ({ test }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -81,6 +89,7 @@ const EditItinerary = ({ test }) => {
           const { places, ...restWithoutPlaces } = data;
           setItineraryData(restWithoutPlaces);
           setDestinations(data.places);
+          // console.log("Fetched itinerary data:", data);
           setBudget(data.budget ? data.budget.toString() : ""); // <-- Tambahkan baris ini
           if (data) {
             const placesData = await fetchPlaces(data.destination_id, currPage);
@@ -425,6 +434,10 @@ const EditItinerary = ({ test }) => {
     }
   }, [selectPlace, test, fetchedPlaces]);
 
+  const totalSpent = getTotalSpent(destinations);
+  const leftoverBudget =
+    (budget && !isNaN(Number(budget)) ? Number(budget) : 0) - totalSpent;
+
   return (
     <div className="p-6">
       {itineraryData ? (
@@ -527,6 +540,7 @@ const EditItinerary = ({ test }) => {
                 <FiEdit2 className="mr-1" /> Edit Budget
               </button>
             </div>
+            {/* Tambahkan ini untuk budget sisa */}
           </div>
 
           {/* Modal Edit Budget */}
@@ -680,21 +694,33 @@ const EditItinerary = ({ test }) => {
               </div>
             );
           })}
+          <div className="mt-4 bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+              <span className="font-semibold">Your Leftover Budget</span>
+              <span
+                className={`text-xl font-bold ${
+                  leftoverBudget < 0 ? "text-red-500" : "text-green-600"
+                }`}
+              >
+                {leftoverBudget < 0
+                  ? `- ${formatRupiah(Math.abs(leftoverBudget))}`
+                  : formatRupiah(leftoverBudget)}
+              </span>
+            </div>
           {authUserId &&
             Number(authUserId) === Number(itineraryData.user_id) && (
               <div className="flex gap-4 mt-4">
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  Delete Itinerary
+                </button>
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
                   onClick={() => setShowSaveModal(true)}
                   disabled={!isAllDaysFilled}
                 >
                   Save Changes
-                </button>
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                  onClick={() => setShowDeleteModal(true)}
-                >
-                  Delete Itinerary
                 </button>
               </div>
             )}
