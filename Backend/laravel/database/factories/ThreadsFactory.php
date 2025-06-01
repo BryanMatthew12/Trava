@@ -22,6 +22,7 @@ class ThreadsFactory extends Factory
             'thread_id' => $this->faker->unique()->randomNumber(5), 
             'user_id' => User::inRandomOrder()->first()?->user_id ?? User::factory(),
             'itinerary_id' => Itinerary::inRandomOrder()->first()?->itinerary_id ?? Itinerary::factory(),
+            'thread_picture' => $this->faker->imageUrl(),
             'views' => $this->faker->numberBetween(0, 1000),
             'likes' => $this->faker->numberBetween(0, 100),
         ];

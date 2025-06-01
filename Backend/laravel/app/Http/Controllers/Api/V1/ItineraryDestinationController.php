@@ -101,10 +101,10 @@ class ItineraryDestinationController extends Controller
     public function exportToThread($itinerary_id)
     {
         try {
-            $user = Auth::user(); // Make sure you're using auth middleware
+            $user = Auth::user();
 
             // 1. Fetch itinerary with related destinations
-            $itinerary = Itinerary::with('destinations')->find($itinerary_id);
+            $itinerary = Itinerary::with(['days.itineraryDestinations.place'])->find($itinerary_id);
 
             if (!$itinerary) {
                 return response()->json(['message' => 'Itinerary not found'], 404);
@@ -116,15 +116,28 @@ class ItineraryDestinationController extends Controller
                 return response()->json(['message' => 'Thread already exists for this itinerary'], 409);
             }
 
-            // 3. Create thread
+            // 3. Get all place_pictures from the itinerary's places
+            $placePictures = collect($itinerary->days)
+                ->flatMap(function ($day) {
+                    return $day->itineraryDestinations->map(function ($dest) {
+                        return $dest->place->place_picture ?? null;
+                    });
+                })
+                ->filter(); // Remove nulls
+
+            // 4. Pick a random picture (if available)
+            $randomPicture = $placePictures->isNotEmpty() ? $placePictures->random() : null;
+
+            // 5. Create thread with the random picture
             $thread = Threads::create([
                 'user_id' => $user->user_id,
                 'itinerary_id' => $itinerary_id,
                 'views' => 0,
                 'likes' => 0,
+                'thread_picture' => $randomPicture,
             ]);
 
-            return response()->json([   
+            return response()->json([
                 'message' => 'Thread exported successfully',
                 'thread_id' => $thread->thread_id,
             ], 201);

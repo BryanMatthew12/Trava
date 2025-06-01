@@ -19,6 +19,7 @@ class Threads extends Model
         'itinerary_id',
         'views',
         'likes',
+        'thread_picture',
     ];
 
     public function user()
