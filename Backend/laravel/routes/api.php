@@ -71,11 +71,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/store-places', [PlacesController::class, 'storePlace']); // store new places
             Route::patch('/places/{id}', [PlacesController::class, 'updatePlace']); // update places
             Route::post('/places/{id}/views', [PlacesController::class, 'incrementViews']); // post views
-            // Route::post('/store-place', function() {
-            //     Log::info('Store Place route hit');
-            //     return response()->json(['message' => 'Route works']);
-            // });
-         
+            Route::post('/places/bulk-store', [PlacesController::class, 'storePlacesBulk']); // store bulk places
+
             // Route to itineraries 
             Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
             Route::post('/itineraries', [ItineraryController::class, 'store']); // create new itinerary
@@ -103,6 +100,7 @@ Route::middleware(['auth:api'])->group(function () {
             // Route for Google Maps geocoding
             Route::get('/locations/{placeName}', [LocationController::class, 'fetchPlaceDetails']); // Fetch places details
             Route::post('/locations', [LocationController::class, 'store']);
+            Route::get('/search-places', [LocationController::class, 'searchPlacesFromGoogle']); // Search places by name')
 
             //Route to user controller
             Route::patch('/users/{id}', [UserController::class, 'update']); // update user

@@ -33,6 +33,7 @@ export default function EditPlaces() {
   }));
 
   const [formData, setFormData] = useState({
+    google_place_id: "",
     destination_id: "",
     place_name: "",
     place_description: "",

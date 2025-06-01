@@ -17,6 +17,7 @@ class CreatePlacesTable extends Migration
             $table->decimal('place_rating', 3, 2);
             $table->longText('place_picture')->nullable();
             $table->decimal('place_est_price', 10, 2);
+            $table->string('place_accommodation')->nullable();
             $table->json('operational')->nullable(); 
             $table->integer('views')->default(0);
             $table->timestamps();
