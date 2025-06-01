@@ -217,7 +217,7 @@ const PlanItinerary = ({ test }) => {
     setIsLoading(true); // Set loading state to true
     try {
       // PATCH description dulu
-      await patchDescription(itineraryId, description);
+      // await patchDescription(itineraryId, description);
 
       // Lalu POST destinations
       const response = await postItinerary(
@@ -397,24 +397,14 @@ const PlanItinerary = ({ test }) => {
         <div className="relative z-10 text-white p-6">
           <div className="relative">
             {isEditingName ? (
-              <input
-                type="text"
-                value={itineraryName}
-                onChange={(e) => setItineraryName(e.target.value)}
-                onBlur={() => {
-                  handleEditName(itineraryName);
-                  setIsEditingName(false);
-                }}
-                className="text-3xl font-bold bg-transparent text-white"
-                autoFocus
-              />
+              <div></div>
             ) : (
               <div className="flex items-center">
                 <h1 className="text-3xl font-bold">
                   {itineraryName || "Trip Destination"}
                 </h1>
                 <button
-                  onClick={() => setIsEditingName(true)}
+                  onClick={() => setIsEditingName(true)} // Enter edit mode
                   className="ml-2 text-blue-500 hover:text-blue-700"
                 >
                   Edit

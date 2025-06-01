@@ -19,7 +19,7 @@ const Admin = () => {
             }`}
             onClick={() => setActiveTab('EditPlaces')}
           >
-            Edit Places
+            Add New Places
           </button>
           <button
             className={`px-4 py-2 rounded ${
