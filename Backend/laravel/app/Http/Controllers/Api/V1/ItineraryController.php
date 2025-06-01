@@ -227,4 +227,30 @@ class ItineraryController extends Controller
         ], 200);
     }
     
+    /**
+     * Edit the name of the specified itinerary.
+     */
+    public function editName(Request $request, $itinerary_id)
+    {
+        // Validasi request
+        $validated = $request->validate([
+            'itinerary_name' => 'required|string|max:255',
+        ]);
+
+        // Temukan itinerary berdasarkan ID
+        $itinerary = Itinerary::find($itinerary_id);
+
+        if (!$itinerary) {
+            return response()->json(['message' => 'Itinerary not found.'], 404);
+        }
+
+        // Update itinerary_name
+        $itinerary->itinerary_name = $validated['itinerary_name'];
+        $itinerary->save();
+
+        return response()->json([
+            'message' => 'Itinerary name updated successfully.',
+            'itinerary_name' => $itinerary->itinerary_name,
+        ], 200);
+    }
 }

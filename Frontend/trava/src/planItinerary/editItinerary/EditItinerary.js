@@ -20,6 +20,7 @@ import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete";
 import ConfirmSave from "../../modal/ConfirmDelete/ConfirmSave.js";
 import { fetchCoord } from "../../api/mapCoord/fetchCoord.js";
 import { editBudget } from "../../api/itinerary/editBudget";
+import { editName } from "../../api/itinerary/editName"; // pastikan path sesuai
 
 // Tambahkan fungsi formatRupiah
 function formatRupiah(angka) {
@@ -65,6 +66,8 @@ const EditItinerary = ({ test }) => {
   const textareaRef = useRef(null);
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [budget, setBudget] = useState(""); // angka murni
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
 
   // Modal state
   const [loading, setLoading] = useState(false);
@@ -353,6 +356,36 @@ const EditItinerary = ({ test }) => {
     }
   };
 
+  // Sync draft with itineraryData
+  useEffect(() => {
+    if (itineraryData?.itinerary_name !== undefined) {
+      setNameDraft(itineraryData.itinerary_name || "");
+    }
+  }, [itineraryData]);
+
+  const handleSaveName = async () => {
+    if (!nameDraft.trim() || nameDraft === itineraryData.itinerary_name) {
+      setIsEditingName(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      await editName(itineraryData.itinerary_id, nameDraft);
+      setItineraryData((prev) => ({
+        ...prev,
+        itinerary_name: nameDraft,
+      }));
+      setIsEditingName(false);
+      setSuccessMsg("Itinerary name updated!");
+      setTimeout(() => setSuccessMsg(""), 2000);
+    } catch (error) {
+      setSuccessMsg("Failed to update itinerary name.");
+      setTimeout(() => setSuccessMsg(""), 2000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const getCoordinates = async () => {
       try {
@@ -396,6 +429,42 @@ const EditItinerary = ({ test }) => {
     <div className="p-6">
       {itineraryData ? (
         <>
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+            {isEditingName ? (
+              <>
+                <input
+                  className="border-b border-blue-500 outline-none bg-transparent text-2xl font-bold flex-1"
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  onBlur={handleSaveName}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveName();
+                    if (e.key === "Escape") {
+                      setIsEditingName(false);
+                      setNameDraft(itineraryData.itinerary_name);
+                    }
+                  }}
+                  autoFocus
+                />
+                <button
+                  className="ml-2 text-blue-600 hover:text-blue-800"
+                  onClick={handleSaveName}
+                  type="button"
+                >
+                  Save
+                </button>
+              </>
+            ) : (
+              <>
+                {itineraryData.itinerary_name}
+                <FiEdit2
+                  className="ml-2 cursor-pointer text-blue-500 hover:text-blue-700"
+                  onClick={() => setIsEditingName(true)}
+                  title="Edit itinerary name"
+                />
+              </>
+            )}
+          </h2>
           <h2 className="text-2xl font-bold mb-4">
             {itineraryData.destination_name}
           </h2>

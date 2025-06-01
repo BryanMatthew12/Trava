@@ -23,6 +23,7 @@ class UpdateItineraryRequest extends FormRequest
     {
         return [
         'itinerary_description' => ['nullable', 'string'],
+        'itinerary_name' => ['nullable', 'string', 'max:255'],
         'budget' => ['nullable', 'numeric'],
         // tambahkan field lain jika perlu
     ];
