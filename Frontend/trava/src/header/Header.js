@@ -1,10 +1,14 @@
 import React from 'react';
-import Profile from './profile/Profile';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectRoleId } from '../slices/auth/authSlice';
 import logo from '../assets/img/travalogo.png';
 
 const Header = () => {
   const navigate = useNavigate();
+  const roleId = useSelector(selectRoleId);
+
+  console.log('Role ID:', roleId); // Debugging line to check role_id
 
   return (
     <header className="bg-white text-gray-800 p-4 shadow-md">
@@ -30,9 +34,12 @@ const Header = () => {
             <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/Profile')}>
               Profile
             </li>
-            <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/Admin')}>
-              Admin
-            </li>
+            {/* Conditionally render Admin menu item based on role_id */}
+            {roleId == '1' && (
+              <li className="cursor-pointer hover:text-blue-500" onClick={() => navigate('/Admin')}>
+                Admin
+              </li>
+            )}
           </ul>
         </nav>
 

@@ -23,6 +23,7 @@ import Success from "../../modal/successModal/Success"; // Import Success modal
 import Loading from "../../modal/loading/Loading";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete"; // Import ConfirmDelete
 import { getItineraryDetails } from "../../api/itinerary/getItineraryDetails";
+import { editName } from "../../api/itinerary/editName";
 
 const PlanItinerary = ({ test }) => {
   const location = useLocation();
@@ -46,6 +47,7 @@ const PlanItinerary = ({ test }) => {
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [fetchedPlaces, setFetchedPlaces] = useState({});
   const [itineraryName, setItineraryName] = useState(""); // State to store itinerary name
+  const [isEditingName, setIsEditingName] = useState(false); // State to track editing mode for itinerary name
 
   const { start, end, budget, desc, destination, destinationId } =
     location.state || {}; // Destructure the state object
@@ -372,6 +374,15 @@ const PlanItinerary = ({ test }) => {
     }
   }, [itineraryId]);
 
+  const handleEditName = async (newName) => {
+    try {
+      await editName(itineraryId, newName); // Call the API to update the name
+      console.log("Itinerary name updated successfully!");
+    } catch (error) {
+      console.error("Error updating itinerary name:", error.message);
+    }
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
       {isLoading && <Loading />}
@@ -384,9 +395,33 @@ const PlanItinerary = ({ test }) => {
       >
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative z-10 text-white p-6">
-          <h1 className="text-3xl font-bold">
-            {itineraryName || "Trip Destination"}
-          </h1>
+          <div className="relative">
+            {isEditingName ? (
+              <input
+                type="text"
+                value={itineraryName}
+                onChange={(e) => setItineraryName(e.target.value)}
+                onBlur={() => {
+                  handleEditName(itineraryName);
+                  setIsEditingName(false);
+                }}
+                className="text-3xl font-bold bg-transparent text-white"
+                autoFocus
+              />
+            ) : (
+              <div className="flex items-center">
+                <h1 className="text-3xl font-bold">
+                  {itineraryName || "Trip Destination"}
+                </h1>
+                <button
+                  onClick={() => setIsEditingName(true)}
+                  className="ml-2 text-blue-500 hover:text-blue-700"
+                >
+                  Edit
+                </button>
+              </div>
+            )}
+          </div>
           <h1 className="text-md font-bold">
             {destination || "Trip Destination"}
           </h1>
@@ -395,6 +430,40 @@ const PlanItinerary = ({ test }) => {
           </p>
         </div>
       </div>
+
+      {/* Edit Name Modal */}
+      {isEditingName && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+            <h3 className="text-lg font-semibold mb-4">Edit Itinerary Name</h3>
+            <input
+              type="text"
+              value={itineraryName}
+              onChange={(e) => setItineraryName(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4"
+              placeholder="Enter itinerary name"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                onClick={() => setIsEditingName(false)} // Close modal
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={() => {
+                  handleEditName(itineraryName); // Save changes
+                  setIsEditingName(false); // Close modal
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Description */}
       <div className="p-6">
