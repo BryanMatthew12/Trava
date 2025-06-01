@@ -22,6 +22,7 @@ import "jspdf-autotable";
 import Success from "../../modal/successModal/Success"; // Import Success modal
 import Loading from "../../modal/loading/Loading";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete"; // Import ConfirmDelete
+import { getItineraryDetails } from "../../api/itinerary/getItineraryDetails";
 
 const PlanItinerary = ({ test }) => {
   const location = useLocation();
@@ -44,6 +45,7 @@ const PlanItinerary = ({ test }) => {
   const [description, setDescription] = useState(location.state?.desc || ""); // State to store description
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [fetchedPlaces, setFetchedPlaces] = useState({});
+  const [itineraryName, setItineraryName] = useState(""); // State to store itinerary name
 
   const { start, end, budget, desc, destination, destinationId } =
     location.state || {}; // Destructure the state object
@@ -362,6 +364,14 @@ const PlanItinerary = ({ test }) => {
     setVisibleBudget(newBudget.toString());
   };
 
+  useEffect(() => {
+    if (itineraryId) {
+      getItineraryDetails(itineraryId).then((data) => {
+        setItineraryName(data.itinerary_name);
+      });
+    }
+  }, [itineraryId]);
+
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
       {isLoading && <Loading />}
@@ -374,7 +384,10 @@ const PlanItinerary = ({ test }) => {
       >
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative z-10 text-white p-6">
-          <h1 className="text-4xl font-bold">
+          <h1 className="text-3xl font-bold">
+            {itineraryName || "Trip Destination"}
+          </h1>
+          <h1 className="text-md font-bold">
             {destination || "Trip Destination"}
           </h1>
           <p className="text-lg mt-2">

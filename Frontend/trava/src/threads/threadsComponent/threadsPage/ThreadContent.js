@@ -31,6 +31,7 @@ const ThreadContent = () => {
 
         const itineraryRes = await getItineraryDetails(itineraries_id);
         setItinerary(itineraryRes);
+        console.log("Thread payload:", threadData); // <-- Tambahkan ini
       } catch (error) {
         setThread(null);
         setItinerary(null);
@@ -128,7 +129,8 @@ const ThreadContent = () => {
           </div>
         </div>
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">{itinerary.destination_name}</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">{thread?.itinerary?.itinerary_name || "-"}</h1>
+          <h1 className="text-xl font-semibold text-gray-800 mb-4">{itinerary.destination_name}</h1>
           <p className="text-gray-700 text-lg mb-6">{itinerary.itinerary_description || "No description."}</p>
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="bg-gray-50 p-4 rounded-lg shadow-sm">

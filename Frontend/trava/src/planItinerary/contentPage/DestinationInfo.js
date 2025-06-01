@@ -2,8 +2,6 @@ import React, { useEffect, useRef } from "react";
 import { fetchCoord } from "../../api/mapCoord/fetchCoord";
 
 const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
-
-
   useEffect(() => {
     const getCoordinates = async () => {
       try {
@@ -21,6 +19,25 @@ const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
 
     getCoordinates();
   }, [place]);
+
+  function formatRupiah(angka) {
+    if (!angka || angka === "0") return "";
+    let clean = angka.toString();
+    if (clean.endsWith(".00")) {
+      clean = clean.slice(0, -3);
+    }
+    const numberString = clean.replace(/[^,\d]/g, "");
+    const split = numberString.split(",");
+    let sisa = split[0].length % 3;
+    let rupiah = split[0].substr(0, sisa);
+    const ribuan = split[0].substr(sisa).match(/\d{3}/g);
+
+    if (ribuan) {
+      rupiah += (sisa ? "." : "") + ribuan.join(".");
+    }
+    rupiah = split[1] !== undefined ? rupiah + "," + split[1] : rupiah;
+    return "Rp. " + rupiah;
+  }
 
   return (
     <div>
@@ -44,7 +61,12 @@ const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
         <strong>Location:</strong> {place.location?.location_name || "Unknown"}
       </p>
       <p className="text-gray-600 mb-2">
-        <strong>Estimated Price:</strong> ${parseFloat(place.price).toFixed(2)}
+        <strong>Estimated Price:</strong>{" "}
+        {place.price === 0
+          ? "Free"
+          : place.price
+          ? formatRupiah(place.price)
+          : "-"}
       </p>
       <p className="text-gray-600 mb-2">
         <strong>Rating:</strong> {place.rating} / 5

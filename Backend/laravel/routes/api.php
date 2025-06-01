@@ -83,6 +83,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'editBudget']); // update Budget
             Route::delete('/itineraries/{itinerary_id}', [ItineraryController::class, 'destroy']);
             Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'update']);
+            Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'editName']);
 
             // Route to itineraries destinations
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
