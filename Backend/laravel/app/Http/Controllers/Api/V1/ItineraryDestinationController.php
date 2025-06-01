@@ -165,7 +165,7 @@ class ItineraryDestinationController extends Controller
                         'place_id' => $dest->place_id,
                         'place_name' => $dest->place->place_name ?? null,
                         'visit_order' => $dest->visit_order,
-                        'place_est_price' => $dest->est_price,
+                        'place_est_price' => $dest->place->place_est_price,
                         'place_rating' => $dest->place->place_rating ?? null,
                         'place_picture' => $dest->place->place_picture ?? null,
                         'place_description' => $dest->place->place_description ?? null,
