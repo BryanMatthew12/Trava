@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Location;
 use App\Http\Controllers\Controller;
 use App\Services\GooglePlacesService;
-use GuzzleHttp\Promise\Create;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class LocationController extends Controller
@@ -61,13 +61,11 @@ class LocationController extends Controller
     {
         Log::info("Fetching place: {$placeName}");
 
-        // Use service to get place_id
         $placeId = $this->googlePlacesService->findPlaceId($placeName);
         if (!$placeId) {
             return response()->json(['error' => 'Place not found'], 404);
         }
 
-        // Use service to get details
         $place = $this->googlePlacesService->getPlaceDetails($placeId);
         if (!$place) {
             return response()->json(['error' => 'No place details found'], 404);
@@ -84,66 +82,68 @@ class LocationController extends Controller
         return response()->json($place);
     }
 
+    public function searchPlacesFromGoogle(Request $request)
+    {
+        $request->validate([
+            'query' => 'required|string',
+            'location' => 'required|string',
+        ]);
 
-    // public function fetchPlaceDetails($placeName)
-    // {
-    //     $apiKey = env('GOOGLE_MAPS_API_KEY');
+        $query = $request->input('query');
+        $location = $request->input('location');
 
-    //     // Log input
-    //     Log::info("Fetching place: {$placeName}");
+        // 1. Get basic places list from Text Search API
+        $response = Http::get('https://maps.googleapis.com/maps/api/place/textsearch/json', [
+            'query' => "$query in $location",
+            'key' => env('GOOGLE_MAPS_API_KEY'),
+        ]);
 
-    //     // Step 1: Get place_id
-    //     $searchResponse = Http::get('https://maps.googleapis.com/maps/api/place/findplacefromtext/json', [
-    //         'input' => $placeName,
-    //         'inputtype' => 'textquery',
-    //         'fields' => 'place_id,name,formatted_address',
-    //         'region' => 'id', // bias to Indonesia
-    //         'key' => $apiKey,
-    //     ]);
+        if (!$response->successful()) {
+            return response()->json(['error' => 'Failed to fetch data from Google Places API'], 500);
+        }
 
-    //     if ($searchResponse->failed()) {
-    //         Log::error('Google FindPlace API failed');
-    //         return response()->json(['error' => 'Failed to contact Google'], 500);
-    //     }
+        $results = $response->json()['results'];
 
-    //     $search = $searchResponse->json();
-    //     Log::info('FindPlace response: ' . json_encode($search));
+        $filteredResults = [];
 
-    //     if (empty($search['candidates'][0]['place_id'])) {
-    //         return response()->json(['error' => 'Place not found'], 404);
-    //     }
+        foreach ($results as $place) {
+            $placeDetailsResponse = Http::get('https://maps.googleapis.com/maps/api/place/details/json', [
+                'place_id' => $place['place_id'],
+                'fields' => 'name,formatted_address,geometry,rating,place_id,opening_hours,price_level',
+                'key' => env('GOOGLE_MAPS_API_KEY'),
+            ]);
 
-    //     $placeId = $search['candidates'][0]['place_id'];
+            if ($placeDetailsResponse->successful()) {
+                $details = $placeDetailsResponse->json()['result'];
 
-    //     // Step 2: Fetch detailed info
-    //     $detailsResponse = Http::get('https://maps.googleapis.com/maps/api/place/details/json', [
-    //         'place_id' => $placeId,
-    //         'fields' => 'place_id,name,formatted_address,geometry,opening_hours,rating,price_level,photos',
-    //         'key' => $apiKey,
-    //     ]);
+                $filteredResults[] = [
+                    'name' => $details['name'],
+                    'formatted_address' => $details['formatted_address'],
+                    'geometry' => $details['geometry'],
+                    'rating' => $details['rating'] ?? null,
+                    'place_id' => $details['place_id'],
+                    'opening_hours' => $details['opening_hours'] ?? null,
+                    'price_level' => $details['price_level'] ?? null,
+                ];
+            } else {
+                // fallback to basic info if details call fails
+                $filteredResults[] = [
+                    'name' => $place['name'],
+                    'formatted_address' => $place['formatted_address'],
+                    'geometry' => $place['geometry'],
+                    'rating' => $place['rating'] ?? null,
+                    'place_id' => $place['place_id'],
+                    'opening_hours' => $place['opening_hours'] ?? null,
+                    'price_level' => $place['price_level'] ?? null,
+                ];
+            }
+        }
 
-    //     if ($detailsResponse->failed()) {
-    //         Log::error('Google Place Details API failed');
-    //         return response()->json(['error' => 'Failed to retrieve place details'], 500);
-    //     }
+        return response()->json([
+            'results' => $filteredResults
+        ]);
+    }
 
-    //     $details = $detailsResponse->json();
-
-    //     if (!isset($details['result'])) {
-    //         return response()->json(['error' => 'No place details found'], 404);
-    //     }
-
-    //     $place = $details['result'];
-
-    //     if (isset($place['geometry']['location'])) {
-    //         $lat = $place['geometry']['location']['lat'];
-    //         $lng = $place['geometry']['location']['lng'];
-    //         $areaLevel2 = $this->getAdministrativeAreaLevel2($lat, $lng);
-    //         $place['administrative_area_level_2'] = $areaLevel2;
-    //     }
-
-    //     return response()->json($place);
-    // }
 
     private function getAdministrativeAreaLevel2($lat, $lng)
     {
@@ -190,5 +190,6 @@ class LocationController extends Controller
 
         return null;
     }
+
 
 }
