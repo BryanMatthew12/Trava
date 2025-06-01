@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('itinerary_id');
             $table->unsignedBigInteger('views')->default(0);
             $table->unsignedBigInteger('likes')->default(0);
+            $table->longText('thread_picture')->nullable(); 
             $table->timestamps();
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('itinerary_id')->references('itinerary_id')->on('itineraries')->onDelete('cascade');

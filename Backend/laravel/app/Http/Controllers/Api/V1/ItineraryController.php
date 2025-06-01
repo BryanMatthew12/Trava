@@ -153,7 +153,7 @@ class ItineraryController extends Controller
         $validated = $request->validated();
 
         // Temukan itinerary berdasarkan ID
-        $itinerary = \App\Models\Itinerary::findOrFail($itinerary_id);
+        $itinerary = Itinerary::findOrFail($itinerary_id);
 
         // Update description jika ada di request
         if (array_key_exists('itinerary_description', $validated)) {

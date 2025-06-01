@@ -41,14 +41,8 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('v1')->group(function () {
         Route::middleware(['role:1,2'])->group(function () {
-            // Route::apiResource('itineraries', ItineraryController::class);
             Route::apiResource('destinations', DestinationController::class);
-            // Route::apiResource('places', PlacesController::class);
             Route::apiResource('comments', CommentController::class);
-            // Route::apiResource('threads', ThreadsController::class);
-            // Route::apiResource('days', DayController::class);
-            // Route::apiResource('itinerary-destinations', ItineraryDestinationController::class);
-            // Route::apiResource('user-preferences', UserPreferenceController::class);
             
             // Route to search destinations names
             Route::get('destinations/search', [DestinationController::class, 'search']);
