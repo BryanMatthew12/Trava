@@ -51,7 +51,7 @@ const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
             : "https://via.placeholder.com/300x200?text=No+Image"
         }
         alt={place.name}
-        className="w-full h-48 object-cover rounded-lg"
+        className="w-full h-72 object-cover rounded-lg"
       />
 
       <p className="text-gray-600 mb-2">

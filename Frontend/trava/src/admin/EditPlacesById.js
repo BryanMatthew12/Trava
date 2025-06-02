@@ -12,6 +12,7 @@ import Cookies from "js-cookie";
 import { BASE_URL } from "../config";
 import ImageUploadCrop from "../api/admin/ImageUploadCrop"; // Pastikan path benar
 import { deletePlace } from "../api/admin/deletePlace"; // Tambahkan import
+import ConfirmSave from "../modal/ConfirmDelete/ConfirmSave"; // Pastikan path benar
 
 const daysOfWeek = [
   "Monday",
@@ -62,6 +63,8 @@ const EditPlacesById = () => {
 
   const [defaultPlaceOptions, setDefaultPlaceOptions] = useState([]);
   const imageFileRef = useRef(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [pendingSubmit, setPendingSubmit] = useState(false);
 
   // Fetch all places for defaultOptions
   useEffect(() => {
@@ -108,9 +111,13 @@ const EditPlacesById = () => {
 
   // Fetch place data by id (implement your own API if needed)
   useEffect(() => {
-    // TODO: fetch place detail by placeId and setFormData with result
-    // Example:
-    // fetchPlaceById(placeId).then(data => setFormData({...data, operational: JSON.parse(data.operational)}));
+    if (placeId) {
+      fetchPlaceDetail(placeId).then((detail) => {
+        if (detail) {
+          setFormData(mapPlaceDetailToForm(detail));
+        }
+      });
+    }
   }, [placeId]);
 
   const fetchPlaceDetail = async (place_id) => {
@@ -126,15 +133,38 @@ const EditPlacesById = () => {
   };
 
   function mapPlaceDetailToForm(place) {
-    const parsedOperational =
-      typeof place.operational === "string"
-        ? JSON.parse(place.operational)
-        : place.operational || {};
+    // Pastikan parsedOperational adalah object { Monday: "08:00-22:00", ... }
+    let parsedOperational = {};
+    if (typeof place.operational === "string") {
+      try {
+        parsedOperational = JSON.parse(place.operational);
+      } catch {
+        // Jika gagal parse, coba deteksi format weekdayText Google
+        // Misal: "Monday: 08:00–22:00, Tuesday: 08:00–22:00, ..."
+        const regex = /([A-Za-z]+):\s*([\d:]+)[–-]([\d:]+)/g;
+        let match;
+        while ((match = regex.exec(place.operational))) {
+          parsedOperational[match[1]] = `${match[2]}-${match[3]}`;
+        }
+      }
+    } else if (typeof place.operational === "object" && place.operational !== null) {
+      parsedOperational = place.operational;
+    }
 
+    // Pastikan setiap hari ada, meskipun kosong
     const formattedOperational = {};
-    for (const [day, hours] of Object.entries(parsedOperational)) {
-      const [start, end] = hours.split("-");
-      formattedOperational[day] = { start, end };
+    for (const day of daysOfWeek) {
+      if (parsedOperational[day]) {
+        const hours = parsedOperational[day];
+        if (typeof hours === "string" && hours.includes("-")) {
+          const [start, end] = hours.split("-");
+          formattedOperational[day] = { start, end };
+        } else {
+          formattedOperational[day] = { start: "", end: "" };
+        }
+      } else {
+        formattedOperational[day] = { start: "", end: "" };
+      }
     }
 
     return {
@@ -150,7 +180,7 @@ const EditPlacesById = () => {
       place_est_price: place.place_est_price
         ? parseInt(place.place_est_price)
         : 0,
-      operational: formattedOperational, // Autofill operational hours
+      operational: formattedOperational,
       views: place.views || 0,
       category_ids: place.categories
         ? place.categories.map((cat) => cat.category_id)
@@ -183,8 +213,27 @@ const EditPlacesById = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setIsConfirmOpen(true);
+    setPendingSubmit(true);
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this place?")) return;
+    try {
+      await deletePlace(formData.place_id);
+      alert("Place deleted successfully!");
+      // Redirect, clear form, atau navigate sesuai kebutuhan
+      // Misal: window.location.href = "/admin/places";
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const doSubmit = async () => {
+    setIsConfirmOpen(false);
+    setPendingSubmit(false);
 
     // Format operational hours
     const formattedOperational = {};
@@ -198,7 +247,7 @@ const EditPlacesById = () => {
     const finalData = {
       ...formData,
       place_rating: parseFloat(formData.place_rating),
-      place_est_price: formData.place_est_price, // sudah string angka tanpa titik/koma
+      place_est_price: formData.place_est_price,
       operational: JSON.stringify(formattedOperational),
     };
 
@@ -206,44 +255,7 @@ const EditPlacesById = () => {
       "Content-Type": "application/json",
     });
 
-    let payload;
-    let headers = {};
-
-    // Handle image file from imageFileRef
-    if (imageFileRef.current instanceof Blob) {
-      // Create a File from the Blob to ensure it has a name/type
-      const file = new File([imageFileRef.current], "image.jpg", {
-        type: imageFileRef.current.type || "image/jpeg",
-      });
-
-      payload = new FormData();
-      Object.entries(finalData).forEach(([key, value]) => {
-        if (key === "category_ids") {
-          value.forEach((v) => payload.append("category_ids[]", v));
-        } else {
-          payload.append(key, value);
-        }
-      });
-
-      payload.append("place_picture", file);
-      headers = {}; // Let browser set Content-Type to multipart/form-data
-    } else {
-      // No image file, send JSON normally
-      payload = finalData;
-      headers["Content-Type"] = "application/json";
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this place?")) return;
-    try {
-      await deletePlace(formData.place_id);
-      alert("Place deleted successfully!");
-      // Redirect, clear form, atau navigate sesuai kebutuhan
-      // Misal: window.location.href = "/admin/places";
-    } catch (err) {
-      alert(err.message);
-    }
+    // ...handle image upload if needed...
   };
 
   return (
@@ -266,8 +278,10 @@ const EditPlacesById = () => {
           if (option) {
             const detail = await fetchPlaceDetail(option.place_id);
             if (detail) {
+              const mapped = mapPlaceDetailToForm(detail);
+              console.log("Payload setelah pilih place:", mapped); // Tambahkan log ini
               setPlaceId2(detail.place_id);
-              setFormData(mapPlaceDetailToForm(detail));
+              setFormData(mapped);
             }
           } else {
             setFormData({
@@ -398,6 +412,13 @@ const EditPlacesById = () => {
       >
         Delete
       </button>
+
+      <ConfirmSave
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={doSubmit}
+        message="Are you sure you want to save the changes?"
+      />
     </form>
   );
 };
