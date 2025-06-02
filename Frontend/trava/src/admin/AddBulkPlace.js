@@ -29,7 +29,7 @@ const AddBulkPlace = () => {
           location_name: item.formatted_address || "Unknown Location",
           place_rating: item.rating || 0,
           place_picture: item.place_picture || "",
-          place_est_price: item.price_level || 0,
+          place_est_price: item.place_est_price || 0,
           operational: mondayHours, // Use formatted Monday hours
           views: item.views || 0,
           category_ids: selectedCategory, // Use selectedCategory for category_ids
