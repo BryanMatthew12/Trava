@@ -12,9 +12,12 @@ export const getThreadById = async (id) => {
         Authorization: `Bearer ${token}`, // Add the token as a Bearer token
       },
     });
+    
+      console.log(response.data);
 
     if (response.data) {
       return response.data;
+      
     } else {
       throw new Error('Error: No data received from the API');
     }

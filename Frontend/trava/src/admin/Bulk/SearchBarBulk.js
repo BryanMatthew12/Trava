@@ -8,7 +8,7 @@ export const SearchBarBulk = ({setBulkData, setDestinationId}) => {
       const destinations = useSelector(selectDestinations);
   const [body, setBody] = useState({
     query: "",
-    location: "",
+    destination_id: "",
   });
 
   const mappedDestinations = destinations.map((destination) => ({
@@ -35,7 +35,7 @@ export const SearchBarBulk = ({setBulkData, setDestinationId}) => {
         options={mappedDestinations}
         onChange={(option) =>[
             setDestinationId(option.value),// Set the destination ID
-            setBody((prev) => ({ ...prev, location: option.label }))
+            setBody((prev) => ({ ...prev, destination_id: option.value }))
         ]
         }
         placeholder="Select a destination"

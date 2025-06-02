@@ -103,20 +103,17 @@ class ItineraryDestinationController extends Controller
         try {
             $user = Auth::user();
 
-            // 1. Fetch itinerary with related destinations
-            $itinerary = Itinerary::with(['days.itineraryDestinations.place'])->find($itinerary_id);
+            $itinerary = Itinerary::with(['destinations'])->find($itinerary_id);
 
             if (!$itinerary) {
                 return response()->json(['message' => 'Itinerary not found'], 404);
             }
 
-            // 2. Check if a thread already exists
             $existingThread = Threads::where('itinerary_id', $itinerary_id)->first();
             if ($existingThread) {
                 return response()->json(['message' => 'Thread already exists for this itinerary'], 409);
             }
 
-            // 3. Get all place_pictures from the itinerary's places
             $placePictures = collect($itinerary->days)
                 ->flatMap(function ($day) {
                     return $day->itineraryDestinations->map(function ($dest) {
@@ -125,10 +122,9 @@ class ItineraryDestinationController extends Controller
                 })
                 ->filter(); // Remove nulls
 
-            // 4. Pick a random picture (if available)
             $randomPicture = $placePictures->isNotEmpty() ? $placePictures->random() : null;
 
-            // 5. Create thread with the random picture
+    
             $thread = Threads::create([
                 'user_id' => $user->user_id,
                 'itinerary_id' => $itinerary_id,
