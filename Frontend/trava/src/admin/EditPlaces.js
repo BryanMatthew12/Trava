@@ -111,7 +111,7 @@ export default function EditPlaces() {
     try {
       await editPlace(finalData);
       setShowSuccess(true); // Tampilkan modal sukses
-      setTimeout(() => setShowSuccess(false), 2000); // Sembunyikan otomatis setelah 2 detik
+      setTimeout(() => setShowSuccess(false), 1000); // Sembunyikan otomatis setelah 2 detik
     } catch (err) {
       console.error("Error submitting form:", err.message);
       // Optionally show error message to the user

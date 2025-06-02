@@ -82,7 +82,7 @@ const AddBulkPlace = () => {
     <>
       <SearchBarBulk setBulkData={setBulkData} setDestinationId={setDestinationId}/>
       <CategoryBulk setSelectedCategory={setSelectedCategory} />
-      <button onClick={handleAddBulk} className="px-3 py-2 bg-blue-500 text-white rounded">
+      <button onClick={handleAddBulk} className="px-3 my-10 py-2 bg-blue-500 text-white rounded">
         Add Bulk Data
       </button>
       <ShowDataBulk bulkData={bulkdata} setBulkData={setBulkData}/>
