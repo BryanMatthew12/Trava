@@ -6,6 +6,7 @@ import { editPlace } from "../api/admin/editPlace";
 import GOOGLE_MAPS_API_KEY from "../api/googleKey/googleKey";
 import { getPlaceGoogle } from "../api/admin/getPlaceGoogle";
 import ConfirmSave from "../modal/ConfirmDelete/ConfirmSave"; // Pastikan path benar
+import Success from "../modal/successModal/Success"; // Pastikan path benar
 
 const daysOfWeek = [
   "Monday",
@@ -51,6 +52,7 @@ export default function EditPlaces() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState("");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,8 +109,9 @@ export default function EditPlaces() {
     };
 
     try {
-      const result = await editPlace(finalData);
-      // Optionally reset form or show success toast
+      await editPlace(finalData);
+      setShowSuccess(true); // Tampilkan modal sukses
+      setTimeout(() => setShowSuccess(false), 2000); // Sembunyikan otomatis setelah 2 detik
     } catch (err) {
       console.error("Error submitting form:", err.message);
       // Optionally show error message to the user
@@ -379,6 +382,7 @@ export default function EditPlaces() {
         onConfirm={doSubmit}
         message="Are you sure you want to save the changes?"
       />
+      {showSuccess && <Success message="Data successfully saved!" />}
     </>
   );
 }
