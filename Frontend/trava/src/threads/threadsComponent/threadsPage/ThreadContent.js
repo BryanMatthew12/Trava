@@ -17,7 +17,7 @@ const ThreadContent = () => {
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const userId = useSelector(selectUserId); // Ambil userId dari Redux
+  const userId = useSelector(selectUserId); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -98,7 +98,7 @@ const ThreadContent = () => {
       <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
         <div className="relative">
           <img
-            src={itinerary.picture || "https://via.placeholder.com/600x300?text=No+Image"}
+            src={thread.thread_picture || "https://via.placeholder.com/600x300?text=No+Image"}
             alt={itinerary.destination_name}
             className="w-full h-64 object-cover"
           />
@@ -150,10 +150,10 @@ const ThreadContent = () => {
             ) : (
               Object.keys(groupedPlaces)
                 .sort((a, b) => a - b)
-                .map((dayId) => (
+                .map((dayId, index) => (
                   <div key={dayId} className="mb-6">
                     <div className="flex items-center mb-2">
-                      <span className="text-lg font-bold text-gray-800 mr-2">Day {dayId}</span>
+                      <span className="text-lg font-bold text-gray-800 mr-2">Day {index + 1}</span>
                       <span className="text-blue-400 text-xl">▼</span>
                     </div>
                     {groupedPlaces[dayId]

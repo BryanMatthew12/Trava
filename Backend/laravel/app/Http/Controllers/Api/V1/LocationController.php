@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Location;
 use App\Http\Controllers\Controller;
+use App\Models\Destination;
 use App\Services\GooglePlacesService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -86,15 +87,28 @@ class LocationController extends Controller
     {
         $request->validate([
             'query' => 'required|string',
-            'location' => 'required|string',
+            'destination_id' => 'required|exists:destinations,destination_id',
         ]);
 
         $query = $request->input('query');
-        $location = $request->input('location');
+        $destination = Destination::find($request->destination_id);
 
-        // 1. Get basic places list from Text Search API
+        if (!$destination || !$destination->latitude || !$destination->longitude) {
+            return response()->json(['error' => 'Destination coordinates not available'], 422);
+        }
+
+        // Use latitude and longitude from the destination
+        $lat = $destination->latitude;
+        $lng = $destination->longitude;
+
+        // Define a radius in meters (e.g., 5000m = 5km)
+        $radius = 5000;
+
+        // Call Google Places Text Search API with location & radius filters
         $response = Http::get('https://maps.googleapis.com/maps/api/place/textsearch/json', [
-            'query' => "$query in $location",
+            'query' => $query,
+            'location' => "{$lat},{$lng}",
+            'radius' => $radius,
             'key' => env('GOOGLE_MAPS_API_KEY'),
         ]);
 
@@ -143,6 +157,7 @@ class LocationController extends Controller
             'results' => $filteredResults
         ]);
     }
+
 
 
     private function getAdministrativeAreaLevel2($lat, $lng)

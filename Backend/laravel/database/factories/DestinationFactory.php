@@ -20,6 +20,8 @@ class DestinationFactory extends Factory
             'destination_id' => $this->faker->unique()->randomNumber(5), 
             'destination_name' => $this->faker->city(),
             'description' => $this->faker->paragraph(),
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),
             'destination_picture' => $this->faker->imageUrl(),
         ];
     }
