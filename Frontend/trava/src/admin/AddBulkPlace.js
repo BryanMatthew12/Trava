@@ -3,11 +3,15 @@ import { SearchBarBulk } from "./Bulk/SearchBarBulk";
 import ShowDataBulk from "./Bulk/ShowDataBulk";
 import CategoryBulk from "./Bulk/CategoryBulk";
 import { postBulkPlace } from "../api/admin/postBulkPlace";
+import Success from "../modal/successModal/Success";
+import Loading from "../modal/loading/Loading"; // <-- import Loading
 
 const AddBulkPlace = () => {
   const [bulkdata, setBulkData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [destinationId, setDestinationId] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // <-- state loading
 
   const parseWeekdayTextToOperational = (weekdayTextArr) => {
     // weekdayTextArr: ["Monday: 7:00 AM – 10:00 PM", ...]
@@ -44,48 +48,51 @@ const AddBulkPlace = () => {
       console.error("No bulk data or categories selected.");
       return;
     }
+    setIsLoading(true); // <-- mulai loading
     try {
-      // Map over bulkdata to construct the places array
       const places = bulkdata.results.map((item, index) => {
         const operational = parseWeekdayTextToOperational(
           item.opening_hours?.weekday_text
         );
-
         return {
-          destination_id: destinationId, // Auto-generate destination_id starting at 1
+          destination_id: destinationId,
           place_name: item.name || "Unknown Place",
           place_description: item.description || "No description available",
           location_name: item.formatted_address || "Unknown Location",
           place_rating: item.rating || 0,
           place_picture: item.place_picture || "",
           place_est_price: item.place_est_price || 0,
-          operational: JSON.stringify(operational), // <-- sama seperti EditPlaces
+          operational: JSON.stringify(operational),
           views: item.views || 0,
-          category_ids: selectedCategory, // Use selectedCategory for category_ids
+          category_ids: selectedCategory,
         };
       });
 
-      // Construct the body object
-      const requestBody = { places };
-
-      console.log("Request Body:", requestBody); // Debugging
-
-      // Send the request using postBulkPlace
-      const response = await postBulkPlace(requestBody);
-      console.log("Response:", response);
+      const batchSize = 1;
+      for (let i = 0; i < places.length; i += batchSize) {
+        const batch = places.slice(i, i + batchSize);
+        const response = await postBulkPlace({ places: batch });
+        console.log(`Batch ${i / batchSize + 1} response:`, response);
+      }
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
       console.error("Error adding bulk places:", error.message);
+    } finally {
+      setIsLoading(false); // <-- selesai loading
     }
   };
 
   return (
     <>
+      {isLoading && <Loading />} {/* <-- tampilkan loading */}
       <SearchBarBulk setBulkData={setBulkData} setDestinationId={setDestinationId}/>
       <CategoryBulk setSelectedCategory={setSelectedCategory} />
       <button onClick={handleAddBulk} className="px-3 py-2 bg-blue-500 text-white rounded">
         Add Bulk Data
       </button>
       <ShowDataBulk bulkData={bulkdata} setBulkData={setBulkData}/>
+      {showSuccess && <Success message="Bulk sudah updated" />}
     </>
   );
 };
