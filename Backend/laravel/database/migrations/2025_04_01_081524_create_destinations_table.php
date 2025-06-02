@@ -13,6 +13,8 @@ class CreateDestinationsTable extends Migration
             $table->string('destination_name'); // Example: Jakarta, Bali, Yogyakarta
             $table->text('description')->nullable(); // General description
             $table->longText('destination_picture')->nullable(); // Store image URL or path
+            $table->decimal('latitude', 10, 7)->nullable(); // Latitude for geolocation
+            $table->decimal('longitude', 10, 7)->nullable();// Longitude for geolocation
             $table->timestamps();
         });
     }

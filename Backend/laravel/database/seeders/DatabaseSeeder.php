@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Destination;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,14 +16,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $names = [
-            'Jakarta Pusat', 
-            'Jakarta Selatan',
-            'Jakarta Barat',
-            'Jakarta Timur',
-            'Jakarta Utara',
+            'DKI Jakarta',
             'Serang',
             'Anyer',
-            'Tanjung Lesung',
+            'Banten',
             'Ujung Kulon',
             'Bandung',
             'Bogor & Puncak',
@@ -44,10 +41,24 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($names as $name) {
-            Destination::factory()->create([
-                'destination_name' => $name,
-            ]);
-        } 
+        $destination = Destination::create([
+            'destination_name' => $name,
+        ]);
+
+        // 🌍 Geocode to get lat & lng
+        $geoResponse = Http::get('https://maps.googleapis.com/maps/api/geocode/json', [
+            'address' => $destination->destination_name,
+            'key' => env('GOOGLE_MAPS_API_KEY'),
+        ]);
+
+        if ($geoResponse->successful() && $geoResponse['status'] === 'OK') {
+            $location = $geoResponse['results'][0]['geometry']['location'];
+            $destination->latitude = $location['lat'];
+            $destination->longitude = $location['lng'];
+            $destination->save();
+        }
+    }
+
 
         $this->call([
             UserSeeder::class,
