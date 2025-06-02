@@ -71,7 +71,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/itineraries/{itinerary_id}', [ItineraryController::class, 'show']); // load preplanning page
             Route::post('/itineraries', [ItineraryController::class, 'store']); // create new itinerary
             Route::get('/itineraries/user/{user_id}', [ItineraryController::class, 'getUserItineraries']); // get all itineraries by user_id
-            Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'editBudget']); // update Budget
+            Route::patch('/itineraries/{itinerary_id}/budget', [ItineraryController::class, 'editBudget']); // update Budget
             Route::delete('/itineraries/{itinerary_id}', [ItineraryController::class, 'destroy']);
             Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'update']);
             Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'editName']);

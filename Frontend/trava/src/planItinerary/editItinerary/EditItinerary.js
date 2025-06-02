@@ -355,7 +355,7 @@ const EditItinerary = ({ test }) => {
   // Handler untuk menyimpan budget dari modal
   const handleSaveBudget = async () => {
     try {
-      await editBudget(itineraryId, Number(budget)); // PATCH ke backend
+      await editBudget(itineraryId, Number(budget)); // Pastikan Number(budget)
       setIsBudgetModalOpen(false);
       setSuccessMsg("Budget updated successfully!");
       setTimeout(() => setSuccessMsg(""), 2000);
