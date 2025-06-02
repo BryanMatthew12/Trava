@@ -5,6 +5,7 @@ import Select from "react-select";
 import { editPlace } from "../api/admin/editPlace";
 import GOOGLE_MAPS_API_KEY from "../api/googleKey/googleKey";
 import { getPlaceGoogle } from "../api/admin/getPlaceGoogle";
+import ConfirmSave from "../modal/ConfirmDelete/ConfirmSave"; // Pastikan path benar
 
 const daysOfWeek = [
   "Monday",
@@ -49,6 +50,7 @@ export default function EditPlaces() {
   const [searchName, setSearchName] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState("");
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,8 +81,13 @@ export default function EditPlaces() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setIsConfirmOpen(true);
+  };
+
+  const doSubmit = async () => {
+    setIsConfirmOpen(false);
 
     // Format operational hours like "08:00-17:00"
     const formattedOperational = {};
@@ -98,9 +105,9 @@ export default function EditPlaces() {
       place_est_price: parseInt(formData.place_est_price),
       operational: JSON.stringify(formattedOperational),
     };
-    
+
     try {
-      const result = await editPlace(finalData); // Await the result
+      const result = await editPlace(finalData);
       // Optionally reset form or show success toast
     } catch (err) {
       console.error("Error submitting form:", err.message);
@@ -202,72 +209,73 @@ export default function EditPlaces() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 max-w-xl mx-auto p-4 bg-white rounded shadow"
-    >
-      <h2 className="text-xl font-bold">Add New Place</h2>
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 max-w-xl mx-auto p-4 bg-white rounded shadow"
+      >
+        <h2 className="text-xl font-bold">Add New Place</h2>
 
-      <Select
-        options={mappedDestinations}
-        onChange={(option) =>
-          setFormData({ ...formData, destination_id: option.value })
-        }
-        placeholder="Select a destination"
-      />
-      <div className="flex gap-2 items-center">
+        <Select
+          options={mappedDestinations}
+          onChange={(option) =>
+            setFormData({ ...formData, destination_id: option.value })
+          }
+          placeholder="Select a destination"
+        />
+        <div className="flex gap-2 items-center">
+          <input
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            placeholder="Search place name (local API)"
+            className="w-full p-2 border rounded"
+          />
+          <button
+            type="button"
+            onClick={handleLocalSearch}
+            className="px-3 py-2 bg-blue-500 text-white rounded"
+            disabled={searchLoading || !searchName}
+          >
+            {searchLoading ? "Searching..." : "Search"}
+          </button>
+        </div>
+        {searchError && <div className="text-red-500">{searchError}</div>}
         <input
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-          placeholder="Search place name (local API)"
+          name="place_name"
+          value={formData.place_name}
+          onChange={handleChange}
+          required
           className="w-full p-2 border rounded"
         />
-        <button
-          type="button"
-          onClick={handleLocalSearch}
-          className="px-3 py-2 bg-blue-500 text-white rounded"
-          disabled={searchLoading || !searchName}
-        >
-          {searchLoading ? "Searching..." : "Search"}
-        </button>
-      </div>
-      {searchError && <div className="text-red-500">{searchError}</div>}
-      <input
-        name="place_name"
-        value={formData.place_name}
-        onChange={handleChange}
-        required
-        className="w-full p-2 border rounded"
-      />
-      <input
-        name="place_address"
-        placeholder="Address"
-        value={formData.location_name}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-      />
-      {/* <input
+        <input
+          name="place_address"
+          placeholder="Address"
+          value={formData.location_name}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+        {/* <input
         name="place_description"
         placeholder="Description"
         value={formData.place_description}
         onChange={handleChange}
         className="w-full p-2 border rounded"
       /> */}
-      {/* <textarea
+        {/* <textarea
         name="place_description"
         value={formData.place_description}
         onChange={handleChange}
         required
         className="w-full p-2 border rounded"
       /> */}
-      {/* <input
+        {/* <input
         name="place_picture"
         value={formData.place_picture}
         onChange={handleChange}
         className="w-full p-2 border rounded"
       /> */}
-      {/* HAPUS INI: */}
-      {/* 
+        {/* HAPUS INI: */}
+        {/* 
       <input
         name="place_rating"
         value={formData.place_rating}
@@ -277,39 +285,39 @@ export default function EditPlaces() {
       />
       */}
 
-      {/* GUNAKAN INI SAJA: */}
-      <div>
-        <label className="block mb-1 font-medium">Rating</label>
+        {/* GUNAKAN INI SAJA: */}
+        <div>
+          <label className="block mb-1 font-medium">Rating</label>
+          <input
+            name="place_rating"
+            type="number"
+            step="0.01"
+            min="0"
+            max="5"
+            value={formData.place_rating}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded"
+            placeholder="Input rating (0 - 5)"
+          />
+        </div>
         <input
-          name="place_rating"
-          type="number"
-          step="0.01"
-          min="0"
-          max="5"
-          value={formData.place_rating}
-          onChange={handleChange}
+          name="place_est_price"
+          placeholder="Estimated Price"
+          type="text"
+          value={formatRupiah(formData.place_est_price)}
+          onChange={e => {
+            // Hanya simpan angka tanpa titik/koma/leading zero
+            let value = e.target.value.replace(/[^0-9]/g, "");
+            // Hilangkan leading zero
+            if (value.startsWith("0")) value = value.replace(/^0+/, "");
+            setFormData({ ...formData, place_est_price: value });
+          }}
           required
           className="w-full p-2 border rounded"
-          placeholder="Input rating (0 - 5)"
         />
-      </div>
-      <input
-        name="place_est_price"
-        placeholder="Estimated Price"
-        type="text"
-        value={formatRupiah(formData.place_est_price)}
-        onChange={e => {
-          // Hanya simpan angka tanpa titik/koma/leading zero
-          let value = e.target.value.replace(/[^0-9]/g, "");
-          // Hilangkan leading zero
-          if (value.startsWith("0")) value = value.replace(/^0+/, "");
-          setFormData({ ...formData, place_est_price: value });
-        }}
-        required
-        className="w-full p-2 border rounded"
-      />
 
-      {/* <div>
+        {/* <div>
         <label className="block mb-1 font-medium">Rating</label>
         <select
           name="place_rating"
@@ -324,46 +332,53 @@ export default function EditPlaces() {
         </select>
       </div> */}
 
-      <Select
-        options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
-        isMulti
-        onChange={(selectedOptions) => {
-          const selectedValues = selectedOptions.map((option) => option.value);
-          setFormData({ ...formData, category_ids: selectedValues });
-        }}
-        placeholder="Select categories"
+        <Select
+          options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
+          isMulti
+          onChange={(selectedOptions) => {
+            const selectedValues = selectedOptions.map((option) => option.value);
+            setFormData({ ...formData, category_ids: selectedValues });
+          }}
+          placeholder="Select categories"
+        />
+
+        <fieldset className="border p-3 rounded">
+          <legend className="font-semibold">Operational Hours</legend>
+          {daysOfWeek.map((day) => (
+            <div key={day} className="flex items-center space-x-2 mb-2">
+              <span className="capitalize w-24">{day}</span>
+              <input
+                type="time"
+                name={`${day}-start`}
+                value={formData.operational[day]?.start || ""}
+                onChange={handleChange}
+                className="border p-1 rounded"
+              />
+              <span>to</span>
+              <input
+                type="time"
+                name={`${day}-end`}
+                value={formData.operational[day]?.end || ""}
+                onChange={handleChange}
+                className="border p-1 rounded"
+              />
+            </div>
+          ))}
+        </fieldset>
+
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Submit
+        </button>
+      </form>
+      <ConfirmSave
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={doSubmit}
+        message="Are you sure you want to save the changes?"
       />
-
-      <fieldset className="border p-3 rounded">
-        <legend className="font-semibold">Operational Hours</legend>
-        {daysOfWeek.map((day) => (
-          <div key={day} className="flex items-center space-x-2 mb-2">
-            <span className="capitalize w-24">{day}</span>
-            <input
-              type="time"
-              name={`${day}-start`}
-              value={formData.operational[day]?.start || ""}
-              onChange={handleChange}
-              className="border p-1 rounded"
-            />
-            <span>to</span>
-            <input
-              type="time"
-              name={`${day}-end`}
-              value={formData.operational[day]?.end || ""}
-              onChange={handleChange}
-              className="border p-1 rounded"
-            />
-          </div>
-        ))}
-      </fieldset>
-
-      <button
-        type="submit"
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Submit
-      </button>
-    </form>
+    </>
   );
 }
