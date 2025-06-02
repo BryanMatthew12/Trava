@@ -13,6 +13,7 @@ import { BASE_URL } from "../config";
 import ImageUploadCrop from "../api/admin/ImageUploadCrop"; // Pastikan path benar
 import { deletePlace } from "../api/admin/deletePlace"; // Tambahkan import
 import ConfirmSave from "../modal/ConfirmDelete/ConfirmSave"; // Pastikan path benar
+import Success from "../modal/successModal/Success"; // Pastikan path benar
 
 const daysOfWeek = [
   "Monday",
@@ -65,6 +66,7 @@ const EditPlacesById = () => {
   const imageFileRef = useRef(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [pendingSubmit, setPendingSubmit] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Fetch all places for defaultOptions
   useEffect(() => {
@@ -255,6 +257,7 @@ const EditPlacesById = () => {
       "Content-Type": "application/json",
     });
 
+    setShowSuccess(true); // Tampilkan modal sukses
     // ...handle image upload if needed...
   };
 
@@ -419,6 +422,7 @@ const EditPlacesById = () => {
         onConfirm={doSubmit}
         message="Are you sure you want to save the changes?"
       />
+      {showSuccess && <Success message="Data successfully saved!" />}
     </form>
   );
 };
