@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { fetchCoord } from "../../api/mapCoord/fetchCoord";
 
-const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
+const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {  
   useEffect(() => {
     const getCoordinates = async () => {
       try {
@@ -19,6 +19,10 @@ const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
 
     getCoordinates();
   }, [place]);
+
+  if (!place) {
+    return <div className="text-gray-500">Data not found.</div>;
+  }
 
   function formatRupiah(angka) {
     if (!angka || angka === "0") return "";
@@ -71,6 +75,18 @@ const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
       <p className="text-gray-600 mb-2">
         <strong>Rating:</strong> {place.rating} / 5
       </p>
+      {place.operational && (
+        <div className="text-gray-600 mb-2">
+          <strong>Operational Hours:</strong>
+          <ul className="ml-4">
+            {Object.entries(JSON.parse(place.operational)).map(([day, hours]) => (
+              <li key={day}>
+                <span className="font-medium">{day}:</span> {hours || "Closed"}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
