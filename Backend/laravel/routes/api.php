@@ -75,7 +75,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::delete('/itineraries/{itinerary_id}', [ItineraryController::class, 'destroy']);
             Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'update']);
             Route::patch('/itineraries/{itinerary_id}', [ItineraryController::class, 'editName']);
-
+            Route::patch('/itineraries/{itinerary_id}/desc', [ItineraryController::class, 'patchDesc']);
+            
             // Route to itineraries destinations
             Route::post('/itinerary-destinations', [ItineraryDestinationController::class, 'store']);
             Route::get('/itinerary-destinations/{itinerary_id}', [ItineraryDestinationController::class, 'show']);
