@@ -233,7 +233,7 @@ class PlacesController extends Controller
     public function getFilteredPlaces()
     {
         // Ambil semua tempat
-        $places = Places::select('place_id', 'place_name', 'place_description', 'location_id', 'place_picture', 'place_rating', 'views')
+        $places = Places::select('place_id', 'place_name', 'place_description', 'location_id', 'place_picture', 'place_rating', 'views', 'operational')
             ->get();
 
         if ($places->isEmpty()) {
