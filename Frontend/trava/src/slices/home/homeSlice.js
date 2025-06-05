@@ -18,7 +18,8 @@ const homeSlice = createSlice({
         location: home.location_name,
         price: home.place_est_price,
         rating: home.place_rating,
-        views: home.views, // Pastikan views ada
+        views: home.views,
+        operational: home.operational, // <-- TAMBAHKAN INI
       }));
     },
     setHome2: (state, action) => {
@@ -32,6 +33,7 @@ const homeSlice = createSlice({
         price: home.place_est_price,
         rating: home.place_rating,
         views: home.views, // Pastikan views ada
+        operational: home.operational, // <-- TAMBAHKAN INI
       }));
 
     },
@@ -46,6 +48,7 @@ const homeSlice = createSlice({
         price: home.place_est_price,
         rating: home.place_rating,
         views: home.views, // Pastikan views ada
+        operational: home.operational, // <-- TAMBAHKAN INI
       }));
     },
     clearHome: (state) => {
