@@ -15,6 +15,7 @@ const RowDataHiddenGem = () => {
     const fetchData = async () => {
       try {
         const response = await fetchHiddenGems(); // Fetch data dari API
+        console.log("Fetched hidden gemsxdxdd:", response); // Log data yang diambil
         if (response) {
           dispatch(setHome3(response)); // Simpan data ke state.home3
         }
