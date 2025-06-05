@@ -51,6 +51,7 @@ const PlanItinerary = ({ test }) => {
 
   const { start, end, budget, desc, destination, destinationId } =
     location.state || {}; // Destructure the state object
+  const [totalSpent, setTotalSpent] = useState(0); // State to track total spent
   const [visibleBudget, setVisibleBudget] = useState(budget); // State to track visibility of budget
 
   // Calculate the number of days
@@ -66,6 +67,9 @@ const PlanItinerary = ({ test }) => {
   const [visibleDays, setVisibleDays] = useState(
     Array.from({ length: tripDuration }, () => true) // Default: all days visible
   );
+
+  // Calculate leftover budget dynamically
+  const leftoverBudget = visibleBudget - totalSpent;
 
   // Fetch places based on destinationId when component mounts
   useEffect(() => {
@@ -357,13 +361,17 @@ const PlanItinerary = ({ test }) => {
   }
 
   const handleAddBudget = (price) => {
-    const newBudget = parseInt(visibleBudget) + parseInt(price);
-    setVisibleBudget(newBudget); // Update the visible budget state
+    const newTotalSpent = totalSpent - parseInt(price);
+    setTotalSpent(newTotalSpent); // Update the total spent state
   };
 
   const handleRemoveBudget = (price) => {
-    const newBudget = parseInt(visibleBudget) - parseInt(price);
-    setVisibleBudget(newBudget.toString());
+    const newTotalSpent = totalSpent + parseInt(price);
+    setTotalSpent(newTotalSpent); // Update the total spent state
+  };
+
+  const handleEditBudget = (newBudget) => {
+    setVisibleBudget(parseInt(newBudget)); // Update the visible budget state
   };
 
   useEffect(() => {
@@ -480,7 +488,7 @@ const PlanItinerary = ({ test }) => {
       <div className="p-6">
         <h2 className="text-xl font-semibold mb-4">Budget</h2>
         <div className="bg-white shadow-md rounded-lg p-4 flex items-center justify-between">
-          <p className="text-xl font-bold">{formatRupiah(currentBudget)}</p>
+          <p className="text-xl font-bold">{formatRupiah(visibleBudget)}</p>
           <button
             className="text-blue-600 hover:underline text-sm font-medium"
             onClick={openModal}
@@ -616,6 +624,8 @@ const PlanItinerary = ({ test }) => {
                         label: place.name,
                         price: place.price || 0, // Include price in options
                       }))}
+                      onInputChange={(selectedOption) => {
+                        console.log(selectedOption)}}
                       onChange={(selectedOption) => [
                         handleSelectPlace(selectedOption, id),
                         handleRemoveBudget(selectedOption.price),
@@ -647,19 +657,21 @@ const PlanItinerary = ({ test }) => {
         </div>
       </div>
 
-      {/* Save/Delete Buttons */}
+      {/* Leftover Budget Section */}
       <div className="p-6">
         <h2 className="text-xl font-semibold mb-4">Your Leftover Budget</h2>
         <div className="bg-white shadow-md rounded-lg p-4 flex items-center justify-between">
           <p
             className={`text-xl font-bold ${
-              visibleBudget < 0 ? "text-red-500" : "text-green-600"
+              leftoverBudget < 0 ? "text-red-500" : "text-green-600"
             }`}
           >
-            {formatRupiah(visibleBudget)}
+            {formatRupiah(leftoverBudget)}
           </p>
         </div>
       </div>
+
+      {/* Save/Delete Buttons */}
       <div className="px-6 pb-6 flex gap-4 justify-end">
         <button
           className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md transition"
@@ -694,11 +706,11 @@ const PlanItinerary = ({ test }) => {
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4"
-              placeholder="Masukkan budget"
-              value={formatRupiah(currentBudget)}
+              placeholder="Enter new budget"
+              value={formatRupiah(visibleBudget)}
               onChange={(e) => {
                 const value = e.target.value.replace(/[^0-9]/g, "");
-                setCurrentBudget(value);
+                handleEditBudget(value); // Update budget dynamically
               }}
             />
             <div className="flex justify-end gap-2">
