@@ -5,10 +5,11 @@ import { BASE_URL } from '../../config';
 export const patchDescription = async (id, description) => {
   try {
     const token = Cookies.get('token');
-
     const response = await axios.patch(
-      `${BASE_URL}/v1/itineraries/${id}`,
-      { itinerary_description: description },
+      `${BASE_URL}/v1/itineraries/${id}/desc`,
+      {
+        itinerary_description: description,
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -16,7 +17,6 @@ export const patchDescription = async (id, description) => {
         },
       }
     );
-
     if (response.data) {
       return response.data;
     } else {

@@ -253,4 +253,23 @@ class ItineraryController extends Controller
             'itinerary_name' => $itinerary->itinerary_name,
         ], 200);
     }
+
+    /**
+     * Edit the description of the specified itinerary.
+     */
+    public function patchDesc(Request $request, $itinerary_id)
+    {
+        $validated = $request->validate([
+            'itinerary_description' => 'required|string',
+        ]);
+
+        $itinerary = Itinerary::findOrFail($itinerary_id);
+        $itinerary->itinerary_description = $validated['itinerary_description'];
+        $itinerary->save();
+
+        return response()->json([
+            'message' => 'Description updated successfully.',
+            'itinerary_description' => $itinerary->itinerary_description,
+        ], 200);
+    }
 }
