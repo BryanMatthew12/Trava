@@ -30,6 +30,7 @@ class StorePlacesRequest extends FormRequest
             'location_name' => 'nullable|string|max:255', // dari google API
             'place_rating' => 'nullable|numeric|min:0|max:5', // dari google API
             'place_picture' => 'nullable|string',
+            'place_description' => 'nullable|string|max:1000', // dari google API
             'place_est_price' => 'nullable|numeric|min:0', // dari google API 
             'operational' => 'nullable|json', // dari google API
             'views' => 'nullable|integer|min:0',

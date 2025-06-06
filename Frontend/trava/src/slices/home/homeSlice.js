@@ -87,7 +87,7 @@ export const selectHomesByCategoryIds = (categoryIds) => (state) => {
 export const selectTop5Places = (state) => {
   return [...state.home.home]
     .sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0))
-    .slice(0, 5);
+    // .slice(0, 5);
 };
 
 // Selector to get places by user_id and category_id, sorted by rating

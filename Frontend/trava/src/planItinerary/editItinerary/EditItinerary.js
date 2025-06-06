@@ -110,7 +110,6 @@ const EditItinerary = ({ test }) => {
           const { places, ...restWithoutPlaces } = data;
           setItineraryData(restWithoutPlaces);
           setDestinations(data.places);
-          // console.log("Fetched itinerary data:", data);
           setBudget(data.budget ? data.budget.toString() : ""); // <-- Tambahkan baris ini
           if (data) {
             const placesData = await fetchPlaces(data.destination_id, currPage);

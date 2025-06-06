@@ -111,7 +111,7 @@ export default function EditPlaces() {
     try {
       await editPlace(finalData);
       setShowSuccess(true); // Tampilkan modal sukses
-      setTimeout(() => setShowSuccess(false), 2000); // Sembunyikan otomatis setelah 2 detik
+      setTimeout(() => setShowSuccess(false), 1000); // Sembunyikan otomatis setelah 2 detik
     } catch (err) {
       console.error("Error submitting form:", err.message);
       // Optionally show error message to the user
@@ -257,38 +257,7 @@ export default function EditPlaces() {
           onChange={handleChange}
           className="w-full p-2 border rounded"
         />
-        {/* <input
-        name="place_description"
-        placeholder="Description"
-        value={formData.place_description}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-      /> */}
-        {/* <textarea
-        name="place_description"
-        value={formData.place_description}
-        onChange={handleChange}
-        required
-        className="w-full p-2 border rounded"
-      /> */}
-        {/* <input
-        name="place_picture"
-        value={formData.place_picture}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-      /> */}
-        {/* HAPUS INI: */}
-        {/* 
-      <input
-        name="place_rating"
-        value={formData.place_rating}
-        onChange={handleChange}
-        required
-        className="w-full p-2 border rounded"
-      />
-      */}
 
-        {/* GUNAKAN INI SAJA: */}
         <div>
           <label className="block mb-1 font-medium">Rating</label>
           <input
@@ -319,21 +288,6 @@ export default function EditPlaces() {
           required
           className="w-full p-2 border rounded"
         />
-
-        {/* <div>
-        <label className="block mb-1 font-medium">Rating</label>
-        <select
-          name="place_rating"
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        >
-          {ratingOptions.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
-          ))}
-        </select>
-      </div> */}
 
         <Select
           options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}

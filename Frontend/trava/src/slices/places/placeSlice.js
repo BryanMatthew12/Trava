@@ -50,7 +50,7 @@ export const selectPlacesById = (id) => (state) =>
 export const selectTop5Places = (state) => {
   return [...state.places.places]
     .sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0))
-    .slice(0, 5);
+    // .slice(0, 5);
 };
 
 export default placeSlice.reducer;
