@@ -116,7 +116,7 @@ class LocationController extends Controller
             return response()->json(['error' => 'Failed to fetch data from Google Places API'], 500);
         }
 
-        $results = $response->json()['results'];
+        $results = array_slice($response->json()['results'], 0, 10);
 
         $filteredResults = [];
 

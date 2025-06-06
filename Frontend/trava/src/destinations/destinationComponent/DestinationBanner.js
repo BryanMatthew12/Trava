@@ -6,7 +6,7 @@ const DestinationBanner = ({ bannerId }) => {
   const picture = useSelector(selectDestinationPictureById(bannerId));
 
   return (
-    <div className="w-full max-w-6xl h-[200px] md:h-[300px] mt-[4rem]">
+    <div className="w-full max-w-6xl h-[500px] md:h-[500px] mt-[4rem]">
       {picture ? (
         <img
           src={picture} // Use the Base64 string directly

@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $names = [
             'DKI Jakarta',
-            'Serang',
+            // 'Serang',
             'Anyer',
             'Banten',
             'Ujung Kulon',
