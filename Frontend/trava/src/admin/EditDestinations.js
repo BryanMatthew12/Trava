@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import Select from "react-select";
 import { updateDestinationById } from "../api/admin/updateDestinations";
 import { selectDestinations } from "../slices/destination/destinationSlice";
+import Success from "../modal/successModal/Success";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { BASE_URL } from "../config";
@@ -18,6 +19,7 @@ function getImageSrc(src) {
 
 const EditDestinations = () => {
   const destinations = useSelector(selectDestinations);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [formData, setFormData] = useState({
     destination_name: "",
@@ -114,7 +116,8 @@ const EditDestinations = () => {
       description: formData.description,
       destination_picture: formData.destination_picture,
     });
-    // Tidak ada alert di sini
+    setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
   };
 
   return (
@@ -177,6 +180,7 @@ const EditDestinations = () => {
         onConfirm={doSubmit}
         message="Are you sure you want to save the changes?"
       />
+      {showSuccess && <Success message="Data telah diubah" />}
     </>
   );
 };
