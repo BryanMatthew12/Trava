@@ -43,17 +43,13 @@ const RowDataRecommended = ({ home2 }) => {
     navigate(`/PlanningItinerary?source=recommended&params=${home.place_id}`);
   };
 
-  // if (loading) {
-  //   return <p>Loading recommended places...</p>; // Show a loading message
-  // }
-
   if (!recommendedHomes || recommendedHomes.length === 0) {
     return <p>No recommended places available to display.</p>; // Show a message if no data is available
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {recommendedHomes.map((home) => (
+      {recommendedHomes.slice(0, 5).map((home) => (
         <div
           key={home.id}
           onClick={async () => await handleItemClick(home)}
