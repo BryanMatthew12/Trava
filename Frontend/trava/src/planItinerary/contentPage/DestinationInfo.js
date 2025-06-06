@@ -1,27 +1,28 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { fetchCoord } from "../../api/mapCoord/fetchCoord";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMapMarkerAlt, faMapMarkedAlt, faMoneyBillWave, faStar, faClock } from "@fortawesome/free-solid-svg-icons";
 
-const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {  
+const DestinationInfo = ({ place, categoryMapping, test }) => {  
   useEffect(() => {
+    if (!place) return;
     const getCoordinates = async () => {
       try {
         const destinations = await fetchCoord(place.name);
         const coordinates = destinations?.data;
-
         if (coordinates) {
           const { latitude, longitude } = coordinates;
-          onPlaceChange(latitude, longitude); // pass to callback
+          test(latitude, longitude);
         }
       } catch (error) {
         console.error("Failed to fetch coord", error.message);
       }
     };
-
     getCoordinates();
-  }, [place]);
+  }, [place, test]);
 
   if (!place) {
-    return <div className="text-gray-500">Data not found.</div>;
+    return <div className="text-gray-500 text-center py-10">Data not found.</div>;
   }
 
   function formatRupiah(angka) {
@@ -44,47 +45,94 @@ const DestinationInfo = ({ place, categoryMapping, onPlaceChange }) => {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">{place.name}</h1>
+    <div className="max-w-2xl mx-auto p-0 mt-8">
+      <h1 className="text-3xl font-extrabold mb-3 text-gray-800">{place.name}</h1>
       <img
         src={
           place.place_picture
             ? place.place_picture.startsWith("data:image")
-              ? place.place_picture // use as-is if it's a data URI
-              : place.place_picture // use as-is if it's a URL
+              ? place.place_picture
+              : place.place_picture
             : "https://via.placeholder.com/300x200?text=No+Image"
         }
         alt={place.name}
-        className="w-full h-72 object-cover rounded-lg"
+        className="w-full h-72 object-cover mb-4 rounded-xl border"
+        style={{ boxShadow: "none" }}
       />
 
-      <p className="text-gray-600 mb-2">
-        <strong>Description:</strong> {place.description}
-      </p>
-      <p className="text-gray-600 mb-2">
-        <strong>Location:</strong> {place.location?.location_name || "Unknown"}
-      </p>
-      <p className="text-gray-600 mb-2">
-        <strong>Estimated Price:</strong>{" "}
-        {place.price === 0
-          ? "Free"
-          : place.price
-          ? formatRupiah(place.price)
-          : "-"}
-      </p>
-      <p className="text-gray-600 mb-2">
-        <strong>Rating:</strong> {place.rating} / 5
-      </p>
+      {place.description && (
+        <p className="text-base text-gray-700 font-semibold mb-6">{place.description}</p>
+      )}
+
+      {/* Info utama pakai icon saja */}
+      <div className="space-y-5 text-lg mb-2">
+        {/* Description
+        <div className="flex items-center gap-4">
+          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
+            <FontAwesomeIcon icon={faMapMarkerAlt} className="text-red-600 text-xl" />
+          </span>
+          <span className="text-gray-800">{place.description}</span>
+        </div> */}
+        {/* Location */}
+        <div className="flex items-center gap-4">
+          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100">
+            <FontAwesomeIcon icon={faMapMarkedAlt} className="text-blue-700 text-xl" />
+          </span>
+          <span className="text-gray-800">{place.location?.location_name || "Unknown"}</span>
+        </div>
+        {/* Estimated Price */}
+        <div className="flex items-center gap-4">
+          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
+            <FontAwesomeIcon icon={faMoneyBillWave} className="text-green-700 text-xl" />
+          </span>
+          <span className="text-gray-800 font-semibold">
+            {place.price === 0
+              ? "Free"
+              : place.price
+              ? formatRupiah(place.price)
+              : "-"}
+          </span>
+        </div>
+        {/* Rating */}
+        <div className="flex items-center gap-4">
+          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-50">
+            <FontAwesomeIcon icon={faStar} className="text-yellow-400 text-xl" />
+          </span>
+          <span className="flex flex-col items-start">
+            <span className="flex items-center gap-1">
+              {/* Bintang dinamis */}
+              {[...Array(5)].map((_, i) => (
+                <FontAwesomeIcon
+                  key={i}
+                  icon={faStar}
+                  className={
+                    i < Math.floor(place.rating)
+                      ? "text-yellow-400 text-lg"
+                      : "text-gray-300 text-lg"
+                  }
+                />
+              ))}
+            </span>
+            <span className="text-xs font-bold text-gray-500 mt-1">{place.rating} / 5</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Operational Hours */}
       {place.operational && (
-        <div className="text-gray-600 mb-2">
-          <strong>Operational Hours:</strong>
-          <ul className="ml-4">
+        <div className="mt-8">
+          <strong className="block text-xl mb-3 text-blue-700">Operational Hours</strong>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-12">
             {Object.entries(JSON.parse(place.operational)).map(([day, hours]) => (
-              <li key={day}>
-                <span className="font-medium">{day}:</span> {hours || "Closed"}
-              </li>
+              <div key={day} className="flex items-center gap-3">
+                <FontAwesomeIcon icon={faClock} className="text-blue-400 mr-1" />
+                <span className="font-semibold text-base text-gray-900 w-28">{day}</span>
+                <span className={hours ? "text-base font-mono text-gray-700" : "text-red-500 font-semibold"}>
+                  {hours || "Closed"}
+                </span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </div>
