@@ -15,6 +15,7 @@ const RowDataHiddenGem = () => {
     const fetchData = async () => {
       try {
         const response = await fetchHiddenGems(); // Fetch data dari API
+        console.log("Fetched hidden gemsxdxdd:", response); // Log data yang diambil
         if (response) {
           dispatch(setHome3(response)); // Simpan data ke state.home3
         }
@@ -47,7 +48,7 @@ const RowDataHiddenGem = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {hiddenGems.map((home, index) => (
+      {hiddenGems.slice(0, 5).map((home, index) => (
         <div
           key={index}
           onClick={() => handleItemClick(home)}

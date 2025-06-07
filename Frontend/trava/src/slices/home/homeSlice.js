@@ -18,7 +18,8 @@ const homeSlice = createSlice({
         location: home.location_name,
         price: home.place_est_price,
         rating: home.place_rating,
-        views: home.views, // Pastikan views ada
+        views: home.views,
+        operational: home.operational, // <-- TAMBAHKAN INI
       }));
     },
     setHome2: (state, action) => {
@@ -32,6 +33,7 @@ const homeSlice = createSlice({
         price: home.place_est_price,
         rating: home.place_rating,
         views: home.views, // Pastikan views ada
+        operational: home.operational, // <-- TAMBAHKAN INI
       }));
 
     },
@@ -46,6 +48,7 @@ const homeSlice = createSlice({
         price: home.place_est_price,
         rating: home.place_rating,
         views: home.views, // Pastikan views ada
+        operational: home.operational, // <-- TAMBAHKAN INI
       }));
     },
     clearHome: (state) => {
@@ -84,7 +87,7 @@ export const selectHomesByCategoryIds = (categoryIds) => (state) => {
 export const selectTop5Places = (state) => {
   return [...state.home.home]
     .sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0))
-    .slice(0, 5);
+    // .slice(0, 5);
 };
 
 // Selector to get places by user_id and category_id, sorted by rating

@@ -233,7 +233,7 @@ class PlacesController extends Controller
     public function getFilteredPlaces()
     {
         // Ambil semua tempat
-        $places = Places::select('place_id', 'place_name', 'place_description', 'location_id', 'place_picture', 'place_rating', 'views')
+        $places = Places::select('place_id', 'place_name', 'place_description', 'location_id', 'place_picture', 'place_rating', 'views', 'operational')
             ->get();
 
         if ($places->isEmpty()) {
@@ -256,22 +256,7 @@ class PlacesController extends Controller
             return $a->views <=> $b->views; // Urutkan berdasarkan views (ascending)
         })->values(); // Reset indeks array
 
-        // Ambil hanya 5 tempat teratas
-        $limitedPlaces = $sortedPlaces->take(5);
-
-        return response()->json($limitedPlaces);
-
-        // return response()->json($limitedPlaces->map(function ($place) {
-        //     return [
-        //         'place_id' => $place->place_id,
-        //         'place_name' => $place->place_name,
-        //         'place_description' => $place->place_description,
-        //         'location' => $place->location->name ?? null, // assuming your locations table has a 'name' column
-        //         'place_picture' => $place->place_picture,
-        //         'place_rating' => $place->place_rating,
-        //         'views' => $place->views,
-        //     };
-        // }));
+        return response()->json($sortedPlaces);
     }
 
     public function getAllPlaces()
@@ -284,7 +269,6 @@ class PlacesController extends Controller
         $page = request()->query('page', 1); // Default to page 1 if not provided or empty
         $perPage = 5; // Number of items per page
 
-        // Ensure page is a valid number
         $page = is_numeric($page) && $page > 0 ? (int)$page : 1;
 
         // Determine the sorting direction

@@ -258,7 +258,7 @@ const EditPlacesById = () => {
     });
 
     setShowSuccess(true); // Tampilkan modal sukses
-    setTimeout(() => setShowSuccess(false), 2000); // Tutup otomatis setelah 2 detik
+    setTimeout(() => setShowSuccess(false), 1000);
     // ...handle image upload if needed...
   };
 
