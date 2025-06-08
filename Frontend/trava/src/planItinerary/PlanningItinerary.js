@@ -106,7 +106,8 @@ const PlanningItinerary = () => {
     setLangitude(lng);
     setLatitude(lat);
   } else {
-    console.log("Marker with the same coordinates already exists.");
+    setLangitude(lng);
+    setLatitude(lat);
   }
 };
 
