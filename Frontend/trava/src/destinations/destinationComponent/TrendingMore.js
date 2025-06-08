@@ -2,11 +2,23 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { selectPlaces } from "../../slices/places/placeSlice";
 import { useLocation, useNavigate } from "react-router-dom";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import GOOGLE_MAPS_API_KEY from "../../api/googleKey/googleKey";
 
 const TrendingMore = () => {
   const allPlaces = useSelector(selectPlaces); // Fetch all places from Redux
   const location = useLocation();
   const navigate = useNavigate();
+
+    const center = {
+    lat: -7.6145,
+    lng: 110.7122,
+  };
+
+  const containerStyle = {
+    width: "100%",
+    height: "100%",
+  };
 
   // Get the province name from the query parameter
   const queryParams = new URLSearchParams(location.search);
@@ -60,9 +72,22 @@ const TrendingMore = () => {
 
       {/* Right Section: Static Maps Box */}
       <div className="w-1/2 bg-gray-200">
-        <div className="h-full flex items-center justify-center">
-          <h2 className="text-gray-600 text-xl">Maps</h2>
-        </div>
+        <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={7}
+          >
+            {/* {markers.map((marker, index) => (
+          <Marker
+            key={index}
+            position={marker}
+            // onClick={() => removeMarker(index)}
+          />
+        ))} */}
+            {/* <p>{destinationName}</p> */}
+          </GoogleMap>
+        </LoadScript>
       </div>
     </div>
   );

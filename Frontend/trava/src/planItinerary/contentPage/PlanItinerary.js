@@ -22,6 +22,7 @@ import Loading from "../../modal/loading/Loading";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoneyBillWave, faStar, faArrowUp, faPen, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import { getPlaceByName } from "../../api/places/getPlaceByName";
 
 const PlanItinerary = ({ test }) => {
   const location = useLocation();
@@ -44,6 +45,20 @@ const PlanItinerary = ({ test }) => {
   const [fetchedPlaces, setFetchedPlaces] = useState({});
   const [itineraryName, setItineraryName] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
+  const [placeOptions, setPlaceOptions] = useState([]);
+
+  useEffect(() => {
+    if(places.length > 0) {
+      const options = places.map(place => ({
+        value: place.id,
+        label: place.name,
+        price: place.price || 0,
+        place_picture: place.place_picture, // Include picture in the option data
+      }));
+      setPlaceOptions(options);
+    }
+  }, [])
+  
 
 
   const { start, end, budget, desc, destination, destinationId } = location.state || {};
@@ -57,8 +72,49 @@ const PlanItinerary = ({ test }) => {
   const days = Array.from({ length: tripDuration }, (_, i) => `Day ${i + 1}`);
   const [visibleDays, setVisibleDays] = useState(Array.from({ length: tripDuration }, () => true));
   const leftoverBudget = visibleBudget - totalSpent;
+  const [searchPlace, setSearchPlace] = useState("");
 
   // Fetch places based on destinationId when component mounts
+useEffect(() => {
+  const fetchPlaces = async () => {
+    try {
+      const response = await getPlaceByName(searchPlace);
+      if (response) {
+
+        // Filter out duplicates by checking if place_id already exists
+        setPlaceOptions((prevOptions) => {
+          const existingIds = new Set(prevOptions.map(option => option.value));
+          
+          const filteredOptions = response
+            .filter(place => !existingIds.has(place.place_id))
+            .map(place => ({
+              value: place.place_id,
+              label: place.place_name,
+              price: place.place_est_price || 0,
+              place_picture: place.place_picture,
+            }));
+
+          // Optional: Dispatch only new places (not already appended)
+          const newPlaces = response.filter(place => !existingIds.has(place.place_id));
+          if (newPlaces.length > 0) {
+            dispatch(appendPlaces(newPlaces));
+          }
+
+          return [...prevOptions, ...filteredOptions];
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching places by name:", error.message);
+    }
+  };
+
+  if (searchPlace) {
+    fetchPlaces();
+  }
+}, [searchPlace]);
+
+
+
   useEffect(() => {
     const fetchPlacesByDestination = async () => {
       if (destinationId) {
@@ -109,17 +165,45 @@ const PlanItinerary = ({ test }) => {
   }, [selectPlace, test, fetchedPlaces]);
 
   const handleNextPage = async () => {
-    if (isLoading) return;
-    setIsLoading(true);
-    try {
-      const nextPage = page + 1;
-      const newPlaces = await fetchPlaces(destinationId, nextPage);
-      dispatch(appendPlaces(newPlaces));
+  if (isLoading) return;
+  setIsLoading(true);
+
+  try {
+    const nextPage = page + 1;
+    const newPlaces = await fetchPlaces(destinationId, nextPage);
+
+    if (newPlaces && Array.isArray(newPlaces)) {
+      // Filter out duplicates based on existing place IDs
+      setPlaceOptions(prevOptions => {
+        const existingIds = new Set(prevOptions.map(option => option.value));
+
+        const filteredNewOptions = newPlaces
+          .filter(place => !existingIds.has(place.place_id))
+          .map(place => ({
+            value: place.place_id,
+            label: place.place_name,
+            price: place.place_est_price || 0,
+            place_picture: place.place_picture,
+          }));
+
+        // Dispatch only new unique places to the store
+        const newUniquePlaces = newPlaces.filter(place => !existingIds.has(place.place_id));
+        if (newUniquePlaces.length > 0) {
+          dispatch(appendPlaces(newUniquePlaces));
+        }
+
+        return [...prevOptions, ...filteredNewOptions];
+      });
+
       setPage(nextPage);
-    } catch (error) {} finally {
-      setIsLoading(false);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching next page of places:", error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const toggleDayVisibility = (index) => {
     setVisibleDays((prev) => prev.map((visible, i) => (i === index ? !visible : visible)));
@@ -542,20 +626,30 @@ const PlanItinerary = ({ test }) => {
                     <label className="block text-gray-600 font-medium mb-0">Add a place</label>
                     <div className="flex-1">
                       <Select
-                        options={places.map((place) => ({
-                          value: place.id,
-                          label: place.name,
-                          price: place.price || 0,
-                        }))}
-                        onInputChange={(selectedOption) => {
-                          // opsional: handle search
-                        }}
+                        options={placeOptions} // Ensure this is correctly set
+                        onInputChange={(inputValue) => setSearchPlace(inputValue)}
                         onChange={(selectedOption) => [
                           handleSelectPlace(selectedOption, id),
                           handleRemoveBudget(selectedOption.price),
                         ]}
                         placeholder="Search for a place"
                         className="text-gray-700"
+                        components={{
+                          Option: (props) => (
+                            <div
+                              {...props.innerProps}
+                              className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
+                            >
+                              <img
+                                src={props.data.place_picture || "https://via.placeholder.com/40"}
+                                alt={props.data.label}
+                                className="w-10 h-10 object-cover rounded mr-3"
+                                style={{ minWidth: 40, minHeight: 40 }}
+                              />
+                              <span>{props.data.label}</span>
+                            </div>
+                          ),
+                        }}
                         onMenuScrollToBottom={handleNextPage}
                         isLoading={isLoading}
                         menuPortalTarget={document.body}

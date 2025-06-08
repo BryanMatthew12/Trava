@@ -3,10 +3,19 @@ import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getItineraryDetails } from "../../api/itinerary/getItineraryDetails";
 import { fetchPlaces } from "../../api/places/places.js";
-import { setPlaces, selectPlaces } from "../../slices/places/placeSlice";
+import {
+  setPlaces,
+  selectPlaces,
+  appendPlaces,
+} from "../../slices/places/placeSlice";
 import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMoneyBillWave, faStar, faPen, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMoneyBillWave,
+  faStar,
+  faPen,
+  faCalendarAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { patchItinerary } from "../../api/itinerary/patchItinerary.js";
 import { useNavigate } from "react-router-dom";
 import { fetchDayId } from "../../api/dayId/fetchDayId";
@@ -22,7 +31,8 @@ import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete";
 import ConfirmSave from "../../modal/ConfirmDelete/ConfirmSave.js";
 import { fetchCoord } from "../../api/mapCoord/fetchCoord.js";
 import { editBudget } from "../../api/itinerary/editBudget";
-import { editName } from "../../api/itinerary/editName"; // pastikan path sesuai
+import { editName } from "../../api/itinerary/editName";
+import { getPlaceByName } from "../../api/places/getPlaceByName.js";
 
 // Tambahkan fungsi formatRupiah
 function formatRupiah(angka) {
@@ -32,6 +42,7 @@ function formatRupiah(angka) {
   if (clean.endsWith(".00")) {
     clean = clean.slice(0, -3);
   }
+
   const numberString = clean.replace(/[^,\d]/g, "");
   const split = numberString.split(",");
   let sisa = split[0].length % 3;
@@ -97,10 +108,65 @@ const EditItinerary = ({ test }) => {
   const [budget, setBudget] = useState(""); // angka murni
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
+  const [searchPlace, setSearchPlace] = useState("");
+  const [placeOptions, setPlaceOptions] = useState([]);
 
   // Modal state
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+
+  useEffect(() => {
+    if (option.length > 0) {
+      const options = option.map((place) => ({
+        value: place.id,
+        label: place.name,
+        price: place.price || 0,
+        place_picture: place.place_picture, // Include picture in the option data
+      }));
+      setPlaceOptions(options);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        const response = await getPlaceByName(searchPlace);
+        if (response) {
+          // Filter out duplicates by checking if place_id already exists
+          setPlaceOptions((prevOptions) => {
+            const existingIds = new Set(
+              prevOptions.map((option) => option.value)
+            );
+
+            const filteredOptions = response
+              .filter((place) => !existingIds.has(place.place_id))
+              .map((place) => ({
+                value: place.place_id,
+                label: place.place_name,
+                price: place.place_est_price || 0,
+                place_picture: place.place_picture,
+              }));
+
+            // Optional: Dispatch only new places (not already appended)
+            const newPlaces = response.filter(
+              (place) => !existingIds.has(place.place_id)
+            );
+            if (newPlaces.length > 0) {
+              dispatch(appendPlaces(newPlaces));
+            }
+
+            return [...prevOptions, ...filteredOptions];
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching places by name:", error.message);
+      }
+    };
+
+    if (searchPlace) {
+      fetchPlaces();
+    }
+  }, [searchPlace]);
 
   useEffect(() => {
     const fetchItineraryDetails = async () => {
@@ -113,7 +179,34 @@ const EditItinerary = ({ test }) => {
           setBudget(data.budget ? data.budget.toString() : ""); // <-- Tambahkan baris ini
           if (data) {
             const placesData = await fetchPlaces(data.destination_id, currPage);
-            dispatch(setPlaces(placesData));
+
+            if (placesData && Array.isArray(placesData)) {
+              // Filter and append only unique places to placeOptions
+              setPlaceOptions((prevOptions) => {
+                const existingIds = new Set(
+                  prevOptions.map((option) => option.value)
+                );
+
+                const newOptions = placesData
+                  .filter((place) => !existingIds.has(place.place_id))
+                  .map((place) => ({
+                    value: place.place_id,
+                    label: place.place_name,
+                    price: place.place_est_price || 0,
+                    place_picture: place.place_picture,
+                  }));
+
+                // Dispatch only unique places to Redux
+                const newUniquePlaces = placesData.filter(
+                  (place) => !existingIds.has(place.place_id)
+                );
+                if (newUniquePlaces.length > 0) {
+                  dispatch(appendPlaces(newUniquePlaces));
+                }
+
+                return [...prevOptions, ...newOptions];
+              });
+            }
           }
         } catch (error) {
           console.error("Error fetching itinerary details:", error.message);
@@ -465,12 +558,18 @@ const EditItinerary = ({ test }) => {
         <div className="relative h-56 flex items-end rounded-b-3xl shadow-lg overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-700 via-indigo-500 to-teal-400 opacity-95" />
           <div className="absolute inset-0 backdrop-blur-[2px] bg-white/10" />
-          <svg className="absolute bottom-0 right-0 w-48 h-24 opacity-30 pointer-events-none" viewBox="0 0 200 60" fill="none">
+          <svg
+            className="absolute bottom-0 right-0 w-48 h-24 opacity-30 pointer-events-none"
+            viewBox="0 0 200 60"
+            fill="none"
+          >
             <path d="M0 30 Q50 60 100 30 T200 30 V60 H0Z" fill="#fff" />
           </svg>
           <div className="relative z-10 text-white p-8 w-full">
             <div className="flex items-center gap-3">
-              <h1 className="text-4xl font-extrabold drop-shadow">{itineraryData.itinerary_name}</h1>
+              <h1 className="text-4xl font-extrabold drop-shadow">
+                {itineraryData.itinerary_name}
+              </h1>
               <button
                 onClick={() => setIsEditingName(true)}
                 className="ml-4 p-3 rounded-full bg-white/30 hover:bg-white/60 transition flex items-center justify-center border border-white/40 hover:border-white shadow-xl"
@@ -480,11 +579,19 @@ const EditItinerary = ({ test }) => {
               </button>
             </div>
             <div className="flex flex-col md:flex-row md:items-center md:gap-6 mt-2">
-              <span className="text-lg font-semibold">{itineraryData.destination_name}</span>
+              <span className="text-lg font-semibold">
+                {itineraryData.destination_name}
+              </span>
             </div>
             <span className="text-base flex items-center gap-2 mt-1">
-              <FontAwesomeIcon icon={faCalendarAlt} className="text-white/90 text-lg" />
-              {formatDateRange(itineraryData.start_date, itineraryData.end_date)}
+              <FontAwesomeIcon
+                icon={faCalendarAlt}
+                className="text-white/90 text-lg"
+              />
+              {formatDateRange(
+                itineraryData.start_date,
+                itineraryData.end_date
+              )}
             </span>
           </div>
         </div>
@@ -523,7 +630,9 @@ const EditItinerary = ({ test }) => {
 
       {/* Description */}
       <div className="p-6">
-        <h2 className="text-xl font-bold border-b-2 border-blue-100 pb-2 mb-4 mt-8">Description</h2>
+        <h2 className="text-xl font-bold border-b-2 border-blue-100 pb-2 mb-4 mt-8">
+          Description
+        </h2>
         <div className="bg-white shadow-md rounded-lg p-4 relative">
           <textarea
             ref={textareaRef}
@@ -575,7 +684,9 @@ const EditItinerary = ({ test }) => {
       <div className="p-6 flex flex-col md:flex-row gap-4">
         <div className="flex-1 bg-white shadow rounded-xl p-4 flex items-center justify-between">
           <span className="font-semibold text-gray-700">Budget</span>
-          <span className="text-xl font-bold text-blue-700">{formatRupiah(budget)}</span>
+          <span className="text-xl font-bold text-blue-700">
+            {formatRupiah(budget)}
+          </span>
           <button
             className="ml-4 p-3 rounded-full bg-blue-100 hover:bg-blue-300 transition flex items-center justify-center border border-blue-300 hover:border-blue-500 shadow"
             onClick={() => setIsBudgetModalOpen(true)}
@@ -586,7 +697,11 @@ const EditItinerary = ({ test }) => {
         </div>
         <div className="flex-1 bg-white shadow rounded-xl p-4 flex items-center justify-between">
           <span className="font-semibold text-gray-700">Leftover</span>
-          <span className={`text-xl font-bold ${leftoverBudget < 0 ? "text-red-500" : "text-green-600"}`}>
+          <span
+            className={`text-xl font-bold ${
+              leftoverBudget < 0 ? "text-red-500" : "text-green-600"
+            }`}
+          >
             {leftoverBudget < 0
               ? `- ${formatRupiah(Math.abs(leftoverBudget))}`
               : formatRupiah(leftoverBudget)}
@@ -630,11 +745,17 @@ const EditItinerary = ({ test }) => {
       {/* Itinerary Mapping */}
       <div className="flex-grow px-6 overflow-y-auto">
         <div className="mb-4">
-          <h3 className="text-gray-700 font-semibold text-lg mb-2 border-b border-blue-100 pb-2">Itinerary</h3>
+          <h3 className="text-gray-700 font-semibold text-lg mb-2 border-b border-blue-100 pb-2">
+            Itinerary
+          </h3>
           {dayId.map((id, index) => {
             const places = destinations.filter((d) => d.day_id === id);
-            const startDate = itineraryData?.start_date ? new Date(itineraryData.start_date) : null;
-            const thisDate = startDate ? new Date(startDate.getTime() + index * 86400000) : null;
+            const startDate = itineraryData?.start_date
+              ? new Date(itineraryData.start_date)
+              : null;
+            const thisDate = startDate
+              ? new Date(startDate.getTime() + index * 86400000)
+              : null;
             return (
               <div
                 key={id}
@@ -680,15 +801,17 @@ const EditItinerary = ({ test }) => {
                           }}
                           key={place.place_id + "-" + place.visit_order}
                           className={`relative p-4 bg-white rounded-xl shadow flex items-center gap-6 cursor-pointer transition-all duration-200
-                            ${activePlaceId === place.place_id
-                              ? "border-2 border-blue-400 scale-[1.01] shadow-lg"
-                              : "border border-gray-200 hover:shadow-lg hover:border-blue-200"}
+                            ${
+                              activePlaceId === place.place_id
+                                ? "border-2 border-blue-400 scale-[1.01] shadow-lg"
+                                : "border border-gray-200 hover:shadow-lg hover:border-blue-200"
+                            }
                           `}
                         >
                           {/* Tombol hapus absolute */}
                           <button
                             className="absolute top-3 right-3 text-red-500 hover:text-red-700"
-                            onClick={e => {
+                            onClick={(e) => {
                               e.stopPropagation();
                               handleDeletePlace(
                                 place.day_id,
@@ -698,23 +821,52 @@ const EditItinerary = ({ test }) => {
                             }}
                             title="Remove"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
                             </svg>
                           </button>
                           {/* Image */}
                           <img
-                            src={place.place_image || place.place_picture || "https://via.placeholder.com/100x100?text=No+Image"}
+                            src={
+                              place.place_image ||
+                              place.place_picture ||
+                              "https://via.placeholder.com/100x100?text=No+Image"
+                            }
                             alt={place.place_name}
                             className="w-24 h-24 object-cover rounded-xl border border-blue-200"
                           />
                           {/* Info */}
                           <div className="flex-grow min-w-0">
-                            <h4 className="font-bold text-gray-800 text-xl truncate">{place.place_name || "Unknown Place"}</h4>
-                            <p className="text-gray-500 text-sm line-clamp-2">{place.place_description || "No description available"}</p>
+                            <h4 className="font-bold text-gray-800 text-xl truncate">
+                              {place.place_name || "Unknown Place"}
+                            </h4>
+                            <p className="text-gray-500 text-sm line-clamp-2">
+                              {place.place_description ||
+                                "No description available"}
+                            </p>
                             <span className="flex items-center gap-1 text-green-700 font-semibold mt-2">
-                              <FontAwesomeIcon icon={faMoneyBillWave} className="text-green-500" />
-                              {place.place_est_price ? `Rp. ${Number(place.place_est_price).toLocaleString("id-ID", {minimumFractionDigits: 2})}` : "N/A"}
+                              <FontAwesomeIcon
+                                icon={faMoneyBillWave}
+                                className="text-green-500"
+                              />
+                              {place.place_est_price
+                                ? `Rp. ${Number(
+                                    place.place_est_price
+                                  ).toLocaleString("id-ID", {
+                                    minimumFractionDigits: 2,
+                                  })}`
+                                : "N/A"}
                             </span>
                             <span className="flex flex-col items-start mt-1">
                               <span className="flex items-center gap-0.5">
@@ -722,12 +874,18 @@ const EditItinerary = ({ test }) => {
                                   <FontAwesomeIcon
                                     key={i}
                                     icon={faStar}
-                                    className={i < Math.floor(place.place_rating || 0) ? "text-yellow-400" : "text-gray-300"}
+                                    className={
+                                      i < Math.floor(place.place_rating || 0)
+                                        ? "text-yellow-400"
+                                        : "text-gray-300"
+                                    }
                                   />
                                 ))}
                               </span>
                               <span className="text-xs text-gray-500 mt-0.5">
-                                {place.place_rating ? `${place.place_rating} / 5` : "N/A"}
+                                {place.place_rating
+                                  ? `${place.place_rating} / 5`
+                                  : "N/A"}
                               </span>
                             </span>
                           </div>
@@ -735,22 +893,52 @@ const EditItinerary = ({ test }) => {
                       ))}
                     {/* Add place */}
                     <div className="border-2 border-dashed border-blue-300 rounded-xl p-4 flex items-center gap-2 bg-blue-50 mt-2">
-                      <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      <svg
+                        className="w-6 h-6 text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 4v16m8-8H4"
+                        />
                       </svg>
-                      <label className="block text-gray-600 font-medium mb-0">Add a place</label>
+                      <label className="block text-gray-600 font-medium mb-0">
+                        Add a place
+                      </label>
                       <div className="flex-1">
                         <Select
-                          options={option.map((place) => ({
-                            value: place.id,
-                            label: place.name,
-                            price: place.price || 0,
-                          }))}
+                          options={placeOptions}
+                          onInputChange={(inputValue) => {
+                            setSearchPlace(inputValue);
+                          }}
                           onChange={(selectedOption) =>
                             handleSelectPlace(selectedOption, id)
                           }
                           placeholder="Search for a place"
                           className="text-gray-700"
+                          components={{
+                            Option: (props) => (
+                              <div
+                                {...props.innerProps}
+                                className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
+                              >
+                                <img
+                                  src={
+                                    props.data.place_picture ||
+                                    "https://via.placeholder.com/40"
+                                  }
+                                  alt={props.data.label}
+                                  className="w-10 h-10 object-cover rounded mr-3"
+                                  style={{ minWidth: 40, minHeight: 40 }}
+                                />
+                                <span>{props.data.label}</span>
+                              </div>
+                            ),
+                          }}
                           onMenuScrollToBottom={handleNextPage}
                           menuPortalTarget={document.body}
                           menuPlacement="auto"
@@ -778,7 +966,8 @@ const EditItinerary = ({ test }) => {
       </div>
 
       {/* Save/Delete Buttons */}
-      {itineraryData && authUserId &&
+      {itineraryData &&
+        authUserId &&
         Number(authUserId) === Number(itineraryData.user_id) && (
           <div className="px-6 pb-6 flex gap-4 justify-end">
             <button
