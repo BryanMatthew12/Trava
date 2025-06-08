@@ -13,6 +13,7 @@ const placeSlice = createSlice({
         description: place.place_description,
         category: place.category_id,
         place_picture: place.place_picture,
+        operational: place.operational, // Ensure this is mapped correctly
         location: place.location,
         price: place.place_est_price,
         rating: place.place_rating, // Ensure this is mapped correctly
@@ -29,7 +30,13 @@ const placeSlice = createSlice({
         price: place.place_est_price,
         rating: place.place_rating,
       }));
-      state.places = [...state.places, ...newPlaces]; // Append new places to the existing array
+
+      // Filter out places with duplicate IDs
+      const filteredPlaces = newPlaces.filter(
+        (newPlace) => !state.places.some((existingPlace) => existingPlace.id === newPlace.id)
+      );
+
+      state.places = [...state.places, ...filteredPlaces]; // Append only unique places
     },
     clearPlaces: (state) => {
       state.places = []; // Clear the places
