@@ -2,6 +2,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { selectHome } from "../../slices/home/homeSlice";
 import { useNavigate } from "react-router-dom";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import GOOGLE_MAPS_API_KEY from "../../api/googleKey/googleKey";
 
 const PopularDestinationsMore = () => {
   const homes = useSelector(selectHome); // Fetch homes from Redux
@@ -10,6 +12,16 @@ const PopularDestinationsMore = () => {
   // Handle navigation to a detailed page
   const handleItemClick = (home) => {
     navigate(`/PlanningItinerary?source=home&params=${home.id}`);
+  };
+
+  const center = {
+    lat: -7.6145,
+    lng: 110.7122,
+  };
+
+  const containerStyle = {
+    width: "100%",
+    height: "100%",
   };
 
   return (
@@ -47,9 +59,22 @@ const PopularDestinationsMore = () => {
 
       {/* Right Section: Static Maps Box */}
       <div className="w-1/2 bg-gray-200">
-        <div className="h-full flex items-center justify-center">
-          <h2 className="text-gray-600 text-xl">Maps</h2>
-        </div>
+        <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={7}
+          >
+            {/* {markers.map((marker, index) => (
+          <Marker
+            key={index}
+            position={marker}
+            // onClick={() => removeMarker(index)}
+          />
+        ))} */}
+            {/* <p>{destinationName}</p> */}
+          </GoogleMap>
+        </LoadScript>
       </div>
     </div>
   );

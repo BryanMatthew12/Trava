@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import GOOGLE_MAPS_API_KEY from "../api/googleKey/googleKey";
 import { exportToThreads } from "../api/itinerary/exportToThreads"; // Import fungsi exportToThreads
+import { selectDestinationById } from "../slices/destination/destinationSlice";
 
 const categoryMapping = {
   1: "Adventure",
@@ -72,7 +73,8 @@ const PlanningItinerary = () => {
       return home2;
     } else if (source === "hiddenGem") {
       return home3;
-    } else {
+    } 
+    else {
       return place;
     }
   })();
