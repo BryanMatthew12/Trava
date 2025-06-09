@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import PlanItinerary from "./contentPage/PlanItinerary";
 import DestinationInfo from "./contentPage/DestinationInfo";
@@ -14,7 +14,6 @@ import { useSelector } from "react-redux";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import GOOGLE_MAPS_API_KEY from "../api/googleKey/googleKey";
 import { exportToThreads } from "../api/itinerary/exportToThreads"; // Import fungsi exportToThreads
-import { selectDestinationById } from "../slices/destination/destinationSlice";
 
 const categoryMapping = {
   1: "Adventure",
@@ -30,6 +29,7 @@ const PlanningItinerary = () => {
   const [markers, setMarkers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false); // State untuk status upload
+  const [destinations, setDestinations] = useState([]);
   const containerStyle = {
     width: "100%",
     height: "100%",
@@ -73,8 +73,7 @@ const PlanningItinerary = () => {
       return home2;
     } else if (source === "hiddenGem") {
       return home3;
-    } 
-    else {
+    } else {
       return place;
     }
   })();
@@ -82,7 +81,7 @@ const PlanningItinerary = () => {
   // State to store the destination name received from DestinationInfo
   const [destinationName, setDestinationName] = useState("");
 
-   const addMarker = (location) => {
+  const addMarker = (location) => {
     setMarkers((prevMarkers) => [...prevMarkers, location]);
   };
 
@@ -94,21 +93,11 @@ const PlanningItinerary = () => {
     addMarker(newMarker);
   };
 
-  // Callback function to receive the destination name
+  // Callback function to receive the destination coordinates
   const handleCoordinates = (lat, lng) => {
-
-    const markerExists = markers.some(
-      (marker) => marker.lat === lat && marker.lng === lng
-    );
-
-    if (!markerExists) {
-      addMarker({ lat, lng }); // Add marker to the map
-      setLangitude(lng);
-      setLatitude(lat);
-    } else {
-      setLangitude(lng);
-      setLatitude(lat);
-    }
+    setLangitude(lng);
+    setLatitude(lat);
+    // JANGAN tambahkan marker manual di sini!
   };
 
   const handleUploadToThreads = () => {
@@ -133,6 +122,32 @@ const PlanningItinerary = () => {
     setIsModalOpen(false); // Tutup modal
   };
 
+  const places = useSelector((state) => state.places.places);
+
+  useEffect(() => {
+    console.log("Destinations in parent:", destinations);
+    console.log("Places in parent:", places);
+    const newMarkers = destinations
+      .map((dest) => {
+        const place = places.find((p) => p.id === dest.place_id);
+        console.log("Place found for marker:", place);
+        // Ambil latitude & longitude dari place.location
+        if (
+          place &&
+          place.location &&
+          place.location.latitude &&
+          place.location.longitude
+        ) {
+          return {
+            lat: Number(place.location.latitude),
+            lng: Number(place.location.longitude),
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+    setMarkers(newMarkers);
+  }, [destinations, places]);
 
   return (
     <div className="flex h-screen">
@@ -159,6 +174,9 @@ const PlanningItinerary = () => {
             categoryMapping={categoryMapping}
             test={handleCoordinates}
             handleMapClick={handleMapClick}
+            destinations={destinations}
+            setDestinations={setDestinations}
+            onDestinationsChange={setDestinations} // Tambahkan ini
           />
         </div>
       </div>
@@ -172,12 +190,12 @@ const PlanningItinerary = () => {
             zoom={15}
           >
             {markers.map((marker, index) => (
-          <Marker
-            key={index}
-            position={marker}
-            // onClick={() => removeMarker(index)}
-          />
-        ))}
+              <Marker
+                key={index}
+                position={marker}
+                // onClick={() => removeMarker(index)}
+              />
+            ))}
             <p>{destinationName}</p>
           </GoogleMap>
         </LoadScript>

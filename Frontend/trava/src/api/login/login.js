@@ -13,7 +13,6 @@ export const login = async (email, password, dispatch, navigate) => {
       dispatch(setToken(response.data.token));
       dispatch(setName(response.data.user.username));
       dispatch(setUserId(response.data.user.user_id));
-      console.log('User ID:', response.data.user.role_id);
       dispatch(setRoleId(response.data.user.role_id));
       navigate('/home'); 
       return response.data;

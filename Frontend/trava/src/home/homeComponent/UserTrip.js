@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUserId } from '../../slices/auth/authSlice';
 import { getUserItineraries } from '../../api/itinerary/showItinerary';
@@ -12,6 +12,7 @@ const UserTrip = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectUserId); // Ambil user_id dari Redux state
   const itineraries = useSelector(selectItineraries); // Ambil daftar itinerary dari Redux state
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,6 +21,8 @@ const UserTrip = () => {
         dispatch(setItineraries(data)); // Simpan data ke Redux state
       } catch (error) {
         console.error('Error fetching user itineraries:', error.message);
+      }finally {
+        setLoading(false); // Set loading to false after fetching data
       }
     };
 
@@ -48,11 +51,26 @@ const UserTrip = () => {
           + Plan new trip
         </button>
       </div>
-      {itineraries.length > 0 ? (
+
+      {loading ? (
+        // Skeleton Loader
+        <div className="space-y-4 overflow-y-auto" style={{ maxHeight: '200px' }}>
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="p-4 bg-gray-200 border border-gray-300 rounded-lg shadow-sm animate-pulse"
+            >
+              <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+              <div className="h-3 bg-gray-300 rounded w-1/3"></div>
+            </div>
+          ))}
+        </div>
+      ) : itineraries.length > 0 ? (
         <div className="space-y-4 overflow-y-auto" style={{ maxHeight: '200px' }}>
           {[...itineraries].reverse().map((itinerary) => (
             <div
-              key={itinerary.itinerary_id} // Ganti id jadi itinerary_id
+              key={itinerary.itinerary_id}
               className="p-4 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"
               onClick={() => handleClick(itinerary)}
             >

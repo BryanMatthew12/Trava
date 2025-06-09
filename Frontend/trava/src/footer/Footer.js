@@ -2,8 +2,10 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInstagram, faFacebook, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import logo from '../assets/img/travalogo.png';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <footer className="bg-gray-100 py-8 px-4 sm:px-8 mt-auto">
       <div className="max-w-[85%] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-12 text-gray-700">
@@ -18,28 +20,18 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-2">Trava</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="hover:underline">
+                <a onClick={() => navigate("/PrePlanningItinerary")} className="hover:underline">
                   Planning itinerary
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:underline">
-                  Expense tracking
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
+                <a onClick={() => navigate("/Threads")} className="hover:underline">
                   Threads
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:underline">
+                <a onClick={() => navigate("/Destinations")} className="hover:underline">
                   Destinations
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:underline">
-                  Contact us
                 </a>
               </li>
             </ul>

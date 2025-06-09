@@ -17,12 +17,14 @@ const UserThread = () => {
   const userName = useSelector(selectName);
   const [userThreads, setUserThreads] = useState([]);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (userId) {
       getThreadsByUserId(userId)
         .then((res) => setUserThreads(res || [])) // ubah dari res?.data ke res
         .catch(() => setUserThreads([]));
+      setLoading(false);
     }
   }, [userId]);
 
