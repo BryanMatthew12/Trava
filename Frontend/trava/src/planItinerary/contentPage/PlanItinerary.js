@@ -22,10 +22,8 @@ import Loading from "../../modal/loading/Loading";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoneyBillWave, faStar, faArrowUp, faPen, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import { getPlaceByName } from "../../api/places/getPlaceByName"; 
-import { getPlaceByIdAndName } from "../../api/places/getPlaceByIdAndName"; // Import the new function
 
-const PlanItinerary = ({ test }) => {
+const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChange }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -38,7 +36,6 @@ const PlanItinerary = ({ test }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentBudget, setCurrentBudget] = useState(location.state?.budget || 0);
   const itineraryId = searchParams.get("params");
-  const [destinations, setDestinations] = useState([]);
   const [selectPlace, setSelectPlace] = useState();
   const [activePlaceId, setActivePlaceId] = useState(null);
   const [description, setDescription] = useState(location.state?.desc || "");
@@ -46,25 +43,6 @@ const PlanItinerary = ({ test }) => {
   const [fetchedPlaces, setFetchedPlaces] = useState({});
   const [itineraryName, setItineraryName] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
-  const [placeOptions, setPlaceOptions] = useState([]);
-
-  useEffect(() => {
-    if(places.length > 0) {
-      const options = places.map(place => ({
-        value: place.id,
-        label: place.name,
-        price: place.price || 0,
-        place_picture: place.place_picture, // Include picture in the option data
-      }));
-      setPlaceOptions(options);
-    }
-    // const getOptions = () => {
-    //   try{
-
-    //   }
-    // }
-  }, [])
-  
 
 
   const { start, end, budget, desc, destination, destinationId } = location.state || {};
@@ -78,51 +56,8 @@ const PlanItinerary = ({ test }) => {
   const days = Array.from({ length: tripDuration }, (_, i) => `Day ${i + 1}`);
   const [visibleDays, setVisibleDays] = useState(Array.from({ length: tripDuration }, () => true));
   const leftoverBudget = visibleBudget - totalSpent;
-  const [searchPlace, setSearchPlace] = useState("");
-  const DEBOUNCE_DELAY = 500;
 
   // Fetch places based on destinationId when component mounts
-useEffect(() => {
-  const handler = setTimeout(() => {
-    const fetchPlaces = async () => {
-      try {
-        const response = await getPlaceByIdAndName(searchPlace, destinationId);
-        if (response) {
-          setPlaceOptions((prevOptions) => {
-            const existingIds = new Set(prevOptions.map(option => option.value));
-
-            const filteredOptions = response
-              .filter(place => !existingIds.has(place.place_id))
-              .map(place => ({
-                value: place.place_id,
-                label: place.place_name,
-                price: place.place_est_price || 0,
-                place_picture: place.place_picture,
-              }));
-
-            const newPlaces = response.filter(place => !existingIds.has(place.place_id));
-            if (newPlaces.length > 0) {
-              dispatch(appendPlaces(newPlaces));
-            }
-
-            return [...prevOptions, ...filteredOptions];
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching places by name:", error.message);
-      }
-    };
-
-    if (searchPlace) {
-      fetchPlaces();
-    }
-  }, DEBOUNCE_DELAY);
-
-  return () => clearTimeout(handler); // Clear timeout if input changes before delay
-}, [searchPlace, dispatch]);
-
-
-
   useEffect(() => {
     const fetchPlacesByDestination = async () => {
       if (destinationId) {
@@ -173,45 +108,17 @@ useEffect(() => {
   }, [selectPlace, test, fetchedPlaces]);
 
   const handleNextPage = async () => {
-  if (isLoading) return;
-  setIsLoading(true);
-
-  try {
-    const nextPage = page + 1;
-    const newPlaces = await fetchPlaces(destinationId, nextPage);
-
-    if (newPlaces && Array.isArray(newPlaces)) {
-      // Filter out duplicates based on existing place IDs
-      setPlaceOptions(prevOptions => {
-        const existingIds = new Set(prevOptions.map(option => option.value));
-
-        const filteredNewOptions = newPlaces
-          .filter(place => !existingIds.has(place.place_id))
-          .map(place => ({
-            value: place.place_id,
-            label: place.place_name,
-            price: place.place_est_price || 0,
-            place_picture: place.place_picture,
-          }));
-
-        // Dispatch only new unique places to the store
-        const newUniquePlaces = newPlaces.filter(place => !existingIds.has(place.place_id));
-        if (newUniquePlaces.length > 0) {
-          dispatch(appendPlaces(newUniquePlaces));
-        }
-
-        return [...prevOptions, ...filteredNewOptions];
-      });
-
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const nextPage = page + 1;
+      const newPlaces = await fetchPlaces(destinationId, nextPage);
+      dispatch(appendPlaces(newPlaces));
       setPage(nextPage);
+    } catch (error) {} finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching next page of places:", error.message);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  };
 
   const toggleDayVisibility = (index) => {
     setVisibleDays((prev) => prev.map((visible, i) => (i === index ? !visible : visible)));
@@ -414,6 +321,13 @@ useEffect(() => {
     });
     return `${startStr} - ${endStr}`;
   }
+
+  useEffect(() => {
+    console.log("Destinations in child:", destinations);
+    if (typeof onDestinationsChange === "function") {
+      onDestinationsChange(destinations);
+    }
+  }, [destinations, onDestinationsChange]);
 
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
@@ -634,30 +548,20 @@ useEffect(() => {
                     <label className="block text-gray-600 font-medium mb-0">Add a place</label>
                     <div className="flex-1">
                       <Select
-                        options={placeOptions} // Ensure this is correctly set
-                        onInputChange={(inputValue) => setSearchPlace(inputValue)}
+                        options={places.map((place) => ({
+                          value: place.id,
+                          label: place.name,
+                          price: place.price || 0,
+                        }))}
+                        onInputChange={(selectedOption) => {
+                          // opsional: handle search
+                        }}
                         onChange={(selectedOption) => [
                           handleSelectPlace(selectedOption, id),
                           handleRemoveBudget(selectedOption.price),
                         ]}
                         placeholder="Search for a place"
                         className="text-gray-700"
-                        components={{
-                          Option: (props) => (
-                            <div
-                              {...props.innerProps}
-                              className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
-                            >
-                              <img
-                                src={props.data.place_picture || "https://via.placeholder.com/40"}
-                                alt={props.data.label}
-                                className="w-10 h-10 object-cover rounded mr-3"
-                                style={{ minWidth: 40, minHeight: 40 }}
-                              />
-                              <span>{props.data.label}</span>
-                            </div>
-                          ),
-                        }}
                         onMenuScrollToBottom={handleNextPage}
                         isLoading={isLoading}
                         menuPortalTarget={document.body}
