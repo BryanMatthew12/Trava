@@ -8,8 +8,6 @@ const Header = () => {
   const navigate = useNavigate();
   const roleId = useSelector(selectRoleId);
 
-  console.log('Role ID:', roleId); // Debugging line to check role_id
-
   return (
     <header className="bg-white text-gray-800 p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">

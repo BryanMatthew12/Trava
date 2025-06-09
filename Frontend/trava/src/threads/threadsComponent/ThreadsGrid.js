@@ -1,13 +1,14 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { viewThread } from "../../api/thread/viewThread";
-import { FaUserCircle } from "react-icons/fa"; // Tambahkan import ini
+import { FaUserCircle } from "react-icons/fa";
+import ThreadGridSkeleton from "../../skeleton/ThreadGridSkeleton"; // Import ThreadGridSkeleton
 
 const ThreadsGrid = ({ guides, loading }) => {
   const navigate = useNavigate();
 
   function getImageSrc(user_picture) {
-    if (!user_picture) return null; // Kembalikan null jika tidak ada gambar
+    if (!user_picture) return null;
     return user_picture;
   }
 
@@ -22,11 +23,16 @@ const ThreadsGrid = ({ guides, loading }) => {
     );
   };
 
+  if (loading) {
+    return <ThreadGridSkeleton />;
+  }
+
   if (!guides || guides.length === 0) {
     return (
       <div className="text-center col-span-full">No threads available.</div>
     );
   }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {guides.map((guide) => (
@@ -48,11 +54,11 @@ const ThreadsGrid = ({ guides, loading }) => {
               {guide.itinerary.itinerary_description ||
                 "No description available."}
             </h3>
-            <p className="text-sm text-gray-600">
-              {guide.thread_content}
-            </p>
-            <div className="flex justify-between items-center text-sm text-gray-500 mt-2 pt-2 border-t border-gray-100"
-                 style={{marginTop: "auto"}}>
+            <p className="text-sm text-gray-600">{guide.thread_content}</p>
+            <div
+              className="flex justify-between items-center text-sm text-gray-500 mt-2 pt-2 border-t border-gray-100"
+              style={{ marginTop: "auto" }}
+            >
               <div className="flex items-center space-x-2">
                 {getImageSrc(guide.user?.user_picture) ? (
                   <img
@@ -73,7 +79,6 @@ const ThreadsGrid = ({ guides, loading }) => {
           </div>
         </div>
       ))}
-      {loading && <div className="text-center col-span-full">Loading...</div>}
     </div>
   );
 };

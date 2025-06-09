@@ -1,13 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useSelector } from "react-redux";
 import { selectPlaces } from "../../slices/places/placeSlice";
 import { useNavigate } from "react-router-dom";
-import { viewPlace } from "../../api/places/viewPlace"; // Tambahkan import ini
+import { viewPlace } from "../../api/places/viewPlace";
+import RowSkeleton from "../../skeleton/RowSkeleton"; // Import RowSkeleton
 
 const RowDataTrending = () => {
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const allPlaces = useSelector(selectPlaces); // Fetch all places from Redux
+  const [loading, setLoading] = useState(true); // State for loading
+
+  useEffect(() => {
+    if(!allPlaces || allPlaces.length === 0) {
+      setLoading(true);
+      return;
+    }
+    setLoading(false);
+  }, [allPlaces])
+  
 
   // Sort all places by rating in descending order and get the top 5
   const top5Places = React.useMemo(() => {
@@ -34,13 +45,22 @@ const RowDataTrending = () => {
 
   const handleItemClick = async (place) => {
     try {
-      await viewPlace(place.id); // Tambah view sebelum navigasi
+      await viewPlace(place.id); // Add view before navigation
     } catch (error) {
-      // Optional: handle error, misal tetap lanjut navigasi walau gagal
       console.error(error);
     }
     navigate(`/PlanningItinerary?source=destination&params=${place.id}`);
   };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 w-full">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <RowSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
 
   if (isMobile) {
     return (

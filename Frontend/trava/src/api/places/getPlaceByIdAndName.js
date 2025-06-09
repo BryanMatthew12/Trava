@@ -2,12 +2,11 @@ import axios from 'axios';
 import Cookies from 'js-cookie'; // Import js-cookie to access cookies
 import { BASE_URL } from '../../config';
 
-export const getThreadById = async (id) => {
+export const getPlaceByIdAndName = async (name, id) => {
   try {
     const token = Cookies.get('token');
 
-    // Make the API request with the token in the headers
-    const response = await axios.get(`${BASE_URL}/v1/threads?thread_id=${id}`, {
+    const response = await axios.get(`${BASE_URL}/v1/places?name=${name}&destination_id=${id}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add the token as a Bearer token
       },
@@ -15,7 +14,6 @@ export const getThreadById = async (id) => {
 
     if (response.data) {
       return response.data;
-      
     } else {
       throw new Error('Error: No data received from the API');
     }

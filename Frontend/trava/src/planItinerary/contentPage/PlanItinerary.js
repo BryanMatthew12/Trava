@@ -22,7 +22,8 @@ import Loading from "../../modal/loading/Loading";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoneyBillWave, faStar, faArrowUp, faPen, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import { getPlaceByName } from "../../api/places/getPlaceByName";
+import { getPlaceByName } from "../../api/places/getPlaceByName"; 
+import { getPlaceByIdAndName } from "../../api/places/getPlaceByIdAndName"; // Import the new function
 
 const PlanItinerary = ({ test }) => {
   const location = useLocation();
@@ -57,6 +58,11 @@ const PlanItinerary = ({ test }) => {
       }));
       setPlaceOptions(options);
     }
+    // const getOptions = () => {
+    //   try{
+
+    //   }
+    // }
   }, [])
   
 
@@ -73,45 +79,47 @@ const PlanItinerary = ({ test }) => {
   const [visibleDays, setVisibleDays] = useState(Array.from({ length: tripDuration }, () => true));
   const leftoverBudget = visibleBudget - totalSpent;
   const [searchPlace, setSearchPlace] = useState("");
+  const DEBOUNCE_DELAY = 500;
 
   // Fetch places based on destinationId when component mounts
 useEffect(() => {
-  const fetchPlaces = async () => {
-    try {
-      const response = await getPlaceByName(searchPlace);
-      if (response) {
+  const handler = setTimeout(() => {
+    const fetchPlaces = async () => {
+      try {
+        const response = await getPlaceByIdAndName(searchPlace, destinationId);
+        if (response) {
+          setPlaceOptions((prevOptions) => {
+            const existingIds = new Set(prevOptions.map(option => option.value));
 
-        // Filter out duplicates by checking if place_id already exists
-        setPlaceOptions((prevOptions) => {
-          const existingIds = new Set(prevOptions.map(option => option.value));
-          
-          const filteredOptions = response
-            .filter(place => !existingIds.has(place.place_id))
-            .map(place => ({
-              value: place.place_id,
-              label: place.place_name,
-              price: place.place_est_price || 0,
-              place_picture: place.place_picture,
-            }));
+            const filteredOptions = response
+              .filter(place => !existingIds.has(place.place_id))
+              .map(place => ({
+                value: place.place_id,
+                label: place.place_name,
+                price: place.place_est_price || 0,
+                place_picture: place.place_picture,
+              }));
 
-          // Optional: Dispatch only new places (not already appended)
-          const newPlaces = response.filter(place => !existingIds.has(place.place_id));
-          if (newPlaces.length > 0) {
-            dispatch(appendPlaces(newPlaces));
-          }
+            const newPlaces = response.filter(place => !existingIds.has(place.place_id));
+            if (newPlaces.length > 0) {
+              dispatch(appendPlaces(newPlaces));
+            }
 
-          return [...prevOptions, ...filteredOptions];
-        });
+            return [...prevOptions, ...filteredOptions];
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching places by name:", error.message);
       }
-    } catch (error) {
-      console.error("Error fetching places by name:", error.message);
-    }
-  };
+    };
 
-  if (searchPlace) {
-    fetchPlaces();
-  }
-}, [searchPlace]);
+    if (searchPlace) {
+      fetchPlaces();
+    }
+  }, DEBOUNCE_DELAY);
+
+  return () => clearTimeout(handler); // Clear timeout if input changes before delay
+}, [searchPlace, dispatch]);
 
 
 
