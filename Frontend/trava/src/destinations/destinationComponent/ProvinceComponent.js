@@ -62,9 +62,9 @@ const ExploreComponent = ({ dispatch, getBannerId }) => {
             placeholder="Select a province"
           />
         </div>
-        {selectedProvinceId && (
+        {/* {selectedProvinceId && (
           <RowDataProvince id={selectedProvinceId} />
-        )}
+        )} */}
       </div>
 
       {selectedProvinceId && (

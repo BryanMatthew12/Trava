@@ -59,7 +59,7 @@ const RowData = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {homes.map((home, index) => {
+      {homes.slice(0, 5).map((home, index) => {
         return (
           <div
             key={index}

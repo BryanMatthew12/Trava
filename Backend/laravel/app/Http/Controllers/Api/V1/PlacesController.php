@@ -256,7 +256,9 @@ class PlacesController extends Controller
             return $a->views <=> $b->views; // Urutkan berdasarkan views (ascending)
         })->values(); // Reset indeks array
 
-        return response()->json($sortedPlaces);
+        $finaldata = $sortedPlaces->take(10);
+
+        return response()->json($finaldata);
     }
 
     public function getAllPlaces()
@@ -267,7 +269,7 @@ class PlacesController extends Controller
         $name = request()->query('name'); // Tambah query param name
         $sortBy = request()->query('sort_by', 'descending'); // Default to descending
         $page = request()->query('page', 1); // Default to page 1 if not provided or empty
-        $perPage = 5; // Number of items per page
+        $perPage = 15; // Number of items per page
 
         $page = is_numeric($page) && $page > 0 ? (int)$page : 1;
 
@@ -339,4 +341,6 @@ class PlacesController extends Controller
             'data' => $place,
         ]);
     }
+
+    
 }
