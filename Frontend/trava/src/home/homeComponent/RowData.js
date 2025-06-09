@@ -1,87 +1,76 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setHome, selectHome } from "../../slices/home/homeSlice";
 import { viewPlace } from "../../api/places/viewPlace";
 import { BASE_URL } from "../../config";
-import Cookies from "js-cookie"; // Import js-cookie to access cookies
-
-function getImageSrc(place_picture) {
-  if (!place_picture) return "https://via.placeholder.com/300x200?text=No+Image";
-  return place_picture;
-}
+import Cookies from "js-cookie";
+import Row from "../../components/Row";
+import RowSkeleton from "../../skeleton/RowSkeleton";
 
 const RowData = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const homes = useSelector(selectHome); // Get homes from Redux state
+  const homes = useSelector(selectHome);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchHomes = async () => {
-
       try {
-        const token = Cookies.get("token"); // Get the token from cookies
-
+        const token = Cookies.get("token");
         const response = await fetch(
           `${BASE_URL}/v1/places?sort_by=descending`,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Add the token as a Bearer token
+              Authorization: `Bearer ${token}`,
             },
           }
         );
         if (!response.ok) {
-          const errorText = await response.text(); // Get error details
+          const errorText = await response.text();
           console.error("Error response:", errorText);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        dispatch(setHome(data)); // Dispatch the data to Redux
-      } catch (error) {}
+        dispatch(setHome(data));
+      } catch (error) {
+        console.error("Error fetching homes:", error.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchHomes();
   }, [dispatch]);
 
-  // Handle navigation to a detailed page
   const handleItemClick = async (home) => {
     try {
-      await viewPlace(home.id); // home.id = place_id
+      await viewPlace(home.id);
     } catch (e) {
       console.error(e);
     }
     navigate(`/PlanningItinerary?source=home&params=${home.id}`);
   };
 
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <RowSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+
   if (!homes || homes.length === 0) {
-    return <p>No homes available to display.</p>; // Show a message if no homes are available
+    return <p>No homes available to display.</p>;
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {homes.slice(0, 5).map((home, index) => {
-        return (
-          <div
-            key={index}
-            onClick={async () => await handleItemClick(home)}
-            className="border p-4 rounded-lg shadow-lg bg-white flex flex-col items-center cursor-pointer hover:shadow-xl transition-shadow"
-          >
-            <img
-              src={getImageSrc(home.place_picture)}
-              alt={home.name}
-              className="w-full h-48 object-cover rounded-lg"
-            />
-
-            <h2 className="text-lg font-bold mt-2 text-center truncate w-full">
-              {home.name}
-            </h2>
-            <p className="text-gray-600 text-center text-sm truncate w-full">
-              {home.description}
-            </p>
-            <p className="text-sm text-gray-500">Rating: {home.rating} ★</p>
-          </div>
-        );
-      })}
+      {homes.slice(0, 5).map((home, index) => (
+        <Row key={index} data={home} onClick={() => handleItemClick(home)} />
+      ))}
     </div>
   );
 };

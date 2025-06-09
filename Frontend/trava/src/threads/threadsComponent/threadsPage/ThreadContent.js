@@ -31,7 +31,6 @@ const ThreadContent = () => {
 
         const itineraryRes = await getItineraryDetails(itineraries_id);
         setItinerary(itineraryRes);
-        console.log("Thread payload:", threadData); // <-- Tambahkan ini
       } catch (error) {
         setThread(null);
         setItinerary(null);

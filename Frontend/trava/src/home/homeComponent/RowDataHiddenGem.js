@@ -4,34 +4,34 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchHiddenGems } from "../../api/home/homeHidden"; // Import fetchHiddenGems
 import { setHome3, selectHiddenGems } from "../../slices/home/homeSlice";
 import { viewPlace } from "../../api/places/viewPlace";
+import RowSkeleton from "../../skeleton/RowSkeleton"; // Import RowSkeleton
 
 const RowDataHiddenGem = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const hiddenGems = useSelector(selectHiddenGems); // Ambil data hidden gems dari Redux
-  const [loading, setLoading] = useState(true); // State untuk loading
+  const hiddenGems = useSelector(selectHiddenGems); // Get hidden gems data from Redux
+  const [loading, setLoading] = useState(true); // State for loading
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchHiddenGems(); // Fetch data dari API
-        console.log("Fetched hidden gemsxdxdd:", response); // Log data yang diambil
+        const response = await fetchHiddenGems(); // Fetch data from API
         if (response) {
-          dispatch(setHome3(response)); // Simpan data ke state.home3
+          dispatch(setHome3(response)); // Save data to Redux state
         }
       } catch (error) {
         console.error("Error fetching hidden gems:", error);
       } finally {
-        setLoading(false); // Hentikan loading
+        setLoading(false); // Stop loading
       }
     };
 
-    fetchData(); // Fetch data saat komponen dimuat
+    fetchData(); // Fetch data when the component mounts
   }, [dispatch]);
 
   const handleItemClick = async (home) => {
     try {
-      await viewPlace(home.id); // home.id = place_id dari slice
+      await viewPlace(home.id); // Use place_id from slice
     } catch (e) {
       console.error(e);
     }
@@ -39,11 +39,13 @@ const RowDataHiddenGem = () => {
   };
 
   if (loading) {
-    return <p>Loading hidden gems...</p>; // Tampilkan pesan loading
-  }
-
-  if (!hiddenGems || hiddenGems.length === 0) {
-    return <p>No hidden gems available to display.</p>; // Tampilkan pesan jika data kosong
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <RowSkeleton key={index} />
+        ))}
+      </div>
+    );
   }
 
   return (
