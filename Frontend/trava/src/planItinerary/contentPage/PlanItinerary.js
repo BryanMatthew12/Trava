@@ -125,6 +125,17 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
   };
 
   const handleSelectPlace = (selectedOption, dayId) => {
+    // Cek apakah sudah ada destinasi dengan place_id dan day_id yang sama
+    const alreadyExists = destinations.some(
+      (destination) =>
+        destination.place_id === selectedOption.value &&
+        destination.day_id === dayId
+    );
+    if (alreadyExists) {
+      // Optional: alert("Place already added for this day!");
+      return false; // Tidak menambah, return false
+    }
+
     setSelectPlace(selectedOption.label);
     setDestinations((prevDestinations) => {
       const filteredDestinations = prevDestinations.filter(
@@ -145,6 +156,8 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
       };
       return [...filteredDestinations, newDestination];
     });
+
+    return true; // Berhasil menambah
   };
 
   const handleDeletePlace = (placeId, dayId) => {
@@ -323,7 +336,6 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
   }
 
   useEffect(() => {
-    console.log("Destinations in child:", destinations);
     if (typeof onDestinationsChange === "function") {
       onDestinationsChange(destinations);
     }
@@ -556,10 +568,19 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
                         onInputChange={(selectedOption) => {
                           // opsional: handle search
                         }}
-                        onChange={(selectedOption) => [
-                          handleSelectPlace(selectedOption, id),
-                          handleRemoveBudget(selectedOption.price),
-                        ]}
+                        onChange={async (selectedOption) => {
+                          const added = handleSelectPlace(selectedOption, id);
+                          if (added) {
+                            handleRemoveBudget(selectedOption.price);
+                          }
+                          // Tetap fetch koordinat & panggil test untuk marker
+                          const coordResult = await fetchCoord(selectedOption.label);
+                          const coordinates = coordResult?.data;
+                          if (coordinates && typeof test === "function") {
+                            test(coordinates.latitude, coordinates.longitude);
+                          }
+                          setSelectPlace(selectedOption.label);
+                        }}
                         placeholder="Search for a place"
                         className="text-gray-700"
                         onMenuScrollToBottom={handleNextPage}
