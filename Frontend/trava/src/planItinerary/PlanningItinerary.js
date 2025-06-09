@@ -96,20 +96,20 @@ const PlanningItinerary = () => {
 
   // Callback function to receive the destination name
   const handleCoordinates = (lat, lng) => {
-  // Check if the marker already exists
-  const markerExists = markers.some(
-    (marker) => marker.lat === lat && marker.lng === lng
-  );
 
-  if (!markerExists) {
-    addMarker({ lat, lng }); // Add marker to the map
-    setLangitude(lng);
-    setLatitude(lat);
-  } else {
-    setLangitude(lng);
-    setLatitude(lat);
-  }
-};
+    const markerExists = markers.some(
+      (marker) => marker.lat === lat && marker.lng === lng
+    );
+
+    if (!markerExists) {
+      addMarker({ lat, lng }); // Add marker to the map
+      setLangitude(lng);
+      setLatitude(lat);
+    } else {
+      setLangitude(lng);
+      setLatitude(lat);
+    }
+  };
 
   const handleUploadToThreads = () => {
     setIsModalOpen(true); // Buka modal konfirmasi

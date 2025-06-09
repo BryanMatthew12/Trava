@@ -140,8 +140,8 @@ useEffect(() => {
     fetchDayData();
   }, [itineraryId]);
 
-  useEffect(() => {
-    const getCoordinates = async () => {
+
+  const getCoordinates = async () => {
       try {
         const destinations = await fetchCoord(selectPlace);
         const coordinates = destinations?.data;
@@ -155,6 +155,8 @@ useEffect(() => {
         }
       } catch (error) {}
     };
+    
+  useEffect(() => {
     if (!selectPlace) return;
     if (fetchedPlaces[selectPlace]) {
       const { latitude, longitude } = fetchedPlaces[selectPlace];
@@ -239,6 +241,11 @@ useEffect(() => {
           !(destination.place_id === placeId && destination.day_id === dayId)
       )
     );
+    setFetchedPlaces((prev) => {
+      const updated = { ...prev };
+      delete updated[placeId];
+      return updated;
+    });
   };
 
   const handleDelete = async () => {
@@ -566,7 +573,7 @@ useEffect(() => {
                             if (activePlaceId === destination.place_id) {
                               setActivePlaceId(null);
                             } else {
-                              setSelectPlace(place?.name);
+                              // setSelectPlace(place?.name);
                               setActivePlaceId(destination.place_id);
                             }
                           }}
@@ -585,6 +592,7 @@ useEffect(() => {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </button>
+
                           {/* Image */}
                           <img
                             src={place?.place_picture || "https://via.placeholder.com/100x100?text=No+Image"}
