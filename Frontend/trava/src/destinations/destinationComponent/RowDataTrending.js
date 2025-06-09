@@ -18,7 +18,7 @@ const RowDataTrending = () => {
     // Sort all places by rating in descending order
     const sortedPlaces = [...allPlaces]
       .sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0)) // Handle missing or invalid ratings
-      .slice(0, 5); // Take the top 5 places
+      .slice(0, 9); // Take the top 5 places
     return sortedPlaces;
   }, [allPlaces]);
 
