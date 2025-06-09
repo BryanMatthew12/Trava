@@ -16,7 +16,7 @@ class RecommendationController extends Controller
 
         $places = Places::whereHas('categories', function ($query) use ($preferredCategoryIds) {
             $query->whereIn('categories.category_id', $preferredCategoryIds);
-        })->with('categories')->take(7  )->get(); // Limit to 5 results
+        })->with('categories')->take(15)->get(); // Limit to 5 results
 
         return response()->json($places);
     }

@@ -22,3 +22,16 @@ export const getPlaceByName = async (name) => {
     throw new Error(error.response?.data?.message || 'Error fetching destinations');
   }
 };
+
+export const getPlacesByDestinationId = async (destinationId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/v1/places?destination_id=${destinationId}`);
+    const places = response.data; // This will be all places for that destination
+    const placeNames = places.map(place => place.place_name);
+
+    return placeNames;
+  } catch (error) {
+    console.error('Error fetching places by destination ID:', error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || 'Error fetching places by destination ID');
+  }
+};
