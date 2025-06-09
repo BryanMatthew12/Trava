@@ -283,7 +283,6 @@ const EditPlacesById = () => {
             const detail = await fetchPlaceDetail(option.place_id);
             if (detail) {
               const mapped = mapPlaceDetailToForm(detail);
-              console.log("Payload setelah pilih place:", mapped); // Tambahkan log ini
               setPlaceId2(detail.place_id);
               setFormData(mapped);
             }

@@ -6,6 +6,7 @@ import { selectUserId } from "../../slices/auth/authSlice";
 import { setHome2 } from "../../slices/home/homeSlice";
 import { useDispatch } from "react-redux";
 import { viewPlace } from "../../api/places/viewPlace";
+import RowSkeleton from "../../skeleton/RowSkeleton"; // Import RowSkeleton
 
 const RowDataRecommended = ({ home2 }) => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const RowDataRecommended = ({ home2 }) => {
   const [loading, setLoading] = useState(true); // State to manage loading state
   const id = useSelector(selectUserId); // Get user ID from Redux
   const dispatch = useDispatch(); // Get dispatch function from Redux
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,12 +38,22 @@ const RowDataRecommended = ({ home2 }) => {
   // Handle navigation to a detailed page
   const handleItemClick = async (home) => {
     try {
-      await viewPlace(home.place_id); // gunakan place_id untuk API
+      await viewPlace(home.place_id); // Use place_id for API
     } catch (e) {
       console.error(e);
     }
     navigate(`/PlanningItinerary?source=recommended&params=${home.place_id}`);
   };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <RowSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
 
   if (!recommendedHomes || recommendedHomes.length === 0) {
     return <p>No recommended places available to display.</p>; // Show a message if no data is available

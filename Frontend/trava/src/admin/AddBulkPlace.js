@@ -71,8 +71,6 @@ const AddBulkPlace = () => {
       const batchSize = 1;
       for (let i = 0; i < places.length; i += batchSize) {
         const batch = places.slice(i, i + batchSize);
-        const response = await postBulkPlace({ places: batch });
-        console.log(`Batch ${i / batchSize + 1} response:`, response);
       }
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);

@@ -33,6 +33,7 @@ import { fetchCoord } from "../../api/mapCoord/fetchCoord.js";
 import { editBudget } from "../../api/itinerary/editBudget";
 import { editName } from "../../api/itinerary/editName";
 import { getPlaceByName } from "../../api/places/getPlaceByName.js";
+import { getPlaceByIdAndName } from "../../api/places/getPlaceByIdAndName.js";
 
 // Tambahkan fungsi formatRupiah
 function formatRupiah(angka) {
@@ -87,6 +88,7 @@ const EditItinerary = ({ test }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [fetchedPlaces, setFetchedPlaces] = useState({});
+  const [destinationId, setDestinationId] = useState('')
   const itineraryId = searchParams.get("params");
   const [itineraryData, setItineraryData] = useState(null);
   const option = useSelector(selectPlaces);
@@ -128,54 +130,14 @@ const EditItinerary = ({ test }) => {
   }, []);
 
   useEffect(() => {
-    const fetchPlaces = async () => {
-      try {
-        const response = await getPlaceByName(searchPlace);
-        if (response) {
-          // Filter out duplicates by checking if place_id already exists
-          setPlaceOptions((prevOptions) => {
-            const existingIds = new Set(
-              prevOptions.map((option) => option.value)
-            );
-
-            const filteredOptions = response
-              .filter((place) => !existingIds.has(place.place_id))
-              .map((place) => ({
-                value: place.place_id,
-                label: place.place_name,
-                price: place.place_est_price || 0,
-                place_picture: place.place_picture,
-              }));
-
-            // Optional: Dispatch only new places (not already appended)
-            const newPlaces = response.filter(
-              (place) => !existingIds.has(place.place_id)
-            );
-            if (newPlaces.length > 0) {
-              dispatch(appendPlaces(newPlaces));
-            }
-
-            return [...prevOptions, ...filteredOptions];
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching places by name:", error.message);
-      }
-    };
-
-    if (searchPlace) {
-      fetchPlaces();
-    }
-  }, [searchPlace]);
-
-  useEffect(() => {
-    const fetchItineraryDetails = async () => {
+  const fetchItineraryDetails = async () => {
       if (itineraryId) {
         try {
           const data = await getItineraryDetails(itineraryId);
           const { places, ...restWithoutPlaces } = data;
           setItineraryData(restWithoutPlaces);
           setDestinations(data.places);
+          setDestinationId(data.destination_id);
           setBudget(data.budget ? data.budget.toString() : ""); // <-- Tambahkan baris ini
           if (data) {
             const placesData = await fetchPlaces(data.destination_id, currPage);
@@ -215,6 +177,55 @@ const EditItinerary = ({ test }) => {
     };
     fetchItineraryDetails();
   }, [itineraryId, currPage, dispatch]);
+
+  const DEBOUNCE_DELAY = 500;
+
+  // Fetch places based on destinationId when component mounts
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const fetchPlaces = async () => {
+        try {
+          const response = await getPlaceByIdAndName(
+            searchPlace,
+            destinationId
+          );
+          if (response) {
+            setPlaceOptions((prevOptions) => {
+              const existingIds = new Set(
+                prevOptions.map((option) => option.value)
+              );
+
+              const filteredOptions = response
+                .filter((place) => !existingIds.has(place.place_id))
+                .map((place) => ({
+                  value: place.place_id,
+                  label: place.place_name,
+                  price: place.place_est_price || 0,
+                  place_picture: place.place_picture,
+                }));
+
+              const newPlaces = response.filter(
+                (place) => !existingIds.has(place.place_id)
+              );
+              if (newPlaces.length > 0) {
+                dispatch(appendPlaces(newPlaces));
+              }
+
+              return [...prevOptions, ...filteredOptions];
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching places by name:", error.message);
+        }
+      };
+
+      if (searchPlace) {
+        fetchPlaces();
+      }
+    }, DEBOUNCE_DELAY);
+
+    return () => clearTimeout(handler); // Clear timeout if input changes before delay
+  }, [searchPlace, dispatch]);
 
   useEffect(() => {
     const fetchDayData = async () => {
