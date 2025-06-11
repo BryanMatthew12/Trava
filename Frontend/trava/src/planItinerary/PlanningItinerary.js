@@ -125,12 +125,9 @@ const PlanningItinerary = () => {
   const places = useSelector((state) => state.places.places);
 
   useEffect(() => {
-    console.log("Destinations in parent:", destinations);
-    console.log("Places in parent:", places);
     const newMarkers = destinations
       .map((dest) => {
         const place = places.find((p) => p.id === dest.place_id);
-        console.log("Place found for marker:", place);
         // Ambil latitude & longitude dari place.location
         if (
           place &&
