@@ -84,7 +84,7 @@ function formatDateRange(start, end) {
   return `${startStr} - ${endStr}`;
 }
 
-const EditItinerary = ({ test }) => {
+const EditItinerary = ({ test, destinations, setDestinations, onDestinationsChange }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [fetchedPlaces, setFetchedPlaces] = useState({});
@@ -96,7 +96,6 @@ const EditItinerary = ({ test }) => {
   const [activePlaceId, setActivePlaceId] = useState(null);
   const [currPage, setCurrPage] = useState(1);
   const dispatch = useDispatch();
-  const [destinations, setDestinations] = useState([]);
   const [dayId, setDayId] = useState([]);
   const [visibleDays, setVisibleDays] = useState([]);
   const authUserId = useSelector(selectUserId);
@@ -269,10 +268,12 @@ const EditItinerary = ({ test }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isEditingDesc, descDraft, description, itineraryId, setDescription]);
 
-  const handleActivePlace = (placeId, placeName) => {
-    setActivePlaceId(placeId);
-    setSelectPlace(placeName);
-  };
+  useEffect(() => {
+    console.log("Destinations in child:", destinations);
+    if (typeof onDestinationsChange === "function") {
+      onDestinationsChange(destinations);
+    }
+  }, [destinations, onDestinationsChange]);
 
   const handleSelectPlace = (selectedOption, dayId) => {
     setSelectPlace(selectedOption.label);
@@ -663,7 +664,7 @@ const EditItinerary = ({ test }) => {
                   try {
                     await patchDescription(itineraryId, descDraft);
                     setDescription(descDraft);
-                    setSuccessMsg("Description updated!");
+                    setSuccessMsg("Description saved!");
                     setTimeout(() => setSuccessMsg(""), 2000);
                   } catch {
                     setSuccessMsg("Failed to update description");
@@ -688,6 +689,14 @@ const EditItinerary = ({ test }) => {
               <FiEdit2 size={20} />
             </button>
           )}
+          <div className="flex justify-end mt-2">
+            <button
+              onClick={exportPDF}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+            >
+              Export Itinerary to PDF
+            </button>
+          </div>
         </div>
       </div>
 
