@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setPlaces,
@@ -22,6 +22,8 @@ import Loading from "../../modal/loading/Loading";
 import ConfirmDelete from "../../modal/ConfirmDelete/ConfirmDelete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoneyBillWave, faStar, faArrowUp, faPen, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import { patchDescription } from "../../api/itinerary/patchDescription";
+import { FiEdit2 } from "react-icons/fi";
 
 const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChange }) => {
   const location = useLocation();
@@ -43,7 +45,10 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
   const [fetchedPlaces, setFetchedPlaces] = useState({});
   const [itineraryName, setItineraryName] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
-
+  const [isEditingDesc, setIsEditingDesc] = useState(false);
+  const [descDraft, setDescDraft] = useState(description);
+  const [successMsg, setSuccessMsg] = useState("");
+  const textareaRef = useRef(null);
 
   const { start, end, budget, desc, destination, destinationId } = location.state || {};
   const [totalSpent, setTotalSpent] = useState(0);
@@ -348,6 +353,27 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
     }
   }, [destinations, onDestinationsChange]);
 
+  // Sync draft with description
+  useEffect(() => {
+    setDescDraft(description);
+  }, [description]);
+
+  // Save description on blur (like EditItinerary)
+  const handleDescBlur = async () => {
+    setIsEditingDesc(false);
+    if (descDraft !== description) {
+      try {
+        await patchDescription(itineraryId, descDraft);
+        setDescription(descDraft);
+        setSuccessMsg("Description saved!");
+        setTimeout(() => setSuccessMsg(""), 2000);
+      } catch {
+        setSuccessMsg("Failed to update description");
+        setTimeout(() => setSuccessMsg(""), 2000);
+      }
+    }
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
       {isLoading && <Loading />}
@@ -419,13 +445,35 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
       {/* Description */}
       <div className="p-6">
         <h2 className="text-xl font-bold border-b-2 border-blue-100 pb-2 mb-4 mt-8">Description</h2>
-        <div className="bg-white shadow-md rounded-lg p-4">
+        <div className="bg-white shadow-md rounded-lg p-4 relative">
           <textarea
-            className="w-full h-24 border border-gray-300 rounded-lg p-2 resize-none"
+            ref={textareaRef}
+            className="w-full h-24 border border-gray-300 rounded-lg p-2 pr-10"
             placeholder="Write or paste anything here: how to get around, tips and tricks"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={descDraft}
+            readOnly={!isEditingDesc}
+            style={{
+              background: isEditingDesc ? "white" : "#f3f4f6",
+              cursor: isEditingDesc ? "text" : "default",
+            }}
+            onChange={(e) => setDescDraft(e.target.value)}
+            onBlur={handleDescBlur}
           />
+          {!isEditingDesc && (
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-blue-500"
+              onClick={() => {
+                setIsEditingDesc(true);
+                setTimeout(() => {
+                  textareaRef.current?.focus();
+                }, 0);
+              }}
+              type="button"
+              tabIndex={-1}
+            >
+              <FiEdit2 size={20} />
+            </button>
+          )}
           <div className="flex justify-end mt-2">
             <button
               onClick={exportPDF}
@@ -435,6 +483,7 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
             </button>
           </div>
         </div>
+        {successMsg && <Success message={successMsg} />}
       </div>
 
       {/* Budget & Leftover */}
@@ -565,7 +614,7 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
                     <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
-                    <label className="block text-gray-600 font-medium mb-0">Add a place</label>
+                    <label className="block text-gray-600 font-medium mb-0">Search New Place</label>
                     <div className="flex-1">
                       <Select
                         options={places.map((place) => ({
@@ -589,7 +638,7 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
                           }
                           setSelectPlace(selectedOption.label);
                         }}
-                        placeholder="Search for a place"
+                        placeholder="Add a place"
                         className="text-gray-700"
                         onMenuScrollToBottom={handleNextPage}
                         isLoading={isLoading}
