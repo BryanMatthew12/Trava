@@ -14,20 +14,27 @@ const Login = () => {
   useEffect(() => {
     dispatch(logout()); // Clear any previous session on mount
   })
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     setError({ email: '', password: '' });
 
+    const allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
     let hasError = false;
+
     if (!email) {
       setError((prev) => ({ ...prev, email: 'Please enter your email address' }));
       hasError = true;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       setError((prev) => ({ ...prev, email: 'Please enter a valid email address' }));
       hasError = true;
+    } else {
+      const emailDomain = email.split('@')[1];
+      if (!allowedDomains.includes(emailDomain)) {
+        setError((prev) => ({ ...prev, email: 'Please enter a valid email address' }));
+        hasError = true;
+      }
     }
 
     if (!password) {
@@ -41,7 +48,7 @@ const Login = () => {
       await login(email, password, dispatch, navigate);
     } catch (error) {
       console.error('Login error:', error.message);
-      setError((prev) => ({ ...prev, email: error.message }));
+      setError((prev) => ({ ...prev, email: "Your email or password is incorrect." }));
     }
   };
 
