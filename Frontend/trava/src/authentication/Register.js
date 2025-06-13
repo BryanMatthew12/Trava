@@ -155,7 +155,7 @@ const Register = () => {
         </form>
         <p className="text-center text-sm text-gray-600 mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-500 hover:underline">
+          <a onClick={() => navigate("/login")} className="text-blue-500 hover:underline">
             Log in
           </a>
         </p>
