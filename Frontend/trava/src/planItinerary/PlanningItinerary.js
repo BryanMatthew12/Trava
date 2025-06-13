@@ -147,9 +147,9 @@ const PlanningItinerary = () => {
   }, [destinations, places]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col sm:flex-row h-screen">
       {/* Left Section: Content */}
-      <div className="w-1/2 bg-gray-100 overflow-y-auto">
+      <div className="w-full sm:w-1/2 bg-gray-100 overflow-y-auto">
         <div className="p-4 border-b border-gray-300 flex justify-between items-center">
           <Link
             to="/home"
@@ -160,7 +160,7 @@ const PlanningItinerary = () => {
           <button
             className="text-blue-500 hover:underline"
             onClick={handleUploadToThreads}
-            disabled={isUploading} // Disable tombol saat sedang upload
+            disabled={isUploading}
           >
             {isUploading ? "Uploading..." : "Upload to Threads"}
           </button>
@@ -173,13 +173,13 @@ const PlanningItinerary = () => {
             handleMapClick={handleMapClick}
             destinations={destinations}
             setDestinations={setDestinations}
-            onDestinationsChange={setDestinations} // Tambahkan ini
+            onDestinationsChange={setDestinations}
           />
         </div>
       </div>
 
       {/* Right Section: Google Map */}
-      <div className="w-1/2 bg-gray-200">
+      <div className="hidden sm:block w-1/2 bg-gray-200">
         <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
           <GoogleMap
             mapContainerStyle={containerStyle}
@@ -190,7 +190,6 @@ const PlanningItinerary = () => {
               <Marker
                 key={index}
                 position={marker}
-                // onClick={() => removeMarker(index)}
               />
             ))}
             <p>{destinationName}</p>

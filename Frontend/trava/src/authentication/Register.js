@@ -11,72 +11,73 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState({ email: "", password: "", confirmPassword: "" });
+  const [error, setError] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [apiError, setApiError] = useState(""); // State for API error messages
 
   const handleRegister = async (e) => {
-  e.preventDefault();
-  setError({ email: "", password: "", confirmPassword: "" });
-  setApiError(""); // Clear previous API error
+    e.preventDefault();
+    setError({ name: "", email: "", password: "", confirmPassword: "" });
+    setApiError(""); // Clear previous API error
 
-  const allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
+    const allowedDomains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com"];
+    let hasError = false;
 
-  if (!email) {
-    setError((prev) => ({
-      ...prev,
-      email: "Please enter your email address"
-    }));
-    return;
-  }
-
-  const emailRegex = /^\S+@(\S+\.\S+)$/;
-  const match = email.match(emailRegex);
-
-  if (!match) {
-    setError((prev) => ({
-      ...prev,
-      email: "Please enter a valid email address"
-    }));
-    return;
-  }
-
-  const domain = match[1].toLowerCase();
-  if (!allowedDomains.includes(domain)) {
-    setError((prev) => ({
-      ...prev,
-      email: `Email must end in one of the following domains: ${allowedDomains.join(', ')}`
-    }));
-    return;
-  }
-
-  if (!password) {
-    setError((prev) => ({
-      ...prev,
-      password: "Please enter a password"
-    }));
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    setError((prev) => ({
-      ...prev,
-      confirmPassword: "Passwords do not match"
-    }));
-    return;
-  }
-
-  try {
-    const result = await register(name, email, password, confirmPassword, dispatch);
-    if (result && result.token) {
-      navigate("/preference");
+    // Validate Name
+    if (!name.trim()) {
+      setError((prev) => ({ ...prev, name: "Please enter your name" }));
+      hasError = true;
     }
-  } catch (error) {
-    console.error("Registration failed:", error.message);
-    setApiError(error.message || "Registration failed. Please try again.");
-  }
-};
 
+    // Validate Email
+    if (!email.trim()) {
+      setError((prev) => ({ ...prev, email: "Please enter your email address" }));
+      hasError = true;
+    } else {
+      const emailRegex = /^\S+@(\S+\.\S+)$/;
+      const match = email.match(emailRegex);
 
+      if (!match) {
+        setError((prev) => ({ ...prev, email: "Please enter a valid email address" }));
+        hasError = true;
+      } else {
+        const domain = match[1].toLowerCase();
+        if (!allowedDomains.includes(domain)) {
+          setError((prev) => ({
+            ...prev,
+            email: `Email must end in one of the following domains: ${allowedDomains.join(", ")}`,
+          }));
+          hasError = true;
+        }
+      }
+    }
+
+    // Validate Password
+    if (!password.trim()) {
+      setError((prev) => ({ ...prev, password: "Please enter a password" }));
+      hasError = true;
+    }
+
+    // Validate Confirm Password
+    if (!confirmPassword.trim()) {
+      setError((prev) => ({ ...prev, confirmPassword: "Please confirm your password" }));
+      hasError = true;
+    } else if (password !== confirmPassword) {
+      setError((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    try {
+      const result = await register(name, email, password, confirmPassword, dispatch);
+      if (result && result.token) {
+        navigate("/preference");
+      }
+    } catch (error) {
+      console.error("Registration failed:", error.message);
+      setApiError(error.message || "Registration failed. Please try again.");
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
@@ -91,9 +92,14 @@ const Register = () => {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full border ${
+                error.name ? "border-red-500" : "border-gray-300"
+              } rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
+                error.name ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
               placeholder="Enter your name"
             />
+            {error.name && <p className="text-red-500 text-sm mt-1">{error.name}</p>}
           </div>
 
           <div className="mb-4">
@@ -151,11 +157,10 @@ const Register = () => {
           >
             Register
           </button>
-          
         </form>
         <p className="text-center text-sm text-gray-600 mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-500 hover:underline">
+          <a onClick={() => navigate("/login")} className="text-blue-500 hover:underline">
             Log in
           </a>
         </p>
