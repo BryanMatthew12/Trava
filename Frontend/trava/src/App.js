@@ -21,6 +21,7 @@ import PopularDestinationsMore from './home/homeComponent/PopularDestinationsMor
 import RecommendedDestinationsMore from './home/homeComponent/RecommendedDestinationsMore';
 import HiddenGemsMore from './home/homeComponent/HiddenGemsMore';
 import Admin from './admin/Admin';
+import NotFound from './NotFound';
 
 const Layout = () => {
   const location = useLocation();
@@ -180,7 +181,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<div>404 Not Found</div>} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
