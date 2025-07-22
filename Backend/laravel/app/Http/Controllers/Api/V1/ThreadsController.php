@@ -7,9 +7,7 @@ use App\Http\Requests\UpdateThreadsRequest;
 use App\Http\Controllers\Controller;
 use App\Services\ThreadsService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Threads;
-use App\Models\User;
 
 class ThreadsController extends Controller
 {
