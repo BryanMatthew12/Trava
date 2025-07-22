@@ -383,11 +383,7 @@ const EditItinerary = ({ test, destinations, setDestinations, onDestinationsChan
     );
   };
 
-  const isAllDaysFilled =
-    dayId.length > 0 &&
-    dayId.every((id) =>
-      destinations.some((destination) => destination.day_id === id)
-    );
+  const isAllDaysFilled = destinations.length > 0;
 
   const handleNextPage = () => {
     setCurrPage((prev) => prev + 1);
@@ -997,7 +993,11 @@ const EditItinerary = ({ test, destinations, setDestinations, onDestinationsChan
               Delete Itinerary
             </button>
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow transition font-bold"
+              className={`px-6 py-2 rounded-lg shadow transition font-bold
+                  ${!isAllDaysFilled
+                    ? "bg-gray-400 text-white cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"}
+                `}              
               onClick={() => setShowSaveModal(true)}
               disabled={!isAllDaysFilled}
             >
