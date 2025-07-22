@@ -248,7 +248,7 @@ class PlacesController extends Controller
             return $place->place_rating >= ($highestRating - 0.3);
         });
 
-        // Urutkan tempat berdasarkan views (ascending), lalu rating (descending)
+        // Urutkan tempat berdasarkan views (ascending), abis itu (descending)
         $sortedPlaces = $filteredPlaces->sort(function ($a, $b) {
             if ($a->views == $b->views) {
                 return $b->place_rating <=> $a->place_rating; // Jika views sama, urutkan berdasarkan rating (descending)

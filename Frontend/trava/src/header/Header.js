@@ -7,6 +7,7 @@ import { FaBars, FaTimes } from 'react-icons/fa';
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const roleId = useSelector(selectRoleId);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -21,6 +22,9 @@ const Header = () => {
   if (roleId == '1') {
     menuItems.push({ label: 'Admin', path: '/Admin' });
   }
+
+  // Helper to check if current path matches
+  const isActive = (path) => location.pathname.toLowerCase() === path.toLowerCase();
 
   return (
     <header className="bg-white text-gray-800 p-4 shadow-md relative">
