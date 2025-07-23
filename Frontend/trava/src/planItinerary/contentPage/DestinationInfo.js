@@ -3,7 +3,7 @@ import { fetchCoord } from "../../api/mapCoord/fetchCoord";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt, faMapMarkedAlt, faMoneyBillWave, faStar, faClock } from "@fortawesome/free-solid-svg-icons";
 
-const DestinationInfo = ({ place, categoryMapping, test }) => {  
+const DestinationInfo = ({ place, addMarker, test }) => {  
   useEffect(() => {
     if (!place) return;
     const getCoordinates = async () => {
@@ -12,7 +12,11 @@ const DestinationInfo = ({ place, categoryMapping, test }) => {
         const coordinates = destinations?.data;
         if (coordinates) {
           const { latitude, longitude } = coordinates;
-          test(latitude, longitude);
+          // test(latitude, longitude);
+          addMarker({
+            lat: latitude,
+            lng: longitude,
+          });
         }
       } catch (error) {
         console.error("Failed to fetch coord", error.message);

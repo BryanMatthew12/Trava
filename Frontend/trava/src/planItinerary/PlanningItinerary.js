@@ -174,6 +174,7 @@ const PlanningItinerary = () => {
             destinations={destinations}
             setDestinations={setDestinations}
             onDestinationsChange={setDestinations}
+            addMarker={addMarker}
           />
         </div>
       </div>
