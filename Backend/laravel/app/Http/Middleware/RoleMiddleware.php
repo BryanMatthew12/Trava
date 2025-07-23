@@ -33,7 +33,7 @@ class RoleMiddleware
 
         // Check if the user's role is in the allowed roles
         if (!in_array($userRole, $roles)) {
-            return response()->json(['message' => 'Forbiddens'], 403); // Corrected spelling 'Forbidden'
+            return response()->json(['message' => 'Forbiddens'], 403); 
         }
 
         return $next($request);

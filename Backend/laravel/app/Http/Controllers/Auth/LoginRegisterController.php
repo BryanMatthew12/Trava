@@ -56,14 +56,6 @@ class LoginRegisterController extends Controller
             'token' => $token,
             'user' => $user,
         ], 201);
-
-        // For real application
-        // User::create([
-        //     'username' => $request->username,
-        //     'email' => $request->email,
-        //     'password' => Hash::make($request->password)
-        // ]);
-        // return redirect()->route('dashboard')->withSuccess('You have successfully registered & logged in!');
     }
 
     /**

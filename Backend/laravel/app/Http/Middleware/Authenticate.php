@@ -12,14 +12,12 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        // For real case apllication
+        
         return $request->expectsJson() ? null : route('Register'); 
         
         if (!$request->expectsJson()) {
             abort(401, 'Unauthorized'); 
         }
 
-        //For API Testing
-        // return abort(401, 'Unauthorized'); 
     }
 }
