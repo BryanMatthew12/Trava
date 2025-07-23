@@ -83,6 +83,8 @@ const PlanningItinerary = () => {
 
   const addMarker = (location) => {
     setMarkers((prevMarkers) => [...prevMarkers, location]);
+    console.log(location);
+    
   };
 
   const handleMapClick = (e) => {
@@ -97,7 +99,6 @@ const PlanningItinerary = () => {
   const handleCoordinates = (lat, lng) => {
     setLangitude(lng);
     setLatitude(lat);
-    // JANGAN tambahkan marker manual di sini!
   };
 
   const handleUploadToThreads = () => {
@@ -141,6 +142,7 @@ const PlanningItinerary = () => {
           };
         }
         return null;
+        
       })
       .filter(Boolean);
     setMarkers(newMarkers);
@@ -172,6 +174,7 @@ const PlanningItinerary = () => {
             test={handleCoordinates}
             handleMapClick={handleMapClick}
             destinations={destinations}
+            addMarker={addMarker}
             setDestinations={setDestinations}
             onDestinationsChange={setDestinations}
           />
