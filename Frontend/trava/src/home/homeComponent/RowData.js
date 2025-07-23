@@ -32,6 +32,8 @@ const RowData = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        console.log(data);
+        
         dispatch(setHome(data));
       } catch (error) {
         console.error("Error fetching homes:", error.message);

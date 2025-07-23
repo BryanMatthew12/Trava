@@ -16,6 +16,8 @@ const RowDataHiddenGem = () => {
     const fetchData = async () => {
       try {
         const response = await fetchHiddenGems(); // Fetch data from API
+        console.log(hiddenGems);
+        
         if (response) {
           dispatch(setHome3(response)); // Save data to Redux state
         }
@@ -68,7 +70,11 @@ const RowDataHiddenGem = () => {
             {home.description}
           </p>
           <p className="text-sm text-gray-500">Rating: {home.rating} ★</p>
-          <p className="text-sm text-gray-500">Location: {home.location}</p>
+          {/* <p className="text-sm text-gray-500">
+            Categories:{" "}
+            {home.categories?.map((category) => category.name).join(", ")}
+          </p> */}
+          {/* <p className="text-sm text-gray-500">Location: {home.location}</p> */}
           <p className="text-sm text-gray-500">Views: {home.views}</p>
         </div>
       ))}

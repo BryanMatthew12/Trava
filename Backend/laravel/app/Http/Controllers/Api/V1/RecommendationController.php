@@ -18,6 +18,11 @@ class RecommendationController extends Controller
             $query->whereIn('categories.category_id', $preferredCategoryIds);
         })->with('categories')->take(15)->get(); // Limit to 5 results
 
+        $places->transform(function ($place) {
+            $placeArray = $place->toArray();
+            $placeArray['location_name'] = $place->location->location_name ?? null;
+            return $placeArray;
+        });
         return response()->json($places);
     }
 }
