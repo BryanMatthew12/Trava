@@ -36,12 +36,12 @@ const Header = ({ onSearch }) => {
           onChange={handleInputChange}
         />
       </div>
-      <nav
+      {/* <nav
         className="flex flex-row gap-3 sm:gap-4 justify-start sm:justify-center text-xs sm:text-sm md:text-base py-2 px-1 sm:px-2 bg-white shadow overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-300"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
+      </nav> */}
         {/* ...menu items... */}
-      </nav>
     </div>
   );
 };

@@ -44,7 +44,7 @@ const Register = () => {
         if (!allowedDomains.includes(domain)) {
           setError((prev) => ({
             ...prev,
-            email: `Email must end in one of the following domains: ${allowedDomains.join(", ")}`,
+            email: `Email must end in one of the following domains: ${allowedDomains.join(",")}`,
           }));
           hasError = true;
         }

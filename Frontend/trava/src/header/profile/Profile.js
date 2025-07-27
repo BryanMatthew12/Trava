@@ -58,38 +58,38 @@ const Profile = () => {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // Ambil file gambar yang dipilih user
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new window.Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxSize = 300;
+      const reader = new FileReader(); // Buat FileReader untuk membaca file
+      reader.onload = (event) => { // Ketika file sudah selesai dibaca
+        const img = new window.Image(); // Buat elemen gambar baru (untuk resize)
+        img.onload = () => { // Ketika gambar sudah selesai dimuat
+          const canvas = document.createElement('canvas'); // Buat elemen canvas untuk menggambar gambar
+          const maxSize = 300; // Ukuran maksimal lebar/tinggi gambar
           let width = img.width;
           let height = img.height;
           if (width > height) {
             if (width > maxSize) {
-              height *= maxSize / width;
+              height *= maxSize / width; // Resize tinggi proporsional jika lebar > maxSize
               width = maxSize;
             }
           } else {
             if (height > maxSize) {
-              width *= maxSize / height;
+              width *= maxSize / height; // Resize lebar proporsional jika tinggi > maxSize
               height = maxSize;
             }
           }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL('image/png');
-          setImage(dataUrl);
-          setImageFile(dataUrl);
+          canvas.width = width; // Set lebar canvas
+          canvas.height = height; // Set tinggi canvas
+          const ctx = canvas.getContext('2d'); // Ambil context 2D canvas
+          ctx.drawImage(img, 0, 0, width, height); // Gambar image ke canvas dengan ukuran baru
+          const dataUrl = canvas.toDataURL('image/png'); // Convert canvas ke data URL base64 PNG
+          setImage(dataUrl); // Simpan data URL ke state image (untuk preview)
+          setImageFile(dataUrl); // Simpan data URL ke state imageFile (untuk upload ke backend)
         };
-        img.src = event.target.result;
+        img.src = event.target.result; // Set source image dari hasil baca FileReader (base64)
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // Mulai baca file sebagai data URL base64
     }
   };
 
