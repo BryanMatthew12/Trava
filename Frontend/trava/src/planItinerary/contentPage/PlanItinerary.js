@@ -358,7 +358,7 @@ const PlanItinerary = ({ test, destinations, setDestinations, onDestinationsChan
     setDescDraft(description);
   }, [description]);
 
-  // Save description on blur (like EditItinerary)
+  // Save description on blur
   const handleDescBlur = async () => {
     setIsEditingDesc(false);
     if (descDraft !== description) {
