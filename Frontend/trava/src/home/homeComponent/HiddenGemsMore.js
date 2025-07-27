@@ -29,7 +29,7 @@ const HiddenGemsMore = () => {
 
   // Handle navigation to a detailed page
   const handleItemClick = (home) => {
-    navigate(`/PlanningItinerary?source=hidden_gems&params=${home.id}`);
+    navigate(`/PlanningItinerary?source=hiddenGem&params=${home.id}`);
   };
 
   if (loading) {
