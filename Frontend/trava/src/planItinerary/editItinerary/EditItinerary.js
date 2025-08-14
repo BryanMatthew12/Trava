@@ -84,11 +84,16 @@ function formatDateRange(start, end) {
   return `${startStr} - ${endStr}`;
 }
 
-const EditItinerary = ({ test, destinations, setDestinations, onDestinationsChange }) => {
+const EditItinerary = ({
+  test,
+  destinations,
+  setDestinations,
+  onDestinationsChange,
+}) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [fetchedPlaces, setFetchedPlaces] = useState({});
-  const [destinationId, setDestinationId] = useState('')
+  const [destinationId, setDestinationId] = useState("");
   const itineraryId = searchParams.get("params");
   const [itineraryData, setItineraryData] = useState(null);
   const option = useSelector(selectPlaces);
@@ -129,7 +134,7 @@ const EditItinerary = ({ test, destinations, setDestinations, onDestinationsChan
   }, []);
 
   useEffect(() => {
-  const fetchItineraryDetails = async () => {
+    const fetchItineraryDetails = async () => {
       if (itineraryId) {
         try {
           const data = await getItineraryDetails(itineraryId);
