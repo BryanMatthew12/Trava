@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import img1 from "../../assets/img/javalandscape.jpg";
-import img2 from "../../assets/img/bali.jpg";
+import img2 from "../../assets/img/yogyakarta.jpg";
 import img3 from "../../assets/img/lombok.jpg";
 
 const images = [
@@ -12,9 +12,9 @@ const images = [
   },
   {
     src: img2,
-    alt: "Bali Beach",
-    caption: "Feel the magic of Bali",
-    description: "Enjoy the beaches, temples, and vibrant life of Bali.",
+    alt: "Yogyakarta",
+    caption: "Discover the charm of Yogyakarta",
+    description: "Enjoy cultural heritage, majestic temples, and local arts in Yogyakarta.",
   },
   {
     src: img3,

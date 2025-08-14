@@ -23,6 +23,9 @@ const Row = ({ data, onClick }) => {
         {data.description}
       </p>
       <p className="text-sm text-gray-500">Rating: {data.rating} ★</p>
+      <p className="text-gray-600 text-center text-sm truncate w-full">
+        Views : {data.views}
+      </p>
     </div>
   );
 };

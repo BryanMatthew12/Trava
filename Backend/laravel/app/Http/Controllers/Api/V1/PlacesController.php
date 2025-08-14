@@ -231,35 +231,42 @@ class PlacesController extends Controller
      * Get filtered places.
      */
     public function getFilteredPlaces()
-    {
-        // Ambil semua tempat
-        $places = Places::select('place_id', 'place_name', 'place_description', 'location_id', 'place_picture', 'place_rating', 'views', 'operational')
-            ->get();
+{
+    $places = Places::with(['location', 'categories']) // <-- add 'categories'
+        ->select('place_id', 'place_name', 'place_description', 'location_id', 'place_picture', 'place_rating', 'views', 'operational')
+        ->get();
 
-        if ($places->isEmpty()) {
-            return response()->json(['message' => 'No places available'], 404);
-        }
-
-        // Cari rating tertinggi
-        $highestRating = $places->max('place_rating');
-
-        // Filter tempat dengan rating >= (rating tertinggi - 0.3)
-        $filteredPlaces = $places->filter(function ($place) use ($highestRating) {
-            return $place->place_rating >= ($highestRating - 0.3);
-        });
-
-        // Urutkan tempat berdasarkan views (ascending), abis itu (descending)
-        $sortedPlaces = $filteredPlaces->sort(function ($a, $b) {
-            if ($a->views == $b->views) {
-                return $b->place_rating <=> $a->place_rating; // Jika views sama, urutkan berdasarkan rating (descending)
-            }
-            return $a->views <=> $b->views; // Urutkan berdasarkan views (ascending)
-        })->values(); // Reset indeks array
-
-        $finaldata = $sortedPlaces->take(10);
-
-        return response()->json($finaldata);
+    if ($places->isEmpty()) {
+        return response()->json(['message' => 'No places available'], 404);
     }
+
+    $highestRating = $places->max('place_rating');
+
+    $filteredPlaces = $places->filter(function ($place) use ($highestRating) {
+        return $place->place_rating >= ($highestRating - 0.3);
+    });
+
+    $sortedPlaces = $filteredPlaces->sort(function ($a, $b) {
+        if ($a->views == $b->views) {
+            return $b->place_rating <=> $a->place_rating;
+        }
+        return $a->views <=> $b->views;
+    })->values();
+
+    $finaldata = $sortedPlaces->map(function ($place) {
+        $placeArray = $place->toArray();
+        $placeArray['location_name'] = $place->location->location_name ?? null;
+        $placeArray['categories'] = $place->categories->map(function ($cat) {
+            return [
+                'id' => $cat->category_id,
+                'name' => $cat->category_name,
+            ];
+        });
+        return $placeArray;
+    })->take(10);
+
+    return response()->json($finaldata);
+}
 
     public function getAllPlaces()
     {
@@ -267,6 +274,7 @@ class PlacesController extends Controller
         $destinationId = request()->query('destination_id');
         $placeId = request()->query('place_id');
         $name = request()->query('name'); // Tambah query param name
+        $locationId = request()->query('location_id');
         $sortBy = request()->query('sort_by', 'descending'); // Default to descending
         $page = request()->query('page', 1); // Default to page 1 if not provided or empty
         $perPage = 15; // Number of items per page

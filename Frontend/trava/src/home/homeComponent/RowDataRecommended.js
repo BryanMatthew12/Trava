@@ -20,7 +20,9 @@ const RowDataRecommended = ({ home2 }) => {
       try {
         const response = await fetchHomes(id); // Fetch data using the API function
         if (response) {
-          setRecommendedHomes(response); // Set the fetched data
+          setRecommendedHomes(response);
+          console.log(response);
+           // Set the fetched data
           dispatch(setHome2(response));
         }
       } catch (error) {
@@ -79,11 +81,11 @@ const RowDataRecommended = ({ home2 }) => {
             {home.place_description}
           </p>
           <p className="text-sm text-gray-500">Rating: {home.place_rating} ★</p>
-          <p className="text-sm text-gray-500">
+          {/* <p className="text-sm text-gray-500">
             Categories:{" "}
             {home.categories.map((category) => category.name).join(", ")}
-          </p>
-          <p className="text-sm text-gray-500">Location: {home.location}</p>
+          </p> */}
+          {/* <p className="text-sm text-gray-500">Location: {home.location}</p> */}
           <p className="text-sm text-gray-500">Views: {home.views}</p>
         </div>
       ))}

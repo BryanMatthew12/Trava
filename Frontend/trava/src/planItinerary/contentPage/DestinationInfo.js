@@ -5,6 +5,8 @@ import { faMapMarkerAlt, faMapMarkedAlt, faMoneyBillWave, faStar, faClock } from
 
 const DestinationInfo = ({ place, addMarker, test }) => {  
   useEffect(() => {
+    console.log(place);
+    
     if (!place) return;
     const getCoordinates = async () => {
       try {
@@ -12,11 +14,9 @@ const DestinationInfo = ({ place, addMarker, test }) => {
         const coordinates = destinations?.data;
         if (coordinates) {
           const { latitude, longitude } = coordinates;
-          // test(latitude, longitude);
-          addMarker({
-            lat: latitude,
-            lng: longitude,
-          });
+          console.log("Fetched coordinates:", latitude, longitude);
+          test(latitude, longitude);
+          addMarker({lat : latitude, lng: longitude});
         }
       } catch (error) {
         console.error("Failed to fetch coord", error.message);
@@ -82,7 +82,7 @@ const DestinationInfo = ({ place, addMarker, test }) => {
           <span className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100">
             <FontAwesomeIcon icon={faMapMarkedAlt} className="text-blue-700 text-xl" />
           </span>
-          <span className="text-gray-800">{place.location?.location_name || "Unknown"}</span>
+          <span className="text-gray-800">{place.location?.location_name || place.location || "Unknown"}</span>
         </div>
         {/* Estimated Price */}
         <div className="flex items-center gap-4">
